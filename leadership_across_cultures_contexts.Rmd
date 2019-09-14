@@ -1,0 +1,56 @@
+---
+title: "Leadership across cultures and contexts"
+author: "Zachary Garfield, Kristen Syme, and Edward Hagen"
+date: "4/25/2019"
+output: 
+  bookdown::html_document2
+bibliography: Leader_contexts.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+<!-- A thematic note: One of our primary goals is to explore how an evolutionary framework can illuminate when we expect to find cultural, behavioral, physiological, etc. variation and then explain (some of) that variation. Part of going "Beyond WEIRD" is getting to theories that can account for population-level variation and predict invariant universals (or, at least, less variable phenotypes). We want to push things beyond the 'butterfly collecting' of simply documenting population-level variation. -->
+
+
+# Abstract
+
+Leader-follower dynamics are central to much of social life. Processes of leadership and followership observed in traditional societies, especially among small-scale societies, are often quite distinct from those observed among WEIRD societies and their complex organizations. Many researchers have turned to evolutionary theory to integrate diverse perspectives on human leadership and to better understand the diversity of leadership and followership observed across human cultures and across social contexts. Evolutionary theories of leadership, in turn, draw on ethnographic case studies from traditional societies that are thought to more closely resemble the small, face-to-face societies in which humans evolved. Currently, though, there is limited systematic data on the nature of leadership in such societies.
+
+We build on our previous cross-cultural findings to systematically review the nature of leadership across the full range of human cultural diversity. Over 1200 ethnographic texts from the Human Relations Area Files (HRAF) were coded on leader qualities, their functions, and the costs and benefits for both leaders and followers across diverse social contexts. We discovered evidence for both cultural universals in leadership, as well as important variation, especially when compared to leadership in WEIRD societies. Across all contexts, leaders in the ethnographic record are most commonly described as intelligent and knowledgeable, of high social status, accomplished, wealthy, and prosocial. The primary benefits leaders offer to followers are resolving conflicts, organizing cooperation, providing social functions, leading in inter-group conflicts, providing ritual services, and distributing resources. The primary benefits leaders receive from followers include non-food resources, increased social status, and social services from followers. The most frequent costs of leadership for leaders include loss of social status and resources, and increased risk of harm or conflict. For followers, the most frequent costs include loss of resources, costs in providing social services, and increased risk of harm or conflict.
+
+Leadership in WEIRD settings often differs substantially from non-WEIRD settings. In WEIRD settings influence often extends into multiple domains, organizations are more hierarchical, and interactions between leaders and followers are less frequently face-to-face. A detailed view of leaders, their roles, and the costs and benefits of leadership across traditional societies and across contexts stands to make a significant empirical contribution for the development of more integrative evolutionary theories of leadership and social hierarchy.
+
+# Introduction
+
+>It's good to be king, if just for a while. - Tom Petty
+
+Across human societies, the influence of leaders stands to substantially shape the nature of group structure and group outcomes. Simultaneously, social norms, pressures from competing leaders or rival or cooperative groups, as well as follower preferences can greatly constrain a leader's agenda. This interaction between the strategies of individual leaders with cultural forces and group dynamics they likely play an out-sized role in contributing to organizational variation including social and economic trajectories of populations [@wiessner_risk_1982], and cultural evolutionary processes [@henrich_big_2015]. Leadership and followership are critical in understanding group structure and have been the focus of much scienfitic attention across psychology, sociology, political science, and managerial studies. Until recently, this very large body of work was relatively disconnected from approaches to leadership in anthropology and biology. Under a unifying evolutionary framework, social and biological scientits have now produced to a sizble body of theory on the evolution and cross-culural patterning of leadership and followership [e.g., CITE], accomanyed by a growing body of empirical results [e.g., CITE]. This approach as been informative. Drawing on the study of leadership across diverse, small-scale and tradiational societies can help develop more generalizable theories and offer applications to shape ogranizational structure in ways which are more consistent with human evolutionary history and evolved leader-follower psychologies [@von_rueden_leadership_2015]. Nonetheless, much of this work has focused on community or political leaders, often overlooking the nature of leadership and followership across social domains. Moreover, while the benefits leaders acrue for their services have recieved substantial attention the costs of leadership for both leaders and followers have also been relatively underinvestigated.
+
+Leaders are individuals who maintain disproportionate influence over decision-making within groups [@von_rueden_leadership_2015], whatever the group may be. Leadership roles are also often associated with specific rights and responsibilities. Not surprisingly, the functions leaders serve then are often closely linked to group contexts and the challenges specific groups face. Certain types of groups, such as kin groups, economic groups, or political groups, may tend to favor certain types of leaders, however there can be substantial variation in the qualities of leaders within these groups as well as and between them.
+
+
+<!-- Reference a historical example of a short term leader implimenting change with lasting effects, good and/or bad. -->
+
+## The qualities of leaders across cultures and contexts
+
+## The functions of leadership across cultures and contexts
+
+## The costs of leadership across cultures and contexts
+
+## The benefits of leadership across cultures and contexts
+
+The ability to shape group dynamics can provide enormous individual benefits to leaders, even if 'just for a while.' 
+
+
+# Methods
+
+# Results
+
+# Discussion
+
+# References
+
+
