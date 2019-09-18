@@ -1,6 +1,7 @@
 #Temporary analyses script for Leadership across context and cultures paper
 #Eventually this will be added to the leadershipdata package, or probably it's own package. 
-
+# Good stack overflow on PCA with binary data
+# https://stats.stackexchange.com/questions/16331/doing-principal-component-analysis-or-factor-analysis-on-binary-data/16335#16335
 
 # Load data library -------------------------------------------------------
 library(leadershipdata)
@@ -9,7 +10,7 @@ library(leadershipdata)
 library(tidyverse)
 library(EGAnet)
 library(glasso)
-library(qgraph)
+# library(qgraph)
 library(NMF)
 library(dendextend)
 
@@ -116,88 +117,90 @@ d_q<-d_q[rowSums(d_q) > 0, ]
 
 # PCA ---------------------------------------------------------
 
+
+
 # PCA on leader qualities
 
-pca_qualities <-prcomp(d_q, scale=FALSE)
-summary(pca_qualities)
-plot(pca_qualities, main ="", col = "deepskyblue2")
-biplot(pca_qualities)
-
-pca_qualities$rotation
-load=pca_qualities$rotation
-##looking at a chart of variables and loadings
-sorted_pca1=load[order(load[,1]),1]
-plot.PCA1_dot<-dotchart(sorted_pca1, cex=.8, main="Dotchart of variable loadings\n for PCA 1", xlab="loadings")
-
-sorted_pca2=load[order(load[,2]),2]
-plot.PCA2_dot<-dotchart(sorted_pca2, cex=.8, main="Dotchart of variable loadings\n for PCA 2", xlab="loadings")
-
-sorted_pca3=load[order(load[,3]),3]
-plot.PCA2_dot<-dotchart(sorted_pca3, cex=.8, main="Dotchart of variable loadings\n for PCA 3", xlab="loadings")
-
-sorted_pca4=load[order(load[,4]),4]
-plot.PCA2_dot<-dotchart(sorted_pca4, cex=.8, main="Dotchart of variable loadings\n for PCA 4", xlab="loadings")
-
-
-# EGA  --------------------------------------------------------------------
-#Create a correlation matrix of the quality variables
-q_cor<-cor(by_culture[quality_vars])
-
-# Compute the EGA
-ega_q<-EGA(q_cor, n=59, model = "TMFG", plot.EGA = F)
-plot(ega_q, vsize = 6, label.prop = .5)
-
-#CFA(ega_q, d_q, "WLSMV")
-
-# Standardized loadings
-net.loads <- net.loads(A = ega_q)$std
-net.loads
-
-# Network scores
-net.scores <- net.scores(data = d_q, A = ega_q)
-net.scores
-
-# Dimension stability test
-## Bootstrap item replicability
-ega_q_boot<-bootEGA(by_culture[quality_vars], n=500, model = "TMFG", type = "parametric", ncore=8)
-itemStability(ega_q_boot, orig.wc = ega_q$wc, item.freq = 0.2)
-plot(ega_q_boot)
-
-
-# Heatmaps -----------------------------------------------------------------
-heatmap_data<-leader_text2[,c(quality_vars, "group.structure2")]
-
-#Temporary, -1 and 1 coudl 0 out
-heatmap_data<-heatmap_data[rowSums(heatmap_data[,c(quality_vars)]) > 0, ]
-
-# Rowv  <- 
-#   t(as.matrix(heatmap_data)) %>% 
-#   dist %>% # Cluster rows (variables) by Spearman rank correlation
-#   hclust(method = 'ward.D') %>% 
-#   as.dendrogram %>% 
-#   #rotate(order= colnames(data[vars])[order(data[vars][1,])]) %>% 
-#   set("branches_k_color", k = 4)
+# pca_qualities <-prcomp(d_q, scale=FALSE)
+# summary(pca_qualities)
+# plot(pca_qualities, main ="", col = "deepskyblue2")
+# biplot(pca_qualities)
 # 
-# Colv  <- heatmap_data %>% 
-#   dist %>% # Cluster columns (participants) by Euclidean metric
-#   hclust(method = 'ward.D') %>% 
-#   as.dendrogram %>%
-#   #rotate(order = rownames(data)[order(-data$Respect)]) %>%
-#   set("branches_k_color", k = 3)
-
-aheatmap(t(as.matrix(heatmap_data[,c(quality_vars)])), 
-         width = 15, height = 10, 
-         #Rowv  = Rowv,
-         #Colv = Colv,
-         distfun = "euclidean",
-         hclustfun = "ward",
-         cellheight = 5,
-         annCol = list(
-           Group = heatmap_data$group.structure2),
-         # annColors = list(
-         #   ),
-         treeheight = 50,
-         filename = 'heatmap_qualities.pdf')
+# pca_qualities$rotation
+# load=pca_qualities$rotation
+# ##looking at a chart of variables and loadings
+# sorted_pca1=load[order(load[,1]),1]
+# plot.PCA1_dot<-dotchart(sorted_pca1, cex=.8, main="Dotchart of variable loadings\n for PCA 1", xlab="loadings")
+# 
+# sorted_pca2=load[order(load[,2]),2]
+# plot.PCA2_dot<-dotchart(sorted_pca2, cex=.8, main="Dotchart of variable loadings\n for PCA 2", xlab="loadings")
+# 
+# sorted_pca3=load[order(load[,3]),3]
+# plot.PCA2_dot<-dotchart(sorted_pca3, cex=.8, main="Dotchart of variable loadings\n for PCA 3", xlab="loadings")
+# 
+# sorted_pca4=load[order(load[,4]),4]
+# plot.PCA2_dot<-dotchart(sorted_pca4, cex=.8, main="Dotchart of variable loadings\n for PCA 4", xlab="loadings")
+# 
+# 
+# # EGA  --------------------------------------------------------------------
+# #Create a correlation matrix of the quality variables
+# q_cor<-cor(by_culture[quality_vars])
+# 
+# # Compute the EGA
+# ega_q<-EGA(q_cor, n=59, model = "TMFG", plot.EGA = F)
+# plot(ega_q, vsize = 6, label.prop = .5)
+# 
+# #CFA(ega_q, d_q, "WLSMV")
+# 
+# # Standardized loadings
+# net.loads <- net.loads(A = ega_q)$std
+# net.loads
+# 
+# # Network scores
+# net.scores <- net.scores(data = d_q, A = ega_q)
+# net.scores
+# 
+# # Dimension stability test
+# ## Bootstrap item replicability
+# ega_q_boot<-bootEGA(by_culture[quality_vars], n=500, model = "TMFG", type = "parametric", ncore=8)
+# itemStability(ega_q_boot, orig.wc = ega_q$wc, item.freq = 0.2)
+# plot(ega_q_boot)
+# 
+# 
+# # Heatmaps -----------------------------------------------------------------
+# heatmap_data<-leader_text2[,c(quality_vars, "group.structure2")]
+# 
+# #Temporary, -1 and 1 coudl 0 out
+# heatmap_data<-heatmap_data[rowSums(heatmap_data[,c(quality_vars)]) > 0, ]
+# 
+# # Rowv  <- 
+# #   t(as.matrix(heatmap_data)) %>% 
+# #   dist %>% # Cluster rows (variables) by Spearman rank correlation
+# #   hclust(method = 'ward.D') %>% 
+# #   as.dendrogram %>% 
+# #   #rotate(order= colnames(data[vars])[order(data[vars][1,])]) %>% 
+# #   set("branches_k_color", k = 4)
+# # 
+# # Colv  <- heatmap_data %>% 
+# #   dist %>% # Cluster columns (participants) by Euclidean metric
+# #   hclust(method = 'ward.D') %>% 
+# #   as.dendrogram %>%
+# #   #rotate(order = rownames(data)[order(-data$Respect)]) %>%
+# #   set("branches_k_color", k = 3)
+# 
+# aheatmap(t(as.matrix(heatmap_data[,c(quality_vars)])), 
+#          width = 15, height = 10, 
+#          #Rowv  = Rowv,
+#          #Colv = Colv,
+#          distfun = "euclidean",
+#          hclustfun = "ward",
+#          cellheight = 5,
+#          annCol = list(
+#            Group = heatmap_data$group.structure2),
+#          # annColors = list(
+#          #   ),
+#          treeheight = 50,
+#          filename = 'heatmap_qualities.pdf')
 
 
 
