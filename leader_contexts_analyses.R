@@ -110,26 +110,26 @@ by_culture = leader_text2 %>%
 
 # Create data frames without all 0 rows -----------------------------------
 
-pca_data_qualities<-leader_text2[,c(quality_vars, "cs_textrec_ID")]
+#Create dataframe of variables for logistic PCA of qualities
+pca_data_qualities<-leader_text2[,c(quality_vars, "cs_textrec_ID", "group.structure2")]
+#Remove -1s for now
 pca_data_qualities[quality_vars==-1]<-0
-pca_data_qualities<-column_to_rownames(pca_data_qualities, var = "cs_textrec_ID")
+#Remove rows with all 0s
+pca_data_qualities<-pca_data_qualities[rowSums(pca_data_qualities[quality_vars])>0,]
 
-#Get rid of rows with only 0s
-pca_data_qualities <- pca_data_qualities %>% 
-  filter(rowSums(.) > 0)
-  
-  
+
+
 #Fit the SVD with k = 6. 6 is the minimum for 80% of the variance
-logsvd_model = logisticSVD(pca_data_qualities, k = 6)
+logsvd_model = logisticSVD(pca_data_qualities[quality_vars], k = 6)
 logsvd_model
 
 #Cross validate optimal m
-logpca_cv = cv.lpca(pca_data_qualities, ks = 6, ms = 1:10)
+logpca_cv = cv.lpca(pca_data_qualities[quality_vars], ks = 6, ms = 1:10)
 plot(logpca_cv)
 
 
-logpca_model = logisticPCA(pca_data_qualities, k = 6, m = which.min(logpca_cv))
-clogpca_model = convexLogisticPCA(pca_data_qualities, k = 6, m = which.min(logpca_cv))
+logpca_model = logisticPCA(pca_data_qualities[quality_vars], k = 6, m = which.min(logpca_cv))
+clogpca_model = convexLogisticPCA(pca_data_qualities[quality_vars], k = 6, m = which.min(logpca_cv))
 
 plot(clogpca_model, type = "trace")
 
@@ -137,19 +137,20 @@ plot(logsvd_model, type = "trace")
 
 
 plot(logsvd_model, type = "scores")+ 
-  geom_point()+ 
-  ggtitle("Exponential Family PCA")
-  #scale_colour_manual(values = c("blue", "red"))
+  geom_point(aes(colour=pca_data_qualities$group.structure2)) + 
+  ggtitle("Exponential Family PCA") +
+scale_colour_brewer(palette = "Set1")
 
 plot(logpca_model, type = "scores") + 
-  geom_point(aes()) + 
-  ggtitle("Logistic PCA") 
-  #scale_colour_manual(values = c("blue", "red"))
+  geom_point(aes(colour=pca_data_qualities$group.structure2)) + 
+  ggtitle("Logistic PCA") +
+  scale_colour_brewer(palette = "Set1")
+
 
 plot(clogpca_model, type = "scores") + 
-  geom_point(aes()) + 
-  ggtitle("Convex Logistic PCA")
-  #scale_colour_manual(values = c("blue", "red"))
+  geom_point(aes(colour=pca_data_qualities$group.structure2)) + 
+  ggtitle("Convex Logistic PCA")+
+  scale_colour_brewer(palette = "Set1")
 
 
 # Heatmaps -----------------------------------------------------------------
