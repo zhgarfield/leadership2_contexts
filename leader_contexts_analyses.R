@@ -157,6 +157,12 @@ plot(clogpca_model, type = "scores") +
 logpca_model_loadings<-data.frame(logpca_model$U)
 logpca_model_loadings$variable<-names(pca_data_qualities[quality_vars])
 
+loadings<- gather(logpca_model_loadings, key = Component, value =  Loading, -variable)
+
+ggplot(loadings, aes(Loading, variable)) +
+  geom_point(aes(colour=Component)) +
+  facet_wrap(vars(Component))
+
 # Correlation of PCs across text records
 pairs(logpca_model$PCs)
 
