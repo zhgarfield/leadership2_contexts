@@ -153,6 +153,14 @@ plot(clogpca_model, type = "scores") +
   scale_colour_brewer(palette = "Set1")
 
 
+# Associate logistic PCA model with variables
+logpca_model_loadings<-data.frame(logpca_model$U)
+logpca_model_loadings$variable<-names(pca_data_qualities[quality_vars])
+
+# Correlation of PCs across text records
+pairs(logpca_model$PCs)
+
+
 # Heatmaps -----------------------------------------------------------------
 heatmap_data<-leader_text2[,c(quality_vars, "group.structure2")]
 
