@@ -10,6 +10,26 @@ library(tidyverse)
 library(EGAnet)
 library(glasso)
 library(qgraph)
+library(NMF)
+library(dendextend)
+
+
+# Recode variables --------------------------------------------------------
+
+# Collapse group structure types
+
+leader_text2$group.structure2<-leader_text2$group.structure.coded
+
+leader_text2$group.structure2[leader_text2$group.structure.coded=="criminal group"]="economic group"
+leader_text2$group.structure2[leader_text2$group.structure.coded=="labor group"]="economic group"
+leader_text2$group.structure2[leader_text2$group.structure.coded=="subsistence group"]="economic group"
+
+leader_text2$group.structure2[leader_text2$group.structure.coded=="age-group"]="social group"
+leader_text2$group.structure2[leader_text2$group.structure.coded=="domestic group"]="social group"
+leader_text2$group.structure2[leader_text2$group.structure.coded=="kin group"]="social group"
+leader_text2$group.structure2[leader_text2$group.structure.coded=="local group"]="social group"
+leader_text2$group.structure2[leader_text2$group.structure.coded=="performance group"]="social group"
+
 
 
 # Create named lists of variables by group --------------------------------
@@ -56,27 +76,49 @@ follower_benefit_vars = c("follower.benefits_fitness",
                         "follower.benefits_social.services","follower.benefits_social.status.reputation",    
                         "follower.benefits_territory","follower.benefits_resource_other")
 # Follower costs vars
-follower_cost_vars = c("follower.costs_fitness.costs",                  
+follower_cost_vars = c("follower.costs_fitness",                  
                      "follower.costs_increased.risk.harm.conflict","follower.costs_other",                          
-                     "follower.costs_resource_food.cost","follower.costs_resources_other.cost",           
-                     "follower.costs_social.status","follower.costs_territory.cost",                 
-                     "follower.costs.mating.cost","follower.costs.social.services")
+                     "follower.costs_resource_food","follower.costs_resource_other",           
+                     "follower.costs_social.status","follower.costs_territory",                 
+                     "follower.costs_mating","follower.costs_social.services")
+
+
+# Aggregate at Culture level ----------------------------------------------
+
+textID_docID<-leader_text_original[,c("cs_textrec_ID","doc_ID")]
+docID_cultureID<-documents[,c("d_ID","d_culture")]
+docID_cultureID$doc_ID<-docID_cultureID$d_ID
+
+text_doc_cultureIDs<-left_join(textID_docID,docID_cultureID)
+
+leader_text2<-left_join(leader_text2, text_doc_cultureIDs, by="cs_textrec_ID")
+
+
+by_culture = leader_text2 %>% 
+  group_by(d_culture) %>%
+  dplyr::select(d_culture, one_of(c(quality_vars, function_vars,
+                                    leader_benefit_vars, leader_cost_vars,
+                                    follower_benefit_vars, follower_cost_vars))) %>% 
+  summarise_each(funs(mean))
+
 
 
 # Create data frames without all 0 rows -----------------------------------
 #For quality variables only
-d_q<-d[quality_vars]
+d_q<-by_culture[quality_vars]
+
 #Get rid of 'evidence against' for now...
-d_q[d_q==-1]<-0
+#d_q[d_q==-1]<-0
+
 #Get rid of rows with only 0s
 d_q<-d_q[rowSums(d_q) > 0, ]
 
 
-# Exploratory PCA ---------------------------------------------------------
+# PCA ---------------------------------------------------------
 
 # PCA on leader qualities
 
-pca_qualities <-prcomp(d_q[quality_vars], scale=FALSE)
+pca_qualities <-prcomp(d_q, scale=FALSE)
 summary(pca_qualities)
 plot(pca_qualities, main ="", col = "deepskyblue2")
 biplot(pca_qualities)
@@ -98,24 +140,65 @@ plot.PCA2_dot<-dotchart(sorted_pca4, cex=.8, main="Dotchart of variable loadings
 
 
 # EGA  --------------------------------------------------------------------
+#Create a correlation matrix of the quality variables
+q_cor<-cor(by_culture[quality_vars])
 
-q_cor<-cor(d_q)
 # Compute the EGA
-ega_q<-EGA(q_cor, n=444, model = "TMFG", plot.EGA = F)
+ega_q<-EGA(q_cor, n=59, model = "TMFG", plot.EGA = F)
 plot(ega_q, vsize = 6, label.prop = .5)
+
+#CFA(ega_q, d_q, "WLSMV")
 
 # Standardized loadings
 net.loads <- net.loads(A = ega_q)$std
 net.loads
+
 # Network scores
 net.scores <- net.scores(data = d_q, A = ega_q)
 net.scores
+
 # Dimension stability test
-ega_q_boot<-bootEGA(d_q, n=1000, model = "glasso", type = "parametric", ncore=4)
-
+## Bootstrap item replicability
+ega_q_boot<-bootEGA(by_culture[quality_vars], n=500, model = "TMFG", type = "parametric", ncore=8)
 itemStability(ega_q_boot, orig.wc = ega_q$wc, item.freq = 0.2)
-
 plot(ega_q_boot)
+
+
+# Heatmaps -----------------------------------------------------------------
+heatmap_data<-leader_text2[,c(quality_vars, "group.structure2")]
+
+#Temporary, -1 and 1 coudl 0 out
+heatmap_data<-heatmap_data[rowSums(heatmap_data[,c(quality_vars)]) > 0, ]
+
+# Rowv  <- 
+#   t(as.matrix(heatmap_data)) %>% 
+#   dist %>% # Cluster rows (variables) by Spearman rank correlation
+#   hclust(method = 'ward.D') %>% 
+#   as.dendrogram %>% 
+#   #rotate(order= colnames(data[vars])[order(data[vars][1,])]) %>% 
+#   set("branches_k_color", k = 4)
+# 
+# Colv  <- heatmap_data %>% 
+#   dist %>% # Cluster columns (participants) by Euclidean metric
+#   hclust(method = 'ward.D') %>% 
+#   as.dendrogram %>%
+#   #rotate(order = rownames(data)[order(-data$Respect)]) %>%
+#   set("branches_k_color", k = 3)
+
+aheatmap(t(as.matrix(heatmap_data[,c(quality_vars)])), 
+         width = 15, height = 10, 
+         #Rowv  = Rowv,
+         #Colv = Colv,
+         distfun = "euclidean",
+         hclustfun = "ward",
+         cellheight = 5,
+         annCol = list(
+           Group = heatmap_data$group.structure2),
+         # annColors = list(
+         #   ),
+         treeheight = 50,
+         filename = 'heatmap_qualities.pdf')
+
 
 
 
