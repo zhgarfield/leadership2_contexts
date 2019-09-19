@@ -161,13 +161,13 @@ plot(logpca_model, type = "scores") +
 
 # Indicate subsistence stype of log PCA model
 plot(logpca_model, type = "scores") + 
-  geom_point(aes(colour=pca_data_qualities$subsistence.x, size=pca_data_qualities$c_cultural_complexity.x)) + 
+  geom_point(aes(colour=pca_data_qualities$subsistence.x)) + 
   ggtitle("Logistic PCA") +
   scale_colour_brewer(palette = "Set1")
 
 
 plot(clogpca_model, type = "scores") + 
-  geom_point(aes(colour=pca_data_qualities$subsistence)) + 
+  geom_point(aes(colour=pca_data_qualities$subsistence.x)) + 
   ggtitle("Convex Logistic PCA")+
   scale_colour_brewer(palette = "Set1")
 
