@@ -118,6 +118,14 @@ pca_data_qualities[quality_vars==-1]<-0
 #Remove rows with all 0s
 pca_data_qualities<-pca_data_qualities[rowSums(pca_data_qualities[quality_vars])>0,]
 
+# Add subsistence category and other vars in pca_data_qualities
+pca_data_qualities <- left_join(pca_data_qualities, text_doc_cultureIDs)
+pca_data_qualities <-left_join(pca_data_qualities, leader_cult)
+pca_data_qualities$c_culture_code<-pca_data_qualities$d_culture
+pca_data_qualities<-left_join(pca_data_qualities, leader_cult)
+pca_data_qualities<-left_join(pca_data_qualities, leader_text, by="cs_textrec_ID")
+pca_data_qualities$demo_sex[pca_data_qualities$demo_sex=="-1"]="unkown"
+pca_data_qualities$demo_sex[is.na(pca_data_qualities$demo_sex)==TRUE]="unkown"
 
 
 #Fit the SVD with k = 6. 6 is the minimum for 80% of the variance
@@ -132,24 +140,34 @@ plot(logpca_cv)
 logpca_model = logisticPCA(pca_data_qualities[quality_vars], k = 6, m = which.min(logpca_cv))
 clogpca_model = convexLogisticPCA(pca_data_qualities[quality_vars], k = 6, m = which.min(logpca_cv))
 
+#Plots
+
+
 plot(clogpca_model, type = "trace")
 
 plot(logsvd_model, type = "trace")
 
 
 plot(logsvd_model, type = "scores")+ 
-  geom_point(aes(colour=pca_data_qualities$group.structure2)) + 
+  geom_point(aes(colour=pca_data_qualities$subsistence.x)) + 
   ggtitle("Exponential Family PCA") +
-scale_colour_brewer(palette = "Set1")
+  scale_colour_brewer(palette = "Set1")
 
+# Indicate group structure of log PCA model
 plot(logpca_model, type = "scores") + 
   geom_point(aes(colour=pca_data_qualities$group.structure2)) + 
   ggtitle("Logistic PCA") +
   scale_colour_brewer(palette = "Set1")
 
+# Indicate subsistence stype of log PCA model
+plot(logpca_model, type = "scores") + 
+  geom_point(aes(colour=pca_data_qualities$subsistence.x, size=pca_data_qualities$c_cultural_complexity.x)) + 
+  ggtitle("Logistic PCA") +
+  scale_colour_brewer(palette = "Set1")
+
 
 plot(clogpca_model, type = "scores") + 
-  geom_point(aes(colour=pca_data_qualities$group.structure2)) + 
+  geom_point(aes(colour=pca_data_qualities$subsistence)) + 
   ggtitle("Convex Logistic PCA")+
   scale_colour_brewer(palette = "Set1")
 
