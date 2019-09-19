@@ -12,6 +12,7 @@ library(NMF)
 library(dendextend)
 library(logisticPCA)
 library(tibble)
+library(gridExtra)
 
 
 # Recode variables --------------------------------------------------------
@@ -159,12 +160,76 @@ logpca_model_loadings$variable<-names(pca_data_qualities[quality_vars])
 
 loadings<- gather(logpca_model_loadings, key = Component, value =  Loading, -variable)
 
-ggplot(loadings, aes(Loading, variable)) +
+ggplot(loadings[loadings], aes(Loading, variable)) +
   geom_point(aes(colour=Component)) +
   facet_wrap(vars(Component))
 
-# Correlation of PCs across text records
-pairs(logpca_model$PCs)
+# Plot individual components
+## Component 1
+loadings_X1<-loadings[loadings$Component=="X1",]
+X1_sort<-loadings_X1$variable[order(loadings_X1$Loading)]
+loadings_X1$variable<-factor(loadings_X1$variable, levels =  X1_sort)
+
+component1_plot<-ggplot(loadings_X1, aes(Loading, variable)) +
+  geom_point(aes(colour=Component))+
+  theme(legend.position = "none")+
+  ggtitle("Component 1")
+
+## Component 2
+loadings_X2<-loadings[loadings$Component=="X2",]
+X2_sort<-loadings_X2$variable[order(loadings_X2$Loading)]
+loadings_X2$variable<-factor(loadings_X2$variable, levels =  X2_sort)
+
+component2_plot<-ggplot(loadings_X2, aes(Loading, variable)) +
+  geom_point(aes(colour=Component))+
+  theme(legend.position = "none")+
+  ggtitle("Component 2")
+
+## Component 3
+loadings_X3<-loadings[loadings$Component=="X3",]
+X3_sort<-loadings_X3$variable[order(loadings_X3$Loading)]
+loadings_X3$variable<-factor(loadings_X3$variable, levels =  X3_sort)
+
+component3_plot<-ggplot(loadings_X3, aes(Loading, variable)) +
+  geom_point(aes(colour=Component))+
+  theme(legend.position = "none")+
+  ggtitle("Component 3")
+
+## Component 4
+loadings_X4<-loadings[loadings$Component=="X4",]
+X4_sort<-loadings_X4$variable[order(loadings_X4$Loading)]
+loadings_X4$variable<-factor(loadings_X4$variable, levels =  X4_sort)
+
+component4_plot<-ggplot(loadings_X4, aes(Loading, variable)) +
+  geom_point(aes(colour=Component))+
+  theme(legend.position = "none")+
+  ggtitle("Component 4")
+
+## Component 5
+loadings_X5<-loadings[loadings$Component=="X5",]
+X5_sort<-loadings_X5$variable[order(loadings_X5$Loading)]
+loadings_X5$variable<-factor(loadings_X5$variable, levels =  X5_sort)
+
+component5_plot<-ggplot(loadings_X5, aes(Loading, variable)) +
+  geom_point(aes(colour=Component))+
+  theme(legend.position = "none")+
+  ggtitle("Component 5")
+
+## Component 6
+loadings_X6<-loadings[loadings$Component=="X6",]
+X6_sort<-loadings_X6$variable[order(loadings_X6$Loading)]
+loadings_X6$variable<-factor(loadings_X6$variable, levels =  X6_sort)
+
+component6_plot<-ggplot(loadings_X6, aes(Loading, variable)) +
+  geom_point(aes(colour=Component))+
+  theme(legend.position = "none")+
+  ggtitle("Component 6")
+
+
+grid.arrange(component1_plot, component2_plot, component3_plot,
+             component4_plot, component5_plot, component6_plot, nrow=2)
+
+
 
 
 # Heatmaps -----------------------------------------------------------------
