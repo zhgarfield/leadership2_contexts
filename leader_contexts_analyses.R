@@ -35,27 +35,44 @@ leader_text2$group.structure2[leader_text2$group.structure.coded=="performance g
 
 # Create named lists of variables by group --------------------------------
 
-# Functions
-function_vars = c("function_bestow.mate","function_organize.cooperation","function_political.appointments",
-                  "function_resolve.conflcit","functions_construction.infrastructure","functions_control.calendar",
-                  "functions_control.economics","functions_control.immigration","functions_council.member",
-                  "functions_distribute.resources","functions_group.determination","functions_group.representative",
-                  "functions_hospitality","functions_moral.authority","functions_new.settlement",
-                  "functions_policymaking","functions_prosocial.investment","functions_protection",
-                  "functions_provide.counsel","functions_provide.subsistence","functions_punishment",
-                  "functions_ritual","functions_serve.leader","functions_social.functions","functions_strategic.planning")
+# Functions,
+function_vars = c("function_bestow.mate" ,  "function_organize.cooperation"                ,             
+"function_political.appointments"        ,   "function_resolve.conflcit"                   ,
+"functions_construction.infrastructure"  ,  
+"functions_control.calendar"             ,   "functions_control.economics"                 ,
+"functions_control.immigration"          ,   "functions_council.member"                    ,
+"functions_distribute.resources"         ,   "functions_group.determination"               ,
+"functions_group.representative"         ,   "functions_hospitality"                       ,
+"functions_medicinal"                    ,   "functions_military.command"                  ,
+"functions_moral.authority"              ,   "functions_new.settlement"                    ,
+"functions_policymaking"                 ,   "functions_prosocial.investment"              ,
+"functions_protection"                   ,   "functions_provide.counsel"                   ,
+"functions_provide.subsistence"          ,   "functions_punishment"                        ,
+"functions_ritual"                       ,   "functions_serve.leader"                      ,
+"functions_social.functions"             ,   "functions_strategic.planning")
 
 # Qualities
-quality_vars = c("qualities_artistic.performance","qualities_drug.consumption","qualities_exp.accomplished",
-                 "qualities_generous", "qualities_high.status","qualities_wealthy","qualities.age","qualities.aggressive",
-                 "qualities.ambition","qualities.attractive","qualities.bravery","qualities.charisma","qualities.coercive.authority",
-                 "qualities.confident","qualities.culturally.conservative","qualities.culturally.progressive","qualities.decisive",
-                 "qualities.fairness","qualities.favorable.personality","qualities.feared","qualities.high.quality.spouse",
-                 "qualities.honest","qualities.humble","qualities.industriousness","qualities.ingroup.member","qualities.innovative",
-                 "qualities.interpersonal.skills", "qualities.killer", "qualities.knowlageable.intellect", "qualities.loyalty",
-                 "qualities.many.children","qualities.oratory.skill","qualities.physical.health","qualities.physically.strong",
-                 "qualities.polygynous","qualities.proper.behavior","qualities.prosocial","qualities.social.contacts",
-                 "qualities.strategic.nepotism","qualities.strategic.planner","qualities.supernatural","qualities.xenophobic")
+quality_vars = c("qualities_artistic.performance"       ,        "qualities_drug.consumption"             ,       "qualities_exp.accomplished",                  
+                 "qualities_generous"                   ,        "qualities_high.status"                  ,     
+                 "qualities_wealthy"                    ,        "qualities.age"                          ,     
+                 "qualities.aggressive"                 ,        "qualities.ambition"                     ,     
+                 "qualities.attractive"                 ,        "qualities.bravery"                      ,     
+                 "qualities.charisma"                   ,        "qualities.coercive.authority"           ,     
+                 "qualities.confident"                  ,        "qualities.culturally.conservative"      ,     
+                 "qualities.culturally.progressive"     ,        "qualities.decisive"                     ,     
+                 "qualities.fairness"                   ,        "qualities.favorable.personality"        ,     
+                 "qualities.feared"                     ,        "qualities.high.quality.spouse"          ,     
+                 "qualities.honest"                     ,        "qualities.humble"                       ,     
+                 "qualities.industriousness"            ,        "qualities.ingroup.member"               ,     
+                 "qualities.innovative"                 ,        "qualities.interpersonal.skills"         ,     
+                 "qualities.killer"                     ,        "qualities.knowlageable.intellect"       ,     
+                 "qualities.loyalty"                    ,        "qualities.many.children"                ,     
+                 "qualities.oratory.skill"              ,        "qualities.physical.health"              ,     
+                  "qualities.physically.strong"         ,         "qualities.polygynous"                  ,      
+                  "qualities.proper.behavior"           ,         "qualities.prosocial"                   ,      
+                  "qualities.social.contacts"           ,         "qualities.strategic.nepotism"          ,     
+                  "qualities.strategic.planner"         ,         "qualities.supernatural"                ,    
+                  "qualities.xenophobic")
 
 # Leader benefits vars
 leader_benefit_vars = c("leader.benefits_fitness",                     
@@ -89,8 +106,9 @@ follower_cost_vars = c("follower.costs_fitness",
 textID_docID<-leader_text_original[,c("cs_textrec_ID","doc_ID")]
 docID_cultureID<-documents[,c("d_ID","d_culture")]
 docID_cultureID$doc_ID<-docID_cultureID$d_ID
+docID_cultureID<-docID_cultureID[,c("d_culture","doc_ID")]
 
-text_doc_cultureIDs<-left_join(textID_docID,docID_cultureID)
+text_doc_cultureIDs<-left_join(textID_docID,docID_cultureID, by="doc_ID")
 
 leader_text2<-left_join(leader_text2, text_doc_cultureIDs, by="cs_textrec_ID")
 
