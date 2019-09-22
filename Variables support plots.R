@@ -16,6 +16,8 @@ all_data[all_data==-1]<-0
 #Groups of variables to model support
 model_vars<-c(quality_vars, function_vars)
 
+all_data$d_culture<-factor(all_data$d_culture)
+all_data<-data.frame(all_data)
 
 # Build functions ---------------------------------------------------------
 
@@ -58,7 +60,7 @@ clrs2 = function(x){
 }
 
 cult.sum = function(df) {
-  v = as.numeric(by(all_data, factor(all_data$d_culture), clrs2, simplify=T))
+  v = as.numeric(by(df, factor(df$d_culture), clrs2, simplify=T))
   return(sum(v==1)/length(v))
 }
 
@@ -66,8 +68,6 @@ cult.sum = function(df) {
 
 
 # Fit models --------------------------------------------------------------
-
-
 
 Model=character(0)
 Variable=character(0)
@@ -114,7 +114,6 @@ for (m in models) {
   model = m[[1]]
   model_vars = m[[2]]
   for (v in 1:length(model_vars)){
-    print(v)
     Model = c(Model, model)
     Variable = c(Variable, model_vars[v])
     Type = c(Type, 'Cultures')
@@ -133,127 +132,92 @@ for (m in models) {
 
 d_melt = data.frame(Model=Model, Variable=Variable, Type=Type, value=value, y_se=y_se, y_negse=y_negse, stringsAsFactors = F)
 
-# var_names <- c(
-#   'dom_aggression' = 'Aggression',
-#   'dom_assert.authority' = 'Assert authority',
-#   'dom_avoid.dom' = 'Avoids dominance',
-#   'dom_fear' = 'Feared',
-#   'dom_fighting' = 'Fighting ability',
-#   'dom_personality' = 'Dominant personality',
-#   'dom_reputation' = 'Reputation',
-#   'dom_strong' = 'Strong',
-#   'dom_anti_aggression' = 'Anti-aggression',
-#   'dom_no_coercive_authority' = 'Lack of coercion',
-#   'dom_non_dominant_personality' = 'Non-dominant personality',
-#   'prestige_counsel' = 'Counsel',
-#   'prestige_emulated' = 'Emulated',
-#   'prestige_expertise' = 'Expertise',
-#   'prestige_family' = 'Family prestige',
-#   'prestige_f.exp.success' = 'Expectation for success',
-#   'prestige_likable' = 'Likable',
-#   'prestige_respected' = 'Respected',
-#   'prestige_no_family_prestige' = 'Lack of familiy prestige',
-#   'prestige_not_respected' = 'Not respected',
-#   'prestige_unlikeable' = 'Unlikable',
-#   'neel_better.mates' = 'Better mates',
-#   'neel_big.family' = 'Large family',
-#   'neel_intelligence' = 'Intelligence',
-#   'neel_polygynous' = 'Polygynous',
-#   'hooper_performance' = 'Performance',
-#   'hooper_sanction.freeriders' = 'Sanctions freeriders',
-#   'hooper_payoff' = 'Payoff',
-#   'hooper_group.size' = 'Leader in large group',
-#   'hooper_coop.activities' = 'Leader prefered',
-#   'hooper_egalitarian_large_group' = 'Leader not preffered',
-#   'hooper_leaderless_large_group' = 'Leaderless large group',
-#   'hooper_no_sanctioning' = 'No sanctioning')
+var_names <- c(
+  "function_bestow.mate" = "Bestow mate",                        
+  "function_political.appointments" = "Polistical appointments",             
+  "functions_construction.infrastructure"       = "Construction/infastructure",
+  "functions_control.economics"                 = "Constrol economics",
+  "functions_council.member"                    = "Council member",
+   "functions_group.determination"              = "Group determiniation",
+   "functions_hospitality"                       = "Hospitality",
+   "functions_military.command"                  = "Military command",
+   "functions_new.settlement"                    =  "Movement/migration",
+   "functions_prosocial.investment"              = "Prosocial investment",
+   "functions_provide.counsel"                   = "Provide counsel",
+   "functions_punishment"                        = "Punishment",
+   "functions_serve.leader"                      = "Serve a leader",
+   "functions_strategic.planning" = "Strategic planning",
+   "function_organize.cooperation"  = "Organize cooperation",
+   "function_resolve.conflcit"      = "Resolve conflict",
+   "functions_control.calendar"     = "Control calander",
+   "functions_control.immigration"  = "Control immigration",
+   "functions_distribute.resources" = "Distribute resources",
+   "functions_group.representative" = "Group repsenetative",
+   "functions_medicinal"           = "Medicinal",
+   "functions_moral.authority"     = "Moral authority",
+   "functions_policymaking"        =  "Policy making",
+   "functions_protection"          = "Protection",
+   "functions_provide.subsistence" = "Provide subsistence",
+   "functions_ritual"              = "Ritual",
+   "functions_social.functions" = "Social functions",
+  "qualities_artistic.performance"     = "Artistic performance",
+  "qualities_generous"                 = "Generous",
+  "qualities.age"                      = "Age",
+   "qualities.attractive"              = "Attractive",
+   "qualities.coercive.authority"      = "Coercive authority",
+   "qualities.culturally.progressive"  = "Culturally progressive",
+   "qualities.favorable.personality"   = "Favorable personality",
+   "qualities.honest"                  = "Honest",
+   "qualities.ingroup.member"          = "Ingroup member",
+   "qualities.killer"                  = "Killer",
+   "qualities.many.children"           = "Many children",
+   "qualities.physically.strong"       = "Physically formidable",
+   "qualities.prosocial"               = "Prosocial",
+   "qualities.strategic.planner"       = "Strategic planner",
+   "qualities_drug.consumption"     = "Drug consumption",
+   "qualities_high.status"            = "High status",
+   "qualities.aggressive"             = "Aggressive",
+   "qualities.bravery"               = "Bravery",
+   "qualities.confident"             = "Confident",
+   "qualities.decisive"              = "Decisive/decision making",
+   "qualities.feared"                = "Feared",
+   "qualities.humble"                = "Humble",
+   "qualities.innovative"            = "Innovative",
+   "qualities.knowlageable.intellect" = "Knowlageable/intelligent",
+   "qualities.oratory.skill"         = "Oratory skill",
+   "qualities.polygynous"            = "Polygnous",
+   "qualities.social.contacts"       = "Social contacts",
+   "qualities.supernatural"    = "Supernatural",
+"qualities_exp.accomplished"       = "Experienced/accomplished",
+"qualities_wealthy"                = "Wealthy",
+"qualities.ambition"               = "Ambition",
+ "qualities.charisma"               = "Charisma",
+ "qualities.culturally.conservative" = "Culturally conservative",
+ "qualities.fairness"               = "Fairness",
+ "qualities.high.quality.spouse"    = "High quality spouse",
+ "qualities.industriousness"        = "Industriousness",
+ "qualities.interpersonal.skills"   = "Interpersonal skills",
+ "qualities.loyalty"                = "Loyalty",
+ "qualities.physical.health"        = "Physical health",
+ "qualities.proper.behavior"        = "Proper behavior",
+ "qualities.strategic.nepotism"     = "Strategic nepotism",
+ "qualities.xenophobic"   = "Xenophic"
+)
 
-#d_melt$Variable <- var_names[d_melt$Variable]
+d_melt$Variable <- var_names[d_melt$Variable]
 
-# the_levels <- c(d_melt$Variable[d_melt$Type=='Cultures'][order(d_melt$value[d_melt$Type=='Cultures'])], 'Female model score', 'Model score')
-# d_melt$Variable = factor(d_melt$Variable, levels=the_levels)
-# 
-# the_models <- c('Dominance', 'Anti-dominance',
-#                 'Prestige', 'Anti-prestige',
-#                 'Collective action', 'Anti-collective action',
-#                 'Intelligence &\n reproductive skew')
-# d_melt$Model = factor(d_melt$Model, levels = the_models)
-# 
-# model_vars <- c(neel_vars, prest_vars, dom_vars) # Not sure what this line is for?
-
-# Example code
-# x <- leader_text[c('c_name', 'author_ID', neel_vars)]
-# x$w <- length(neel_vars)
-# x$prop <- rowSums(x[,3:6])/x$w
-
-# Creating text level model score and CIs using GLMM
-
-# Attempt to replicate from above
-
-# Model = c()
-# Score = c()
-# Lower = c()
-# Upper = c()
-# 
-# model_scores <- function(data, type){
-#   for (m in models){
-#     
-#     model = m[[1]]
-#     model_vars = m[[2]]
-#     wgt = rep(length(model_vars), nrow(data))
-#     
-#     
-#     if (sum(as.matrix(data[,model_vars])) != 0){
-#       
-#       m <- glmer(rowSums(data[,model_vars])/wgt ~ 1 + (1|c_name/author_ID), family = binomial, weights = wgt, data = data)
-#       Model = c(Model, model)
-#       Score = c(Score, logit.inv(fixef(m)[['(Intercept)']]))
-#       ci=logit.inv(confint(m, method = "Wald")['(Intercept)',])
-#       Lower = c(Lower, ci[[1]])
-#       Upper = c(Upper, ci[[2]])
-#       
-#     } else {
-#       
-#       Model = c(Model, model)
-#       Score = c(Score, 0)
-#       Lower = c(Lower, 0)
-#       Upper = c(Upper, 0)
-#       
-#     }
-    
-    # Model = c(Model, model)
-    # Score = c(Score, logit.inv(fixef(m)[['(Intercept)']]))
-    # ci=logit.inv(confint(m, method = "Wald")['(Intercept)',])
-    # Lower = c(Lower, ci[[1]])
-    # Upper = c(Upper, ci[[2]])
-    
-#   }
-#   
-#   data.frame(
-#     Model = factor(Model, levels = the_models),
-#     Variable = factor(rep(type, 7), levels = the_levels),
-#     Type = rep(type, 7),
-#     value = Score,
-#     y_negse = Lower,
-#     y_se = Upper,
-#     stringsAsFactors = F
-#   )
-# }
-
-# all_model_scores <- model_scores(leader_text, 'Model score')
-# female_model_scores <- model_scores(leader_text[leader_text$demo_sex == 'female',], 'Female model score')
-
-# d_melt2 <- rbind(d_melt, female_model_scores, all_model_scores)
+the_levels <- c(d_melt$Variable[d_melt$Type=='Cultures'][order(d_melt$value[d_melt$Type=='Cultures'])])
+d_melt$Variable = factor(d_melt$Variable, levels=the_levels)
 
 # Plot code
 plot.variable.support = ggplot(d_melt, aes(value, Variable, xmin=y_negse, xmax=y_se, colour=Type)) + 
   geom_errorbarh() + 
   geom_point() +
   #scale_x_continuous(breaks=seq(0,1,.1), labels=percent, limits=c(0,1)) +
-  #scale_colour_discrete(name='', labels=c('Cultures', 'Text records', 'Female model score', 'Model score')) +
-  #labs(x='\nPercent', y='') +
+  scale_colour_discrete(name='', labels=c('Cultures', 'Text records')) +
+  labs(x='\nPercent', y='') +
   facet_grid(Model~., scales = "free_y", space='free') +
-  # facet_wrap(~Model, scales = "free_y") +
+   facet_wrap(~Model, scales = "free_y") +
   theme_bw() +
   theme(strip.text.y = element_text(angle=0))
 plot.variable.support
