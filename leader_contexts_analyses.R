@@ -109,7 +109,7 @@ by_culture = leader_text2 %>%
 # PCA ---------------------------------------------------------
 # Logistic PCA on leader qualities
 
-# Create data frames without all 0 rows -----------------------------------
+# Create data frames without all 0 rows
 
 #Create dataframe of variables for logistic PCA of qualities
 pca_data_qualities<-leader_text2[,c(quality_vars, "cs_textrec_ID", "group.structure2")]
@@ -142,9 +142,8 @@ clogpca_model = convexLogisticPCA(pca_data_qualities[quality_vars], k = 6, m = w
 
 #Plots
 
-
+plot(logpca_model, type = "trace")
 plot(clogpca_model, type = "trace")
-
 plot(logsvd_model, type = "trace")
 
 
@@ -178,7 +177,7 @@ logpca_model_loadings$variable<-names(pca_data_qualities[quality_vars])
 
 loadings<- gather(logpca_model_loadings, key = Component, value =  Loading, -variable)
 
-ggplot(loadings[loadings], aes(Loading, variable)) +
+ggplot(loadings, aes(Loading, variable)) +
   geom_point(aes(colour=Component)) +
   facet_wrap(vars(Component))
 

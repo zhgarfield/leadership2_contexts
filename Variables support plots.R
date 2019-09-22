@@ -6,16 +6,9 @@
 
 # Manage data -------------------------------------------------------------
 
+authorID_textID<-leader_text_original[,c("author_ID","cs_textrec_ID")]
 
-all_data <- left_join(leader_text2, text_doc_cultureIDs)
-all_data$c_culture_code<-all_data$d_culture.x
-all_data <-left_join(all_data, leader_cult)
-all_data$c_culture_code<-all_data$d_culture
-all_data<-left_join(all_data, leader_cult)
-all_data<-left_join(all_data, leader_text, by="cs_textrec_ID")
-
-#Cleaning up all_data
-all_data<-all_data[,c(quality_vars, function_vars, "c_name.x", "cs_textrec_ID", "author_ID","doc_ID.x")]
+all_data <- left_join(leader_text2, authorID_textID)
 
 # Remove negative values from vars
 all_data[all_data==-1]<-0
@@ -35,6 +28,27 @@ var.ev = function(v){
   
 }
 
+resample <- function(dat, cluster, replace) {
+  
+  # exit early for trivial data
+  if(nrow(dat) == 1 || all(replace==FALSE))
+    return(dat)
+  
+  # sample the clustering factor
+  cls <- sample(unique(dat[[cluster[1]]]), replace=replace[1])
+  
+  # subset on the sampled clustering factors
+  sub <- lapply(cls, function(b) subset(dat, dat[[cluster[1]]]==b))
+  
+  # sample lower levels of hierarchy (if any)
+  if(length(cluster) > 1)
+    sub <- lapply(sub, resample, cluster=cluster[-1], replace=replace[-1])
+  
+  # join and return samples
+  do.call(rbind, sub)
+  
+}
+
 clrs2 = function(x){
   
   m = mean(x[[1]])
@@ -44,17 +58,11 @@ clrs2 = function(x){
 }
 
 cult.sum = function(df) {
-  v = as.numeric(by(all_data, factor(all_data$c_name.x), clrs2, simplify=T))
+  v = as.numeric(by(all_data, factor(all_data$d_culture), clrs2, simplify=T))
   return(sum(v==1)/length(v))
 }
 
-#d1 = coding2
-#d1 = left_join(d1, select(apology, -culture), by='id')
 
-# Get rid of -1's in forgiven, guilt, motive_apologize
-# d1$forgiven[d1$forgiven==-1] = 0
-# d1$guilt[d1$guilt==-1] = 0
-# d1$motive_apologize[d1$motive_apologize==-1] = 0
 
 
 # Fit models --------------------------------------------------------------
@@ -81,7 +89,7 @@ for (m in models){
   
   glmer_models <- lapply(model_vars, function(x) { 
     print(x)
-    glmer(substitute(i ~ 1 + (1|c_name.x/author_ID), list(i = as.name(x))), family=binomial, data = all_data, nAGQ=0)
+    glmer(substitute(i ~ 1 + (1|d_culture/author_ID), list(i = as.name(x))), family=binomial, data = all_data, nAGQ=0)
   })
   
   for (v in 1:length(model_vars)){
@@ -106,16 +114,17 @@ for (m in models) {
   model = m[[1]]
   model_vars = m[[2]]
   for (v in 1:length(model_vars)){
+    print(v)
     Model = c(Model, model)
     Variable = c(Variable, model_vars[v])
     Type = c(Type, 'Cultures')
     
     # Summarize at culture level
     
-    d.tmp = all_data[, c(model_vars[v], 'c_name.x', 'author_ID')]
+    d.tmp = all_data[, c(model_vars[v], 'd_culture', 'author_ID')]
     val = cult.sum(d.tmp)
     value = c(value, val)
-    replicates = replicate(10, cult.sum(resample(d.tmp, cluster=c('c_name.x', 'author_ID'), replace=c(T,F))))
+    replicates = replicate(10, cult.sum(resample(d.tmp, cluster=c('d_culture', 'author_ID'), replace=c(T,F))))
     q=quantile(replicates, c(0.025, 0.975))
     y_se = c(y_se, q[[2]])
     y_negse = c(y_negse, q[[1]])
@@ -248,3 +257,4 @@ plot.variable.support = ggplot(d_melt, aes(value, Variable, xmin=y_negse, xmax=y
   theme_bw() +
   theme(strip.text.y = element_text(angle=0))
 plot.variable.support
+
