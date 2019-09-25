@@ -141,7 +141,7 @@ pca_data_qualities<-pca_data_qualities[rowSums(pca_data_qualities[quality_vars])
 # Add subsistence category and other vars in pca_data_qualities
 pca_data_qualities <- left_join(pca_data_qualities, text_doc_cultureIDs, by = "cs_textrec_ID")
 pca_data_qualities$c_name<-pca_data_qualities$d_culture
-pca_data_qualities <-left_join(pca_data_qualities, leader_cult[,c("subsistence","c_name")], by = "c_name")
+pca_data_qualities <-left_join(pca_data_qualities, leader_cult, by = "c_name")
 pca_data_qualities$c_culture_code<-pca_data_qualities$d_culture
 pca_data_qualities<-left_join(pca_data_qualities, leader_cult)
 pca_data_qualities<-left_join(pca_data_qualities, leader_text, by="cs_textrec_ID")
@@ -169,7 +169,7 @@ plot(logsvd_model, type = "trace")
 
 
 plot(logsvd_model, type = "scores")+ 
-  geom_point(aes(colour=pca_data_qualities$subsistence.x)) + 
+  geom_point(aes(colour=pca_data_qualities$subsistence)) + 
   ggtitle("Exponential Family PCA") +
   scale_colour_brewer(palette = "Set1")
 
