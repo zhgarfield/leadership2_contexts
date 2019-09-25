@@ -2,6 +2,7 @@
 #Eventually this will be added to the leadershipdata package, or probably it's own package. 
 # Good stack overflow on PCA with binary data
 # https://stats.stackexchange.com/questions/16331/doing-principal-component-analysis-or-factor-analysis-on-binary-data/16335#16335
+# https://cran.r-project.org/web/packages/logisticPCA/vignettes/logisticPCA.html
 
 # Load data library -------------------------------------------------------
 library(leadershipdata)
