@@ -143,7 +143,7 @@ pca_data_qualities <- left_join(pca_data_qualities, text_doc_cultureIDs, by = "c
 pca_data_qualities$c_name<-pca_data_qualities$d_culture
 pca_data_qualities <-left_join(pca_data_qualities, leader_cult, by = "c_name")
 pca_data_qualities$c_culture_code<-pca_data_qualities$d_culture
-pca_data_qualities<-left_join(pca_data_qualities, leader_cult)
+pca_data_qualities<-left_join(pca_data_qualities, leader_cult, by = "c_culture_code")
 pca_data_qualities<-left_join(pca_data_qualities, leader_text, by="cs_textrec_ID")
 pca_data_qualities$demo_sex[pca_data_qualities$demo_sex=="-1"]="unkown"
 pca_data_qualities$demo_sex[is.na(pca_data_qualities$demo_sex)==TRUE]="unkown"
