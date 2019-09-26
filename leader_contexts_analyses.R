@@ -13,7 +13,14 @@ library(dendextend)
 library(logisticPCA)
 library(tibble)
 library(gridExtra)
+library(patchwork)
 
+
+# Create functions --------------------------------------------------------
+# Converts factors to charachter vecrtors in data frame
+de_factor <- function(df){
+df %>% dplyr::mutate_if(is.factor, as.character) -> df
+}
 
 # Recode variables --------------------------------------------------------
 
@@ -103,12 +110,11 @@ follower_cost_vars = c("follower.costs_fitness",
 
 # Aggregate at Culture level ----------------------------------------------
 
-textID_docID<-leader_text_original[,c("cs_textrec_ID","doc_ID")]
-docID_cultureID<-documents[,c("d_ID","d_culture")]
+textID_docID<-de_factor(leader_text_original[,c("cs_textrec_ID","doc_ID")])
+docID_cultureID<-de_factor(documents[,c("d_ID","d_culture")])
 docID_cultureID$doc_ID<-docID_cultureID$d_ID
 docID_cultureID<-docID_cultureID[,c("d_culture","doc_ID")]
 
-textID_docID$doc_ID<-as.character(textID_docID$doc_ID)
 
 text_doc_cultureIDs<-left_join(textID_docID,docID_cultureID, by="doc_ID")
 
@@ -120,13 +126,13 @@ by_culture = leader_text2 %>%
   dplyr::select(d_culture, one_of(c(quality_vars, function_vars,
                                     leader_benefit_vars, leader_cost_vars,
                                     follower_benefit_vars, follower_cost_vars))) %>% 
-  summarise_each(funs(mean))
+  summarise_each(list(mean=mean))
 
 
 
 
 
-# PCA ---------------------------------------------------------
+# PCA Qualities ---------------------------------------------------------
 # Logistic PCA on leader qualities
 
 # Create data frames without all 0 rows
@@ -140,26 +146,31 @@ pca_data_qualities<-pca_data_qualities[rowSums(pca_data_qualities[quality_vars])
 
 # Add subsistence category and other vars in pca_data_qualities
 pca_data_qualities <- left_join(pca_data_qualities, text_doc_cultureIDs, by = "cs_textrec_ID")
-pca_data_qualities$c_name<-pca_data_qualities$d_culture
-pca_data_qualities <-left_join(pca_data_qualities, leader_cult, by = "c_name")
-pca_data_qualities$c_culture_code<-pca_data_qualities$d_culture
-pca_data_qualities<-left_join(pca_data_qualities, leader_cult, by = "c_culture_code")
-pca_data_qualities<-left_join(pca_data_qualities, leader_text, by="cs_textrec_ID")
-pca_data_qualities$demo_sex[pca_data_qualities$demo_sex=="-1"]="unkown"
-pca_data_qualities$demo_sex[is.na(pca_data_qualities$demo_sex)==TRUE]="unkown"
 
+# Rename culture name in leader_cult data
+leader_cult$d_culture<-leader_cult$c_culture_code
+leader_cult<-de_factor(leader_cult)
+#Subset culture vars of interest
+culture_vars<-leader_cult[,c("d_culture","subsistence","c_cultural_complexity")]
 
+pca_data_qualities <-left_join(pca_data_qualities, culture_vars, by = "d_culture")
+
+#Don't think we need this...
+#pca_data_qualities<-left_join(pca_data_qualities, leader_text, by="cs_textrec_ID")
+
+#Set components
+k=3
 #Fit the SVD with k = 6. 6 is the minimum for 80% of the variance
-logsvd_model = logisticSVD(pca_data_qualities[quality_vars], k = 6)
+logsvd_model = logisticSVD(pca_data_qualities[quality_vars], k = k)
 logsvd_model
 
 #Cross validate optimal m
-logpca_cv = cv.lpca(pca_data_qualities[quality_vars], ks = 6, ms = 1:10)
+logpca_cv = cv.lpca(pca_data_qualities[quality_vars], ks = k, ms = 1:10)
 plot(logpca_cv)
 
 
-logpca_model = logisticPCA(pca_data_qualities[quality_vars], k = 6, m = which.min(logpca_cv), main_effects = T)
-clogpca_model = convexLogisticPCA(pca_data_qualities[quality_vars], k = 6, m = which.min(logpca_cv))
+logpca_model = logisticPCA(pca_data_qualities[quality_vars], k = k, m = which.min(logpca_cv), main_effects = T)
+clogpca_model = convexLogisticPCA(pca_data_qualities[quality_vars], k = k, m = which.min(logpca_cv))
 
 #Plots
 
@@ -181,7 +192,7 @@ plot(logpca_model, type = "scores") +
 
 # Indicate subsistence stype of log PCA model
 plot(logpca_model, type = "scores") + 
-  geom_point(aes(colour=pca_data_qualities$subsistence.x)) + 
+  geom_point(aes(colour=pca_data_qualities$subsistence)) + 
   ggtitle("Logistic PCA") +
   scale_colour_brewer(palette = "Set1")
 
@@ -233,41 +244,223 @@ component3_plot<-ggplot(loadings_X3, aes(Loading, variable)) +
   theme(legend.position = "none")+
   ggtitle("Component 3")
 
-## Component 4
-loadings_X4<-loadings[loadings$Component=="X4",]
-X4_sort<-loadings_X4$variable[order(loadings_X4$Loading)]
-loadings_X4$variable<-factor(loadings_X4$variable, levels =  X4_sort)
 
-component4_plot<-ggplot(loadings_X4, aes(Loading, variable)) +
+
+plot(component1_plot + component2_plot + component3_plot)
+
+
+# PCA Functions -----------------------------------------------------------
+
+# Logistic PCA on leader functions
+
+#Create dataframe of variables for logistic PCA of qualities
+pca_data_functions<-leader_text2[,c(function_vars, "cs_textrec_ID", "group.structure2")]
+#Remove -1s for now
+pca_data_functions[function_vars==-1]<-0
+#Remove rows with all 0s
+pca_data_functions<-pca_data_functions[rowSums(pca_data_functions[function_vars])>0,]
+
+# Add subsistence category and other vars in pca_data_qualities
+pca_data_functions <- left_join(pca_data_functions, text_doc_cultureIDs, by = "cs_textrec_ID")
+
+pca_data_functions <-left_join(pca_data_functions, culture_vars, by = "d_culture")
+
+
+#Fit the SVD 
+logsvd_model = logisticSVD(pca_data_functions[function_vars], k = k)
+logsvd_model
+
+#Cross validate optimal m
+logpca_cv = cv.lpca(pca_data_functions[function_vars], ks = k, ms = 1:10)
+plot(logpca_cv)
+
+
+logpca_model = logisticPCA(pca_data_functions[function_vars], k = k, m = which.min(logpca_cv), main_effects = T)
+clogpca_model = convexLogisticPCA(pca_data_functions[function_vars], k = k, m = which.min(logpca_cv))
+
+#Plots
+
+plot(logpca_model, type = "trace")
+plot(clogpca_model, type = "trace")
+plot(logsvd_model, type = "trace")
+
+
+plot(logsvd_model, type = "scores")+ 
+  geom_point(aes(colour=pca_data_functions$subsistence)) + 
+  ggtitle("Exponential Family PCA") +
+  scale_colour_brewer(palette = "Set1")
+
+# Indicate group structure of log PCA model
+plot(logpca_model, type = "scores") + 
+  geom_point(aes(colour=pca_data_functions$group.structure2)) + 
+  ggtitle("Logistic PCA") +
+  scale_colour_brewer(palette = "Set1")
+
+# Indicate subsistence stype of log PCA model
+plot(logpca_model, type = "scores") + 
+  geom_point(aes(colour=pca_data_functions$subsistence)) + 
+  ggtitle("Logistic PCA") +
+  scale_colour_brewer(palette = "Set1")
+
+
+plot(clogpca_model, type = "scores") + 
+  geom_point(aes(colour=pca_data_functions$group.structure2)) + 
+  ggtitle("Convex Logistic PCA")+
+  scale_colour_brewer(palette = "Set1")
+
+
+# Associate logistic PCA model with variables
+logpca_model_loadings<-data.frame(logpca_model$U)
+logpca_model_loadings$variable<-names(pca_data_functions[function_vars])
+
+loadings<- gather(logpca_model_loadings, key = Component, value =  Loading, -variable)
+
+ggplot(loadings, aes(Loading, variable)) +
+  geom_point(aes(colour=Component)) +
+  facet_wrap(vars(Component))
+
+# Plot individual components
+## Component 1
+loadings_X1<-loadings[loadings$Component=="X1",]
+X1_sort<-loadings_X1$variable[order(loadings_X1$Loading)]
+loadings_X1$variable<-factor(loadings_X1$variable, levels =  X1_sort)
+
+component1_plot<-ggplot(loadings_X1, aes(Loading, variable)) +
   geom_point(aes(colour=Component))+
   theme(legend.position = "none")+
-  ggtitle("Component 4")
+  ggtitle("Component 1")
 
-## Component 5
-loadings_X5<-loadings[loadings$Component=="X5",]
-X5_sort<-loadings_X5$variable[order(loadings_X5$Loading)]
-loadings_X5$variable<-factor(loadings_X5$variable, levels =  X5_sort)
+## Component 2
+loadings_X2<-loadings[loadings$Component=="X2",]
+X2_sort<-loadings_X2$variable[order(loadings_X2$Loading)]
+loadings_X2$variable<-factor(loadings_X2$variable, levels =  X2_sort)
 
-component5_plot<-ggplot(loadings_X5, aes(Loading, variable)) +
+component2_plot<-ggplot(loadings_X2, aes(Loading, variable)) +
   geom_point(aes(colour=Component))+
   theme(legend.position = "none")+
-  ggtitle("Component 5")
+  ggtitle("Component 2")
 
-## Component 6
-loadings_X6<-loadings[loadings$Component=="X6",]
-X6_sort<-loadings_X6$variable[order(loadings_X6$Loading)]
-loadings_X6$variable<-factor(loadings_X6$variable, levels =  X6_sort)
+## Component 3
+loadings_X3<-loadings[loadings$Component=="X3",]
+X3_sort<-loadings_X3$variable[order(loadings_X3$Loading)]
+loadings_X3$variable<-factor(loadings_X3$variable, levels =  X3_sort)
 
-component6_plot<-ggplot(loadings_X6, aes(Loading, variable)) +
+component3_plot<-ggplot(loadings_X3, aes(Loading, variable)) +
   geom_point(aes(colour=Component))+
   theme(legend.position = "none")+
-  ggtitle("Component 6")
+  ggtitle("Component 3")
 
 
-grid.arrange(component1_plot, component2_plot, component3_plot,
-             component4_plot, component5_plot, component6_plot, nrow=2)
+plot(component1_plot + component2_plot + component3_plot)
 
 
+
+
+# PCA Qualities & Functions -----------------------------------------------
+
+# Logistic PCA on leader functions and qualities
+
+#Create dataframe of variables for logistic PCA of qualities
+pca_data_FQ<-leader_text2[,c(function_vars, quality_vars, "cs_textrec_ID", "group.structure2")]
+#Remove -1s for now
+pca_data_FQ[function_vars==-1]<-0
+pca_data_FQ[quality_vars==-1]<-0
+
+#Remove rows with all 0s
+pca_data_FQ<-pca_data_FQ[rowSums(pca_data_FQ[function_vars])>0,]
+
+# Add subsistence category and other vars in pca_data_qualities
+pca_data_FQ <- left_join(pca_data_FQ, text_doc_cultureIDs, by = "cs_textrec_ID")
+
+pca_data_FQ <-left_join(pca_data_FQ, culture_vars, by = "d_culture")
+
+
+#Fit the SVD 
+logsvd_model = logisticSVD(pca_data_FQ[,c(function_vars, quality_vars)], k = k)
+logsvd_model
+
+#Cross validate optimal m
+logpca_cv = cv.lpca(pca_data_FQ[,c(function_vars, quality_vars)], ks = k, ms = 1:10)
+plot(logpca_cv)
+
+
+logpca_model = logisticPCA(pca_data_FQ[,c(function_vars, quality_vars)], k = k, m = which.min(logpca_cv), main_effects = T)
+#clogpca_model = convexLogisticPCA(pca_data_FQ[,c(function_vars, quality_vars)], k = k, m = which.min(logpca_cv))
+
+#Plots
+
+plot(logpca_model, type = "trace")
+#plot(clogpca_model, type = "trace")
+plot(logsvd_model, type = "trace")
+
+
+plot(logsvd_model, type = "scores")+ 
+  geom_point(aes(colour=pca_data_FQ$subsistence)) + 
+  ggtitle("Exponential Family PCA") +
+  scale_colour_brewer(palette = "Set1")
+
+# Indicate group structure of log PCA model
+plot(logpca_model, type = "scores") + 
+  geom_point(aes(colour=pca_data_FQ$group.structure2)) + 
+  ggtitle("Logistic PCA") +
+  scale_colour_brewer(palette = "Set1")
+
+# Indicate subsistence stype of log PCA model
+plot(logpca_model, type = "scores") + 
+  geom_point(aes(colour=pca_data_FQ$subsistence)) + 
+  ggtitle("Logistic PCA") +
+  scale_colour_brewer(palette = "Set1")
+
+
+plot(clogpca_model, type = "scores") + 
+  geom_point(aes(colour=pca_data_FQ$group.structure2)) + 
+  ggtitle("Convex Logistic PCA")+
+  scale_colour_brewer(palette = "Set1")
+
+
+# Associate logistic PCA model with variables
+logpca_model_loadings<-data.frame(logpca_model$U)
+logpca_model_loadings$variable<-names(pca_data_FQ[,c(function_vars, quality_vars)])
+
+loadings<- gather(logpca_model_loadings, key = Component, value =  Loading, -variable)
+
+ggplot(loadings, aes(Loading, variable)) +
+  geom_point(aes(colour=Component)) +
+  facet_wrap(vars(Component))
+
+# Plot individual components
+## Component 1
+loadings_X1<-loadings[loadings$Component=="X1",]
+X1_sort<-loadings_X1$variable[order(loadings_X1$Loading)]
+loadings_X1$variable<-factor(loadings_X1$variable, levels =  X1_sort)
+
+component1_plot<-ggplot(loadings_X1, aes(Loading, variable)) +
+  geom_point(aes(colour=Component))+
+  theme(legend.position = "none")+
+  ggtitle("Component 1")
+
+## Component 2
+loadings_X2<-loadings[loadings$Component=="X2",]
+X2_sort<-loadings_X2$variable[order(loadings_X2$Loading)]
+loadings_X2$variable<-factor(loadings_X2$variable, levels =  X2_sort)
+
+component2_plot<-ggplot(loadings_X2, aes(Loading, variable)) +
+  geom_point(aes(colour=Component))+
+  theme(legend.position = "none")+
+  ggtitle("Component 2")
+
+## Component 3
+loadings_X3<-loadings[loadings$Component=="X3",]
+X3_sort<-loadings_X3$variable[order(loadings_X3$Loading)]
+loadings_X3$variable<-factor(loadings_X3$variable, levels =  X3_sort)
+
+component3_plot<-ggplot(loadings_X3, aes(Loading, variable)) +
+  geom_point(aes(colour=Component))+
+  theme(legend.position = "none")+
+  ggtitle("Component 3")
+
+
+plot(component1_plot + component2_plot + component3_plot)
 
 
 # Heatmaps -----------------------------------------------------------------
