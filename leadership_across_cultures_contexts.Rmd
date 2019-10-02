@@ -33,22 +33,39 @@ Across human societies, the influence of leaders stands to substantially shape t
 
 Leaders are individuals who maintain disproportionate influence over decision-making within groups [@von_rueden_leadership_2015], whatever the group may be. Leadership roles are also often associated with specific rights and responsibilities. Not surprisingly, the functions leaders serve then are often closely linked to group contexts and the challenges specific groups face. Certain types of groups, such as kin groups, economic groups, or political groups, may tend to favor certain types of leaders, however there can be substantial variation in the qualities of leaders within these groups as well as and between them.
 
+We first briefly review current theoretical, ethnographic, and empirical perspectives on the qualities of leaders, the functions they serve, and the costs and benefits of leadership for both leaders and followers across human societies, including WEIRD and non-WEIRD populations. We then outline the aims and methods of the current cross-cultural study, before presenting results and interpretations.  
 
-<!-- Reference a historical example of a short term leader implimenting change with lasting effects, good and/or bad. -->
+
+<!-- Reference a historical example of a short term leader implementing change with lasting effects, good and/or bad. -->
 
 ## The functions of leadership across cultures and contexts
 
-The emergence of leadership and the functions leaders serve across cultures is closely tied to social and political structure. Among ethnographically described small-scale societies which generally lack multi-level, institutionalized social and political structures, leadership at the community level is typically informal and ephemeral and tends to emerge contextually when demands of coordination or conflict resolution require a managerial presence [@von_rueden_leadership_2015]. Leaders in such contexts often draw on persuasive capacities and leverage community-based respect, their greater knowledge and social support to express their influence. The theoretical and ethnographic literature suggests these demands most commonly arise in the contexts of conflict resolution and collective actions. Demands of mediation in within-group conflict resolution, although variable in scale, are probably a universal feature of human groups. Demands of between-group interactions, including both conflict and cooperation are also very common across small-scale societies, including hunter-gatherers. Representing the group and managing both internal and external relationships and conflicts are expected to be the most salient functions of community leaders. 
+Leadership as a phenomena is a universal feature of human groups; among all societies there are particular contexts in which one individual maintains greater influence. Also, adopting the broad definition of leadership given above, parents can be defined as leaders of nuclear families. Strong community leadership, however, is common cross-culturally.  
+
+The emergence of leadership and the functions leaders serve across cultures is closely tied to social and political structure. 
+
+Among ethnographically described small-scale societies which generally lack multi-level, institutionalized social and political structures, leadership at the community level is typically informal and ephemeral and tends to emerge contextually when demands of coordination or conflict resolution require a managerial presence [@von_rueden_leadership_2015]. Leadership tends to be context-specific and leaders in such contexts often draw on persuasive capacities and leverage community-based respect, their greater knowledge and social support to express their influence. The theoretical and ethnographic literature suggests these demands most commonly arise in the contexts of conflict resolution and collective actions. Demands of mediation in within-group conflict resolution, although variable in scale, are probably a universal feature of human groups. Demands of between-group interactions, including both conflict and cooperation are also very common across small-scale societies, including hunter-gatherers. Representing the group and managing both internal and external relationships and conflicts are expected to be the most salient functions of community leaders. 
 
 Within communities, leaders may emerge whenever groups of individuals form. The role of leaders in ritual contexts, such as in initiations, and in providing social services, including facilitating marriages and organizing social activities, are also relatively common. 
 
 Increased sedentarization and defensibility of resources is often associated with both social stratification and an institutionalized managerial role of community leaders. Among horticulturalists and agriculturalists managerial leadership can promote for more efficient use of shared resources such as water reserves and cooperative labor. Pastoralists and coastal populations can face similar pressures surrounding grazing lands and fishing access. In the wake of economic intensification, the function of leadership becomes increasing associated with the distribution of resources.
 
-Defensibility of resources is also often associated with increased territoriality and increased pressures of inter-group conflicts. Community leaders among populations more reliant on domesticated plant foods, livestock, and specific territory are often forced to manage military forces and develop offensive and defensive strategies in warfare, more so than mobile populations. 
+Defensibility of resources is also often associated with increased territoriality and increased pressures of inter-group conflicts. Community leaders among populations more reliant on domesticated plant foods, livestock, and specific territory are often forced to manage military forces and develop offensive and defensive strategies in warfare, more so than mobile populations.
 
+In WEIRD societies, community leaders are primarily heads of governmental and corporate bodies with specific responsibilities and functions associated with their position. The structure of these organizations are generally organized hierarchically with nested bodies and a formal internal 'chain of command.' At the higher levels of large-scale organizations, leaders primarily serve as representatives in inter-group interactions, facilitate the creation and adoption of policies, and serve as a figure head embodying the strategic vision of the organization. They are not often involved in resolving immediate conflicts, such as disputes between individuals or nested bodies, however, they are often the final end-point in a decision making hierarchy and the results of a single decision of these leaders can trickle down through industry or government with global ramifications.  
 
 
 ## The qualities of leaders across cultures and contexts
+
+Despite eminse variation, there do seem to be some commonalities among the qualities of community leaders. Across human societies, when strong community leaders exist, they tend to be high status males who embody the ideal qualities most respected by the group and necessary for successful leadership in the domains in which they have differential influence. Elders, respected individuals, and highly intelligent or knowledgeable individuals tend to have increased influence over community decisions across cultures, including among the most egalitarian hunter-gatherers, stratified chiefdoms, and contemporary state-level organizations. 
+
+Amont small-scale socities with relative egalitarianism and local political autonomy, coomunity leaders, in addition to being older, respected males, tend to be individuals with large social networks and strong social support. Physically, leaders across multople contexts tend to be taller and more physically formidable. Such physical embodiments might equip individuals for more eefective leadership in the context of inter-group conflicts as well as in the context of intra-group conflict resolution and in management of collective actions. 
+
+
+
+
+
+
 
 ## The costs of leadership across cultures and contexts
 
@@ -58,7 +75,7 @@ The ability to shape group dynamics can provide enormous individual benefits to 
 
 # Study aims
 
-Evolutionary theoretical models and empirical studies often seek to integrate findings within a broad framework of human cultural diversity. The universality of human leadership systems and the incredible diversity among the qualities of leaders across cultures and context and the functions they serve is difficult to capture. Scholars are then left to haphazardly self-select ethnographic cases or rely on the self-selected reviews of others. Here, we seek provide the first broad near comprehensive view of the qualities and functions of leaders across from a representative cross-cultural sample. 
+Evolutionary theoretical models and empirical studies often seek to integrate findings within a broad framework of human cultural diversity. The universality of human leadership systems and the incredible diversity among the qualities of leaders across cultures and context and the functions they serve is difficult to capture. Scholars are then left to haphazardly self-select ethnographic cases or rely on the self-selected reviews of others. Here, we provide the first broad and near comprehensive view of the qualities and functions of leaders across from a representative cross-cultural sample. We also aim to understand how leader qualities relate to their functions and how these relationships vary across social contexts and levels of cultural complexity. We hope these empirical results will facilitate more fine-grained approaches within leadership studies and greater theoretical and empirical work beyond community leadership, while also revealing the importance of a broad, cross-cultural perspective in understanding the psychology and cultural patterning of perhaps the most foundation component of human social behavior and social organization. 
 
 
 # Methods
