@@ -117,7 +117,7 @@ We analyze data from our researcher-coded operationalized variables at the text 
 <!-- At the text record level, hierarchical cluster analysis was then used to identify natural groupings of all our coded variables. If variables from a model clustered together, and separately from the other variables, that would lend support to the theoretical cohesiveness of that model. If, on the other hand, variables from different models clustered together, that would suggest theoretical models may need revision or that clusters had identified components of a novel theoretical model.  -->
 
 
-To reduce the dimensionality of the `r length(quality_vars)` quality variables and the 
+To reduce the dimensionality of the `r length(quality_vars)` quality variables and the `r length(function_vars)` we relied on logistic PCA from the Binary Dimensionality Reduction (logisticPCA) package CITE. 
 
 
 # Results
