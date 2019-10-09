@@ -151,16 +151,17 @@ pca_data_qualities$demo_sex[is.na(pca_data_qualities$demo_sex)==TRUE]="unkown"
 
 
 #Fit the SVD with k = 6. 6 is the minimum for 80% of the variance
-logsvd_model = logisticSVD(pca_data_qualities[quality_vars], k = 6)
+k = 3
+logsvd_model = logisticSVD(pca_data_qualities[quality_vars], k = k)
 logsvd_model
 
 #Cross validate optimal m
-logpca_cv = cv.lpca(pca_data_qualities[quality_vars], ks = 6, ms = 1:10)
+logpca_cv = cv.lpca(pca_data_qualities[quality_vars], ks = k, ms = 1:10)
 plot(logpca_cv)
 
 
-logpca_model = logisticPCA(pca_data_qualities[quality_vars], k = 6, m = which.min(logpca_cv), main_effects = T)
-clogpca_model = convexLogisticPCA(pca_data_qualities[quality_vars], k = 6, m = which.min(logpca_cv))
+logpca_model = logisticPCA(pca_data_qualities[quality_vars], k = k, m = which.min(logpca_cv), main_effects = T)
+clogpca_model = convexLogisticPCA(pca_data_qualities[quality_vars], k = k, m = which.min(logpca_cv))
 
 #Plots
 
@@ -171,12 +172,14 @@ plot(logsvd_model, type = "trace")
 
 plot(logsvd_model, type = "scores")+ 
   geom_point(aes(colour=pca_data_qualities$subsistence)) + 
+  stat_ellipse(aes(colour=pca_data_qualities$subsistence)) +
   ggtitle("Exponential Family PCA") +
   scale_colour_brewer(palette = "Set1")
 
 # Indicate group structure of log PCA model
 plot(logpca_model, type = "scores") + 
   geom_point(aes(colour=pca_data_qualities$group.structure2)) + 
+  stat_ellipse(aes(colour=pca_data_qualities$group.structure2)) + 
   ggtitle("Logistic PCA") +
   scale_colour_brewer(palette = "Set1")
 
