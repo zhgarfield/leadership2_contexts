@@ -33,32 +33,71 @@ Across human societies, the influence of leaders stands to substantially shape t
 
 Leaders are individuals who maintain disproportionate influence over decision-making within groups [@von_rueden_leadership_2015], whatever the group may be. Leadership roles are also often associated with specific rights and responsibilities. Not surprisingly, the functions leaders serve then are often closely linked to group contexts and the challenges specific groups face. Certain types of groups, such as kin groups, economic groups, or political groups, may tend to favor certain types of leaders, however there can be substantial variation in the qualities of leaders within these groups as well as and between them.
 
+We first briefly review current theoretical, ethnographic, and empirical perspectives on the qualities of leaders, the functions they serve, and the costs and benefits of leadership for both leaders and followers across human societies, including WEIRD and non-WEIRD populations. We then outline the aims and methods of the current cross-cultural study, before presenting results and interpretations.  
 
-<!-- Reference a historical example of a short term leader implimenting change with lasting effects, good and/or bad. -->
+
+<!-- Reference a historical example of a short term leader implementing change with lasting effects, good and/or bad. -->
 
 ## The functions of leadership across cultures and contexts
 
-The emergence of leadership and the functions leaders serve across cultures is closely tied to social and political structure. Among ethnographically described small-scale societies which generally lack multi-level, institutionalized social and political structures, leadership at the community level is typically informal and ephemeral and tends to emerge contextually when demands of coordination or conflict resolution require a managerial presence [@von_rueden_leadership_2015]. Leaders in such contexts often draw on persuasive capacities and leverage community-based respect, their greater knowledge and social support to express their influence. The theoretical and ethnographic literature suggests these demands most commonly arise in the contexts of conflict resolution and collective actions. Demands of mediation in within-group conflict resolution, although variable in scale, are probably a universal feature of human groups. Demands of between-group interactions, including both conflict and cooperation are also very common across small-scale societies, including hunter-gatherers. Representing the group and managing both internal and external relationships and conflicts are expected to be the most salient functions of community leaders. 
+Leadership as a phenomena is a universal feature of human groups; among all societies there are particular contexts in which one individual maintains greater influence. Also, adopting the broad definition of leadership given above, parents can be defined as leaders of nuclear families. Strong community leadership, however, is common cross-culturally.  
+
+The emergence of leadership and the functions leaders serve across cultures is closely tied to social and political structure. 
+
+Among ethnographically described small-scale societies which generally lack multi-level, institutionalized social and political structures, leadership at the community level is typically informal and ephemeral and tends to emerge contextually when demands of coordination or conflict resolution require a managerial presence [@von_rueden_leadership_2015]. Leadership tends to be context-specific and leaders in such contexts often draw on persuasive capacities and leverage community-based respect, their greater knowledge and social support to express their influence. The theoretical and ethnographic literature suggests these demands most commonly arise in the contexts of conflict resolution and collective actions. Demands of mediation in within-group conflict resolution, although variable in scale, are probably a universal feature of human groups. Demands of between-group interactions, including both conflict and cooperation are also very common across small-scale societies, including hunter-gatherers. Representing the group and managing both internal and external relationships and conflicts are expected to be the most salient functions of community leaders. 
 
 Within communities, leaders may emerge whenever groups of individuals form. The role of leaders in ritual contexts, such as in initiations, and in providing social services, including facilitating marriages and organizing social activities, are also relatively common. 
 
 Increased sedentarization and defensibility of resources is often associated with both social stratification and an institutionalized managerial role of community leaders. Among horticulturalists and agriculturalists managerial leadership can promote for more efficient use of shared resources such as water reserves and cooperative labor. Pastoralists and coastal populations can face similar pressures surrounding grazing lands and fishing access. In the wake of economic intensification, the function of leadership becomes increasing associated with the distribution of resources.
 
-Defensibility of resources is also often associated with increased territoriality and increased pressures of inter-group conflicts. Community leaders among populations more reliant on domesticated plant foods, livestock, and specific territory are often forced to manage military forces and develop offensive and defensive strategies in warfare, more so than mobile populations. 
+Defensibility of resources is also often associated with increased territoriality and increased pressures of inter-group conflicts. Community leaders among populations more reliant on domesticated plant foods, livestock, and specific territory are often forced to manage military forces and develop offensive and defensive strategies in warfare, more so than mobile populations.
 
+In WEIRD societies, community leaders are primarily heads of governmental and corporate bodies with specific responsibilities and functions associated with their position. The structure of these organizations are generally organized hierarchically with nested bodies and a formal internal 'chain of command.' At the higher levels of large-scale organizations, leaders primarily serve as representatives in inter-group interactions, facilitate the creation and adoption of policies, and serve as a figure head embodying the strategic vision of the organization. They are not often involved in resolving immediate conflicts, such as disputes between individuals or nested bodies, however, they are often the final end-point in a decision making hierarchy and the results of a single decision of these leaders can trickle down through industry or government with global ramifications. 
+
+The Global Leadership and Organizational Behavior Effectivensss (GLOBE) project is a large-scale international research program aimed at understanding leadership effectiveness and culturla variation across large organizations. The GLOBE project has produced multiple cross-national datasets on leadership and hundreds of publications. For example, *The GLOBE Study of CEO Leadership Behavior and Effectiveness in 24 Countries* draws on data from over 1,000 CEOs and over 5,000 senior executives from corporations in varied of industries across 24 countries. The goals of the GLOBE CEO Study were to address (1) how natioanl culture influences expectations for hte behaviors of leaders, (2) which behaviors of CEOs are typically associated with organizational success, (3) differences between high-functioning adn low-functionsing CEOs, adn (4) the importance of CEO behaviors aligning with societal expectations. Through path analysis the study concluded that culturla values indirectly predict CEO leadership behavior through culturally endorsed leadership expectations. That is, leaders moderate their behavior through culturally learned values and leadership-specific values.  
+
+The GLOBE CEO Study defines six "global leadership behaviors" developed from 21 "primary leadership beaviors." Among the global leadership behaviors, the GLOBE CEO STudy found that charimatic leadership beahvior is consistently the most important behavioral trait regarding firm performance and dedication of top managemnet team (TMT) members, followed by team-oriented behavior and human-oritented behavior. Participative leadership was moderately related to TMT dedication, however was not related to firm performance. The most successful CEOs are those who are rated as more visonary, performance oriented, and decisve. Furthermore, results strongly suggest the fit between a CEOs beahavioral profile and the expectations of leadership within a society strongly predict TMT dedication and firm performance. 
 
 
 ## The qualities of leaders across cultures and contexts
 
-## The costs of leadership across cultures and contexts
+Despite eminse variation, there do seem to be some commonalities among the qualities of community leaders. Across human societies, when strong community leaders exist, they tend to be high status males who embody the ideal qualities most respected by the group and necessary for successful leadership in the domains in which they have differential influence. Elders, respected individuals, and highly intelligent or knowledgeable individuals tend to have increased influence over community decisions across cultures, including among the most egalitarian hunter-gatherers, stratified chiefdoms, and contemporary state-level organizations. 
+
+Among small-scale socities with relative egalitarianism and local political autonomy coomunity leaders, in addition to being older, respected males, tend to be individuals with large social networks and strong social support. Physically, leaders across multiple contexts tend to be taller and more physically formidable. Such physical embodiments might equip individuals for more eefective leadership in the context of inter-group conflicts as well as in the context of intra-group dispute settlement and in management of collective actions. Charisma and oratory skills are common properties of leaders, but are espeically important in the context of egalitarianism where individual leaders must rely on persuassion and more subtle forms of influence to convince community members to come to agreement. 
+
+
+
+
+
+
+
 
 ## The benefits of leadership across cultures and contexts
 
-The ability to shape group dynamics can provide enormous individual benefits to leaders, even if 'just for a while.' 
+The ability to shape group dynamics can provide enormous individual benefits to leaders, even if 'just for a while.' Fundamentally, leaders in any context are able to promote group policies which either align with their individual interests or which are not especially costly for themselves.
+
+Across diverse populations and organizations, community leaders, political leaders, and organization leaders tend to have greater mating oppurtunities and therefore, given the aformentioned male-biase in top leadership positions, these leaders also tend to have greater reproductive success. 
+
+Instituionalized leadership positions are also typically associated with increased social status. 
+
+Leaders and high-status individuals are also more likely to be the recipeints of social support and material benefits in times of need. 
+
+
+
+## The costs of leadership across cultures and contexts
+
+The unique costs associated with leadership positions have recieved less attention, relative to the benefits of leadership. 
+
+Group responsibilities necessarily impose oppurtunity costs on individual priorities and agendas. 
+
+In managing collective action and enacting group-level policies, some behaviors of leaders will upset some followers and leader-follower interactions can be hostile. 
+
+
+
 
 # Study aims
 
-Evolutionary theoretical models and empirical studies often seek to integrate findings within a broad framework of human cultural diversity. The universality of human leadership systems and the incredible diversity among the qualities of leaders across cultures and context and the functions they serve is difficult to capture. Scholars are then left to haphazardly self-select ethnographic cases or rely on the self-selected reviews of others. Here, we seek provide the first broad near comprehensive view of the qualities and functions of leaders across from a representative cross-cultural sample. 
+Evolutionary theoretical models and empirical studies often seek to integrate findings within a broad framework of human cultural diversity. The universality of human leadership systems and the incredible diversity among the qualities of leaders across cultures and context and the functions they serve is difficult to capture. Scholars are then left to haphazardly self-select ethnographic cases or rely on the self-selected reviews of others. Here, we provide the first broad and near comprehensive view of the qualities and functions of leaders across from a representative cross-cultural sample. We also aim to understand how leader qualities relate to their functions and how these relationships vary across social contexts and levels of cultural complexity. We hope these empirical results will facilitate more fine-grained approaches within leadership studies and greater theoretical and empirical work beyond community leadership, while also revealing the importance of a broad, cross-cultural perspective in understanding the psychology and cultural patterning of perhaps the most foundation component of human social behavior and social organization. 
 
 
 # Methods
@@ -67,11 +106,42 @@ Evolutionary theoretical models and empirical studies often seek to integrate fi
 
 We evaluate the cross-cultural frequency in the functions and qualities of leaders and the costs and benefits of leadership for both leaders and followers using an ethnographic database previously built and published (doi.org/10.5281/zenodo.2541999), from which CITE "tested" three theoretical models against the ethnographic record. Whereas CITE, documented supporting evidence in respect to influential theoretical models and offered direction for novel theoretical synthesis, our goals here are to let the ethnographic record speak for itself in understanding variation in the dimensions of leadership we are interested in. 
 
-Using the same database of 1212 ethnographic paragraphs extracted from the 60-culture Probability Sample Files (PSF) of the electronic Human Relations Area Files (eHRAF) database. The leadershipdata was designed to capture a wide sample of the ethnographic record of leadership. Two authors coded each paragraph for presence of `r length(quality_vars)` distinct qualities of leaders, `r length(function_vars)` distinct functions leaders serve, and `r length(leader_benefit_vars)` benefits and `r length(leader_cost_vars)` costs that leader or followers may receive. Cost and benefits were operationalized prior to coding following our reading of the evolutionary leadership literature. See Table X. The operationalized qualities and functions (See Table X) were developed from the ethnographic text records in the database. First ZG read a subset of text records and developed initial variable lists and operationalizations of the qualities and functions in those text records. Then, KS coded all 1212 text records (in a random order) for the operationalized qualities, functions, cost, and benefits, **creating new variables and operationalizations for additional qualities and functions encountered**. After coding half of the random sample KS and ZG revised the operational definitions to produce the final list of variables in Tables XX. ZG then followed the same process of coding the entire sample of 1212 text records for the X operationalized variables. DISCUSS IRR. ZG and KS then discussed every instance of disagreement between their respective coding to produce a consensus matrix, which is used in the analyses here and added to the published data repository. For additional details on ethnographic sampling and creating of the leadershipdata package see CITE. 
+Using the same database of 1212 ethnographic paragraphs (termed text-records) extracted from the 60-culture Probability Sample Files (PSF) of the electronic Human Relations Area Files (eHRAF) database. The leadershipdata was designed to capture a wide sample of the ethnographic record of leadership. Two authors coded each paragraph for presence of `r length(quality_vars)` distinct qualities of leaders, `r length(function_vars)` distinct functions leaders serve, and `r length(leader_benefit_vars)` benefits and `r length(leader_cost_vars)` costs that leader or followers may receive. Cost and benefits were operationalized prior to coding following our reading of the evolutionary leadership literature. See Table X. The operationalized qualities and functions (See Table X) were developed from the ethnographic text records in the database. First ZG read a subset of text records and developed initial variable lists and operationalizations of the qualities and functions in those text records. Then, KS coded all 1212 text records (in a random order) for the operationalized qualities, functions, cost, and benefits, **creating new variables and operationalizations for additional qualities and functions encountered**. After coding half of the random sample KS and ZG revised the operational definitions to produce the final list of variables in Tables XX. ZG then followed the same process of coding the entire sample of 1212 text records for the X operationalized variables. DISCUSS IRR. ZG and KS then discussed every instance of disagreement between their respective coding to produce a consensus matrix, which is used in the analyses here and added to the published data repository. For additional details on ethnographic sampling and creating of the leadershipdata package see CITE. 
+
+
 
 ## Statistical analysis
 
+We analyze data from our researcher-coded operationalized variables at the text record level and at the culture level. Our first goal was to assess the proportion of text records and cultures that provided evidence for each of our coded variables. 
+
+<!-- At the text record level, hierarchical cluster analysis was then used to identify natural groupings of all our coded variables. If variables from a model clustered together, and separately from the other variables, that would lend support to the theoretical cohesiveness of that model. If, on the other hand, variables from different models clustered together, that would suggest theoretical models may need revision or that clusters had identified components of a novel theoretical model.  -->
+
+
+To reduce the dimensionality of the `r length(quality_vars)` quality variables and the `r length(function_vars)` we relied on logistic PCA from the Binary Dimensionality Reduction (logisticPCA) package CITE. 
+
+
 # Results
+
+The geographic distribution of the cultures in our sample is displayed in Fig. 1, with cultures labeled by mode of subsistence and represented by a symbol proportional to the number of documents that provide ethnographic texts for that culture (for details, see Table S1). The 1212 text records from `r length(unique(leadershipdata::documents$d_ID))` unique documents describing `r length(unique(leader_text2$d_culture))` cultures were generally short, with a median word count of X, a mean of X, and standard deviation of X. The vast majority of text records pertained to male leadership (89.8%, 898 text records) and very few pertained to female leadership (2.5%, 25 text records).In7 instances (0.7%)textrecordspertain tobothmales and females,and in69 text records (6.9%) sex was unknown.
+
+NEED TO DISCUSS 1187 and split records. 
+
+## Variable distributions
+
+For each of the X coded variables, we computed the percentage of text records that provided support, estimating standard errors using a binomial generalized linear mixed effects model with a random intercept for author nested within culture. See FIG.
+
+```{r, echo=FALSE, warning=FALSE, message=F, fig.width=15, fig.height=8}
+plot.variable.support
+```
+
+
+Costs and benefits. 
+
+```{r, echo=FALSE, warning=FALSE, message=F, fig.width=15, fig.height=8}
+plot.variable.support_costs_benefits
+```
+
+
 
 # Discussion
 
