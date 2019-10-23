@@ -15,6 +15,7 @@ library(dendextend)
 library(logisticPCA)
 library(tibble)
 library(gridExtra)
+library(car)
 #library(patchwork)
 
 
@@ -1142,6 +1143,15 @@ ggplot(leader_text2, aes(pop_density, functions_component1))+
   geom_jitter(height = 0, width = 0.1) +
   geom_boxplot(width=.15)
 
+
+# Exploratory models ------------------------------------------------------
+
+qc_m<-glm(qualities_component1 ~ c_cultural_complexity + com_size + subsistence, 
+         data=leader_text2, family="gaussian")
+summary(qc_m)
+vif(qc_m)
+plot(qc_m)
+plot(allEffects(qc_m))
 
 
 # Heatmaps -----------------------------------------------------------------
