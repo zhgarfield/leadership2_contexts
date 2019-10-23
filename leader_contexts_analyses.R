@@ -700,7 +700,7 @@ pca_data_qualities <- left_join(pca_data_qualities, text_doc_cultureIDs, by = "c
 leader_cult$d_culture<-leader_cult$c_culture_code
 leader_cult<-de_factor(leader_cult)
 #Subset culture vars of interest
-culture_vars<-leader_cult[,c("d_culture","subsistence","c_cultural_complexity")]
+culture_vars<-leader_cult[,c("d_culture","subsistence","c_cultural_complexity", "settlement_fixity", "pop_density","com_size")]
 
 pca_data_qualities <-left_join(pca_data_qualities, culture_vars, by = "d_culture")
 
@@ -1066,6 +1066,82 @@ ggplot(leader_text2, aes(qualities_component1, functions_component1))+
   #geom_abline(slope = past_lm$coefficients[2], intercept = past_lm$coefficients[1], color="purple") +
   labs(x="\nQualities component: Prestige - Dominance", 
        y="Functions component: Mediation - Organization\n")
+
+# Cultural complexity
+ggplot(leader_text2, aes(c_cultural_complexity, qualities_component1))+
+  geom_point(aes(colour=subsistence))
+
+
+leader_text2<-left_join(leader_text2, culture_vars)
+
+##### Q & F component
+#Qualities and functions component by settlement fixity
+ggplot(leader_text2, aes(settlement_fixity, qf_component1))+
+  geom_violin()+
+  geom_jitter(height = 0, width = 0.1) +
+  geom_boxplot(width=.15)
+
+
+#Qualities and functions component by community size
+ggplot(leader_text2, aes(com_size, qf_component1))+
+  geom_violin()+
+  geom_jitter(height = 0, width = 0.1) +
+  geom_boxplot(width=.15)
+
+#Qualities and functions component by community size
+ggplot(leader_text2, aes(pop_density, qf_component1))+
+  geom_violin()+
+  geom_jitter(height = 0, width = 0.1) +
+  geom_boxplot(width=.15)
+
+##### Qualities component
+
+#Qualities component by settlement fixity
+ggplot(leader_text2, aes(settlement_fixity, qualities_component1))+
+  geom_violin(trim=F) +
+  geom_jitter(height = 0, width = 0.1) +
+  geom_boxplot(width=.15)
+
+
+#Qualities component by community size
+ggplot(leader_text2, aes(com_size, qualities_component1))+
+  geom_violin(trim=F) +
+  geom_jitter(height = 0, width = 0.1) +
+  geom_boxplot(width=.15)
+
+#Qualities component by community size
+ggplot(leader_text2, aes(pop_density, qualities_component1))+
+  geom_violin(trim=F) +
+  geom_jitter(height = 0, width = 0.1) +
+  geom_boxplot(width=.15)
+
+#Qualities component by community size
+ggplot(leader_text2, aes(subsistence, qualities_component1))+
+  geom_violin(trim=F) +
+  geom_jitter(height = 0, width = 0.1) +
+  geom_boxplot(width=.15)
+
+##### Functions component
+
+#Functions component by settlement fixity
+ggplot(leader_text2, aes(settlement_fixity, functions_component1))+
+  geom_violin(trim=F) +
+  geom_jitter(height = 0, width = 0.1) +
+  geom_boxplot(width=.15)
+
+
+#Functions component by community size
+ggplot(leader_text2, aes(com_size, functions_component1))+
+  geom_violin(trim=F) +
+  geom_jitter(height = 0, width = 0.1) +
+  geom_boxplot(width=.15)
+
+#Functions component by community size
+ggplot(leader_text2, aes(pop_density, functions_component1))+
+  geom_violin(trim=F) +
+  geom_jitter(height = 0, width = 0.1) +
+  geom_boxplot(width=.15)
+
 
 
 # Heatmaps -----------------------------------------------------------------
