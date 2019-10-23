@@ -6,7 +6,7 @@
 
 # Load data library -------------------------------------------------------
 library(leadershipdata)
-load("leader_text2.rda")
+# load("leader_text2.rda")
 
 # Load libraries ----------------------------------------------------------
 library(tidyverse)
@@ -446,7 +446,7 @@ for (m in models) {
     d.tmp = all_data[, c(model_vars[v], 'd_culture', 'author_ID')]
     val = cult.sum(d.tmp)
     value = c(value, val)
-    replicates = replicate(1000, cult.sum(resample(d.tmp, cluster=c('d_culture', 'author_ID'), replace=c(T,F))))
+    replicates = replicate(10, cult.sum(resample(d.tmp, cluster=c('d_culture', 'author_ID'), replace=c(T,F))))
     q=quantile(replicates, c(0.025, 0.975))
     y_se = c(y_se, q[[2]])
     y_negse = c(y_negse, q[[1]])
@@ -1069,11 +1069,12 @@ ggplot(leader_text2, aes(qualities_component1, functions_component1))+
        y="Functions component: Mediation - Organization\n")
 
 # Cultural complexity
+leader_text2<-left_join(leader_text2, culture_vars)
 ggplot(leader_text2, aes(c_cultural_complexity, qualities_component1))+
   geom_point(aes(colour=subsistence))
 
 
-leader_text2<-left_join(leader_text2, culture_vars)
+
 
 ##### Q & F component
 #Qualities and functions component by settlement fixity
