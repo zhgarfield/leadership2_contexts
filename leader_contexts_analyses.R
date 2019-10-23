@@ -16,6 +16,8 @@ library(logisticPCA)
 library(tibble)
 library(gridExtra)
 library(car)
+library(visreg)
+library(effects)
 #library(patchwork)
 
 
@@ -1147,13 +1149,86 @@ ggplot(leader_text2, aes(pop_density, functions_component1))+
 
 # Exploratory models ------------------------------------------------------
 
-qc_m<-glm(qualities_component1 ~ c_cultural_complexity + com_size + subsistence, 
-         data=leader_text2, family="gaussian")
-summary(qc_m)
-vif(qc_m)
-plot(qc_m)
-plot(allEffects(qc_m))
+# qc_m<-glm(qualities_component1 ~ c_cultural_complexity + com_size + subsistence, 
+#          data=leader_text2, family="gaussian")
+# summary(qc_m)
+# Anova(qc_m)
+# vif(qc_m)
+# plot(qc_m)
+# visreg(qc_m)
+# plot(allEffects(qc_m))
 
+leader_text2$com_size <- 
+  ordered(
+    leader_text2$com_size,
+    levels = c("< 99", "100-199", "200-399", "400-999", "> 1,000")
+    )
+
+leader_text2$pop_density <-
+  ordered(
+    leader_text2$pop_density,
+    levels = c(
+      "≤ 1 person / 1-5 sq. mile", 
+      "1-25 persons / sq. mile", 
+      "26-100 persons / sq. mile",
+      "101-500 persons / sq. mile",
+      "over 500 persons / sq. mile"
+      )
+  )
+
+qc_m2 <- lmer(
+  qualities_component1 ~ 
+    functions_component1 +
+    subsistence +
+    c_cultural_complexity +
+    pop_density +
+    com_size + 
+    (1|d_culture/doc_ID),
+  data=leader_text2
+  )
+summary(qc_m2)
+Anova(qc_m2)
+AIC(qc_m2)
+visreg(qc_m2)
+# visreg(qc_m2, by = 'c_cultural_complexity', xvar = 'pop_density')
+
+by_culture2 <-
+  leader_text2 %>% 
+  group_by(d_culture) %>%
+  dplyr::select(d_culture,
+                qualities_component1,
+                functions_component1,
+                one_of(
+                  c(quality_vars,
+                    function_vars,
+                    leader_benefit_vars,
+                    leader_cost_vars,
+                    follower_benefit_vars,
+                    follower_cost_vars))) %>%
+  summarise_all(mean, na.rm=T) %>% 
+  left_join(leader_cult[c('d_culture', 'c_name', 'region', 'subsistence')]) %>% 
+  mutate(
+    c_name = fct_reorder(c_name, qualities_component1, mean)
+  ) %>% 
+  ggplot(aes(qualities_component1, c_name)) + geom_point()
+by_culture2
+
+# Leader functions
+
+fc_m2 <- lmer(
+  functions_component1 ~ 
+    # functions_component1 +
+    subsistence +
+    c_cultural_complexity +
+    pop_density +
+    com_size + 
+    (1|d_culture/doc_ID),
+  data=leader_text2
+)
+summary(fc_m2)
+Anova(fc_m2)
+AIC(fc_m2)
+visreg(fc_m2)
 
 # Heatmaps -----------------------------------------------------------------
 heatmap_data<-leader_text2[,c(quality_vars, "group.structure2")]
