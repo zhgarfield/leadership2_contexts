@@ -153,6 +153,11 @@ sccs<-sccs[,c("SCCS.","V1648")]
 sccs_ehraf_ID<-read.csv("sccs_ehraf_IDs.csv")
 sccs_ehraf_ID$c_culture_code<-sccs_ehraf_ID$OWC
 
+sccs_ehraf_our_sample<-left_join(leader_cult, sccs_ehraf_ID)
+sccs_ehraf_our_sample<-sccs_ehraf_our_sample[,c("c_name","c_culture_code",
+                                                "SCCS.")]
+sccs_ehraf_our_sample<-sccs_ehraf_our_sample[!is.na(sccs_ehraf_our_sample$SCCS.)==T,]
+
 sccs_vars<-left_join(sccs, sccs_ehraf_ID, by = "SCCS.")
 sccs_vars<-sccs_vars[,c("c_culture_code","V1648")]
 sccs_vars<-distinct(sccs_vars)
