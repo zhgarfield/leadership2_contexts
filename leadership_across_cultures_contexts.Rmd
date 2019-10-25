@@ -122,7 +122,7 @@ To reduce the dimensionality of the `r length(quality_vars)` quality variables a
 
 # Results
 
-The geographic distribution of the cultures in our sample is displayed in Fig. 1, with cultures labeled by mode of subsistence and represented by a symbol proportional to the number of documents that provide ethnographic texts for that culture (for details, see Table S1). The 1212 text records from `r length(unique(leadershipdata::documents$d_ID))` unique documents describing `r length(unique(leader_text2$d_culture))` cultures were generally short, with a median word count of X, a mean of X, and standard deviation of X. The vast majority of text records pertained to male leadership (89.8%, 898 text records) and very few pertained to female leadership (2.5%, 25 text records).In7 instances (0.7%)textrecordspertain tobothmales and females,and in69 text records (6.9%) sex was unknown.
+The geographic distribution of the cultures in our sample is displayed in Fig. 1, with cultures labeled by mode of subsistence and represented by a symbol proportional to the number of documents that provide ethnographic texts for that culture (for details, see Table S1). The 1212 text records from `r length(unique(leadershipdata::documents$d_ID))` unique documents describing `r length(unique(leader_text2$d_culture))` cultures were generally short, with a median word count of X, a mean of X, and standard deviation of X. The vast majority of text records pertained to male leadership (89.8%, 898 text records) and very few pertained to female leadership (2.5%, 25 text records). In 7 instances (0.7%)textrecordspertain tobothmales and females,and in 69 text records (6.9%) sex was unknown.
 
 NEED TO DISCUSS 1187 and split records. 
 
