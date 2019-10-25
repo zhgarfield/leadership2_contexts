@@ -6,7 +6,7 @@
 
 # Load data library -------------------------------------------------------
 library(leadershipdata)
-load("leader_text2.rda")
+# load("leader_text2.rda")
 
 # Load libraries ----------------------------------------------------------
 library(tidyverse)
@@ -29,6 +29,11 @@ df %>% dplyr::mutate_if(is.factor, as.character) -> df
 }
 
 # Recode variables --------------------------------------------------------
+
+# Add sex
+leader_text2 <- left_join(leader_text2, leader_text_original[c("cs_textrec_ID", "demo_sex")])
+male_leader_pct <- signif(100*sum(leader_text2$demo_sex=='male', na.rm=T)/nrow(leader_text2), 3)
+female_leader_pct <- signif(100*sum(leader_text2$demo_sex=='female', na.rm=T)/nrow(leader_text2), 2)
 
 # Collapse group structure types
 
@@ -149,8 +154,8 @@ culture_vars<-leader_cult[,c("d_culture","subsistence","c_cultural_complexity", 
 # Add more SCCS variables
 load("sccs.RData")
 sccs<-data.frame(sccs)
-sccs<-sccs[,c("SCCS.","V1648")]
-sccs_ehraf_ID<-read.csv("sccs_ehraf_IDs.csv")
+sccs<-sccs[,c("SCCS.","V1648")] # ID, Frequency of warfare
+sccs_ehraf_ID<-distinct(read.csv("sccs_ehraf_IDs.csv")) # Some dupes in csv file
 sccs_ehraf_ID$c_culture_code<-sccs_ehraf_ID$OWC
 
 sccs_ehraf_our_sample<-left_join(leader_cult, sccs_ehraf_ID)
@@ -158,16 +163,14 @@ sccs_ehraf_our_sample<-sccs_ehraf_our_sample[,c("c_name","c_culture_code",
                                                 "SCCS.")]
 sccs_ehraf_our_sample<-sccs_ehraf_our_sample[!is.na(sccs_ehraf_our_sample$SCCS.)==T,]
 
-sccs_vars<-left_join(sccs, sccs_ehraf_ID, by = "SCCS.")
+sccs_vars<-left_join(sccs, sccs_ehraf_ID[c('SCCS.', 'c_culture_code')], by = "SCCS.")
+sccs_vars<-na.omit(sccs_vars) # Some eHRAF cultures do not map to SCCS cultures
 sccs_vars<-sccs_vars[,c("c_culture_code","V1648")]
-sccs_vars<-distinct(sccs_vars)
-sccs_vars<-sccs_vars[!is.na(sccs_vars$c_culture_code)==T,]
 
-
-
-#Warfare variable
-war.dummy<-data.frame(model.matrix(~sccs_vars$V1648))
-sccs_war_var<-cbind(war.dummy, sccs_vars)
+# Convert warfare levels to interval var
+sccs_vars$warfare_freq <- as.numeric(sccs_vars$V1648)
+sccs_vars$warfare_freq <- ifelse(sccs_vars$warfare_freq %in% c(1,20), NA, sccs_vars$warfare_freq)
+sccs_vars$warfare_freq <- 19 - sccs_vars$warfare_freq
 
 
 # Heatmaps -----------------------------------------------------------------
@@ -394,7 +397,7 @@ var_names <- c(
   "qualities.feared"                = "Feared",
   "qualities.humble"                = "Humility",
   "qualities.innovative"            = "Innovative",
-  "qualities.knowlageable.intellect" = "Knowlageable/intelligence",
+  "qualities.knowlageable.intellect" = "Knowledgeable/intelligence",
   "qualities.oratory.skill"         = "Oratory skill",
   "qualities.polygynous"            = "Polygnous",
   "qualities.social.contacts"       = "Social contacts",
@@ -592,20 +595,23 @@ pca_data_qualities <-left_join(pca_data_qualities, leader_cult, by = "d_culture"
 #pca_data_qualities$demo_sex[pca_data_qualities$demo_sex=="-1"]="unkown"
 #pca_data_qualities$demo_sex[is.na(pca_data_qualities$demo_sex)==TRUE]="unkown"
 
+# Fix names
+pca_data_qualities2 <- pca_data_qualities[quality_vars]
+names(pca_data_qualities2) <- var_names[names(pca_data_qualities2)]
 
 #Set components
 k=3
 #Fit the SVD with k = 6. 6 is the minimum for 80% of the variance
-logsvd_model_qualities = logisticSVD(pca_data_qualities[quality_vars], k = k)
+logsvd_model_qualities = logisticSVD(pca_data_qualities2, k = k)
 logsvd_model_qualities
 
 #Cross validate optimal m
-logpca_cv_qualities = cv.lpca(pca_data_qualities[quality_vars], ks = k, ms = 1:10)
+logpca_cv_qualities = cv.lpca(pca_data_qualities2, ks = k, ms = 1:10)
 plot(logpca_cv_qualities)
 
 
-logpca_model_qualities = logisticPCA(pca_data_qualities[quality_vars], k = k, m = which.min(logpca_cv_qualities), main_effects = T)
-clogpca_model_qualities = convexLogisticPCA(pca_data_qualities[quality_vars], k = k, m = which.min(logpca_cv_qualities))
+logpca_model_qualities = logisticPCA(pca_data_qualities2, k = k, m = which.min(logpca_cv_qualities), main_effects = T)
+clogpca_model_qualities = convexLogisticPCA(pca_data_qualities2, k = k, m = which.min(logpca_cv_qualities))
 
 #Plots
 
@@ -640,41 +646,45 @@ plot(clogpca_model_qualities, type = "scores") +
 
 # Associate logistic PCA model with variables
 logpca_model_loadings<-data.frame(logpca_model_qualities$U)
-logpca_model_loadings$variable<-names(pca_data_qualities[quality_vars])
+logpca_model_loadings$variable<-names(pca_data_qualities2)
 
-loadings<- gather(logpca_model_loadings, key = Component, value =  Loading, -variable)
+qual_loadings<- gather(logpca_model_loadings, key = Component, value =  Loading, -variable)
 
-ggplot(loadings, aes(Loading, variable)) +
+ggplot(qual_loadings, aes(Loading, variable)) +
   geom_point(aes(colour=Component)) +
   facet_wrap(vars(Component))
 
 # Plot individual components
 ## Component 1
-loadings_X1<-loadings[loadings$Component=="X1",]
-X1_sort<-loadings_X1$variable[order(loadings_X1$Loading)]
-loadings_X1$variable<-factor(loadings_X1$variable, levels =  X1_sort)
+qual_loadings_X1<-qual_loadings[qual_loadings$Component=="X1",]
+X1_sort<-qual_loadings_X1$variable[order(qual_loadings_X1$Loading)]
+qual_loadings_X1$variable<-factor(qual_loadings_X1$variable, levels =  X1_sort)
 
-qualities_component1_plot<-ggplot(loadings_X1, aes(Loading, variable)) +
-  geom_point(aes(colour=Component))+
-  theme(legend.position = "none")+
-  ggtitle("Component 1")
+qualities_component1_plot <-
+  ggplot(qual_loadings_X1, aes(Loading, variable, colour=Loading)) +
+  ggalt::geom_lollipop(horizontal = T, size = 1) +
+  scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue') +
+  theme_bw(15) +
+  labs(title = "Leader qualities PC 1 (Prestige-Dominance)", x = "\nLoading", y = "")
+
+qualities_component1_plot
 
 ## Component 2
-loadings_X2<-loadings[loadings$Component=="X2",]
-X2_sort<-loadings_X2$variable[order(loadings_X2$Loading)]
-loadings_X2$variable<-factor(loadings_X2$variable, levels =  X2_sort)
+qual_loadings_X2<-qual_loadings[qual_loadings$Component=="X2",]
+X2_sort<-qual_loadings_X2$variable[order(qual_loadings_X2$Loading)]
+qual_loadings_X2$variable<-factor(qual_loadings_X2$variable, levels =  X2_sort)
 
-qualities_component2_plot<-ggplot(loadings_X2, aes(Loading, variable)) +
+qualities_component2_plot<-ggplot(qual_loadings_X2, aes(Loading, variable)) +
   geom_point(aes(colour=Component))+
   theme(legend.position = "none")+
   ggtitle("Component 2")
 
 ## Component 3
-loadings_X3<-loadings[loadings$Component=="X3",]
-X3_sort<-loadings_X3$variable[order(loadings_X3$Loading)]
-loadings_X3$variable<-factor(loadings_X3$variable, levels =  X3_sort)
+qual_loadings_X3<-qual_loadings[qual_loadings$Component=="X3",]
+X3_sort<-qual_loadings_X3$variable[order(qual_loadings_X3$Loading)]
+qual_loadings_X3$variable<-factor(qual_loadings_X3$variable, levels =  X3_sort)
 
-qualities_component3_plot<-ggplot(loadings_X3, aes(Loading, variable)) +
+qualities_component3_plot<-ggplot(qual_loadings_X3, aes(Loading, variable)) +
   geom_point(aes(colour=Component))+
   theme(legend.position = "none")+
   ggtitle("Component 3")
@@ -902,18 +912,6 @@ qf_component3_plot<-ggplot(loadings_X3, aes(Loading, variable)) +
 grid.arrange(qf_component1_plot, qf_component2_plot, qf_component3_plot,nrow=1)
 
 
-# PCA on Warfare variables ------------------------------------------------
-
-#Cross validate optimal m
-logpca_cv_war = cv.lpca(sccs_war_var[,c(2:20)], ks = 1, ms = 1:10)
-
-logpca_model_war = logisticPCA(sccs_war_var[,c(2:20)], k = 1, m = which.min(logpca_cv_war), main_effects = T)
-
-sccs_war_var$war_component <- logpca_model_war$PCs
-
-sccs_war_var<-sccs_war_var[,c("c_culture_code","war_component")]
-sccs_war_var$d_culture<-sccs_war_var$c_culture_code
-
 # Add components to DF ----------------------------------------------------
 
 pca_data_qualities$qualities_component1 <- logpca_model_qualities$PCs[,1]
@@ -1083,21 +1081,7 @@ leader_text2$pop_density <-
       )
   )
 
-leader_text2<-left_join(leader_text2, sccs_war_var, by="d_culture")
-
-leader_text2$war_group[leader_text2$war_component<= 0]="Medium"
-leader_text2$war_group[leader_text2$war_component<= -.5]="High"
-leader_text2$war_group[leader_text2$war_component>= 1]="Low"
-
-leader_text2$war_group <-
-  ordered(
-    leader_text2$war_group,
-    levels = c( 
-      "Low",
-      "Medium",
-      "High"
-      )
-  )
+leader_text2<-left_join(leader_text2, sccs_vars, by=c("d_culture"="c_culture_code"))
 
 qc_m2 <- lmer(
   qualities_component1 ~ 
@@ -1106,7 +1090,8 @@ qc_m2 <- lmer(
     c_cultural_complexity +
     pop_density +
     com_size +
-    #war_group +
+    group.structure2 +
+    # warfare_freq +
     (1|d_culture/doc_ID),
   data=leader_text2
   )
@@ -1117,6 +1102,8 @@ vif(qc_m2)
 visreg(qc_m2)
 plot(allEffects(qc_m2))
 # visreg(qc_m2, by = 'c_cultural_complexity', xvar = 'pop_density')
+# visreg(qc_m2, by = 'group.structure2', xvar = 'warfare_freq')
+
 
 by_culture2 <-
   leader_text2 %>% 
@@ -1148,7 +1135,8 @@ fc_m2 <- lmer(
     c_cultural_complexity +
     pop_density +
     com_size +
-    #war_group +
+    group.structure2 +
+    # warfare_freq +
     (1|d_culture/doc_ID),
   data=leader_text2
 )
@@ -1156,6 +1144,7 @@ summary(fc_m2)
 Anova(fc_m2)
 AIC(fc_m2)
 visreg(fc_m2)
+visreg(fc_m2, xvar = 'warfare_freq', by = 'group.structure2')
 
 # Heatmaps -----------------------------------------------------------------
 heatmap_data<-leader_text2[,c(quality_vars, "group.structure2")]

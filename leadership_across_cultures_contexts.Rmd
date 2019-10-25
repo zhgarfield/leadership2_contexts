@@ -8,7 +8,7 @@ bibliography: Leader2.bib
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=F)
 load("Leader2.Rdata")
 library(pander)
 ```
@@ -122,24 +122,26 @@ To reduce the dimensionality of the `r length(quality_vars)` quality variables a
 
 # Results
 
-The geographic distribution of the cultures in our sample is displayed in Fig. 1, with cultures labeled by mode of subsistence and represented by a symbol proportional to the number of documents that provide ethnographic texts for that culture (for details, see Table S1). The 1212 text records from `r length(unique(leadershipdata::documents$d_ID))` unique documents describing `r length(unique(leader_text2$d_culture))` cultures were generally short, with a median word count of X, a mean of X, and standard deviation of X. The vast majority of text records pertained to male leadership (89.8%, 898 text records) and very few pertained to female leadership (2.5%, 25 text records). In 7 instances (0.7%)textrecordspertain tobothmales and females,and in 69 text records (6.9%) sex was unknown.
+The geographic distribution of the cultures in our sample is displayed in Fig. 1, with cultures labeled by mode of subsistence and represented by a symbol proportional to the number of documents that provide ethnographic texts for that culture (for details, see Table S1). The `r nrow(leader_text2)` text records from `r length(unique(documents$d_ID))` unique documents describing `r length(unique(leader_text2$d_culture))` cultures were generally short, with a median word count of X, a mean of X, and standard deviation of X. The vast majority of text records pertained to male leadership (`r male_leader_pct`%) and very few pertained to female leadership (`r female_leader_pct`%), with some records not sex-specific.
 
 NEED TO DISCUSS 1187 and split records. 
 
 ## Variable distributions
 
-For each of the X coded variables, we computed the percentage of text records that provided support, estimating standard errors using a binomial generalized linear mixed effects model with a random intercept for author nested within culture. See FIG.
+For each of the X coded variables, we computed the percentage of text records that provided support, estimating standard errors using a binomial generalized linear mixed effects model with a random intercept for author nested within culture. See Figure \@ref(fig:varsupport).
 
-```{r, echo=FALSE, warning=FALSE, message=F, fig.width=15, fig.height=8}
+```{r varsupport, fig.width=15, fig.height=8, fig.cap="Support for each coded variable. Blue: percent of text records with evidence of support. Red: percent of cultures with evidence of support."}
 plot.variable.support
 ```
 
 
-Costs and benefits. 
+Costs and benefits. See Figure \@ref(fig:varsupportcb).
 
-```{r, echo=FALSE, warning=FALSE, message=F, fig.width=15, fig.height=8}
+```{r varsupportcb, echo=FALSE, warning=FALSE, message=F, fig.width=15, fig.height=8}
 plot.variable.support_costs_benefits
 ```
+
+## Principle components analysis
 
 
 
