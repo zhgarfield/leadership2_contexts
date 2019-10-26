@@ -6,7 +6,8 @@
 
 # Load data library -------------------------------------------------------
 library(leadershipdata)
-# load("leader_text2.rda")
+
+load("leader_text2.rda")
 
 # Load libraries ----------------------------------------------------------
 library(tidyverse)
@@ -665,7 +666,7 @@ qualities_component1_plot <-
   ggalt::geom_lollipop(horizontal = T, size = 1) +
   scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue') +
   theme_bw(15) +
-  labs(title = "Leader qualities PC 1 (Prestige-Dominance)", x = "\nLoading", y = "")
+  labs(title = "Leader qualities PC 1 (Prestige vs. Dominance)", x = "\nLoading", y = "")
 
 qualities_component1_plot
 
@@ -711,18 +712,22 @@ pca_data_functions <- left_join(pca_data_functions, text_doc_cultureIDs, by = "c
 
 pca_data_functions <-left_join(pca_data_functions, culture_vars, by = "d_culture")
 
+# Fix names
+pca_data_functions2 <- pca_data_functions[function_vars]
+names(pca_data_functions2) <- var_names[names(pca_data_functions2)]
+
 
 #Fit the SVD 
-logsvd_model_functions = logisticSVD(pca_data_functions[function_vars], k = k)
+logsvd_model_functions = logisticSVD(pca_data_functions2, k = k)
 logsvd_model_functions
 
 #Cross validate optimal m
-logpca_cv_function = cv.lpca(pca_data_functions[function_vars], ks = k, ms = 1:10)
+logpca_cv_function = cv.lpca(pca_data_functions2, ks = k, ms = 1:10)
 plot(logpca_cv_function)
 
 
-logpca_model_functions = logisticPCA(pca_data_functions[function_vars], k = k, m = which.min(logpca_cv_function), main_effects = T)
-clogpca_model_functions = convexLogisticPCA(pca_data_functions[function_vars], k = k, m = which.min(logpca_cv_function))
+logpca_model_functions = logisticPCA(pca_data_functions2, k = k, m = which.min(logpca_cv_function), main_effects = T)
+clogpca_model_functions = convexLogisticPCA(pca_data_functions2, k = k, m = which.min(logpca_cv_function))
 
 #Plots
 
@@ -756,51 +761,56 @@ plot(clogpca_model_functions, type = "scores") +
 
 
 # Associate logistic PCA model with variables
-logpca_model_loadings<-data.frame(logpca_model_functions$U)
-logpca_model_loadings$variable<-names(pca_data_functions[function_vars])
+logpca_model_functions_loadings<-data.frame(logpca_model_functions$U)
+logpca_model_functions_loadings$variable<-names(pca_data_functions2)
 
-loadings<- gather(logpca_model_loadings, key = Component, value =  Loading, -variable)
+loadings_functions<- gather(logpca_model_functions_loadings, key = Component, value =  Loading, -variable)
 
-ggplot(loadings, aes(Loading, variable)) +
+ggplot(loadings_functions, aes(Loading, variable)) +
   geom_point(aes(colour=Component)) +
   facet_wrap(vars(Component))
 
 # Plot individual components
 ## Component 1
-loadings_X1<-loadings[loadings$Component=="X1",]
-X1_sort<-loadings_X1$variable[order(loadings_X1$Loading)]
-loadings_X1$variable<-factor(loadings_X1$variable, levels =  X1_sort)
+functions_loadings_X1<-loadings_functions[loadings_functions$Component=="X1",]
+functions_X1_sort<-functions_loadings_X1$variable[order(functions_loadings_X1$Loading)]
+functions_loadings_X1$variable<-factor(functions_loadings_X1$variable, levels =  functions_X1_sort)
 
-functions_component1_plot<-ggplot(loadings_X1, aes(Loading, variable)) +
-  geom_point(aes(colour=Component))+
-  theme(legend.position = "none")+
-  ggtitle("Component 1")
+functions_component1_plot <-
+  ggplot(functions_loadings_X1, aes(Loading, variable, colour=Loading)) +
+  ggalt::geom_lollipop(horizontal = T, size = 1) +
+  scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue') +
+  theme_bw(15) +
+  labs(title = "Leader functions PC 1 (Mediation vs. Organization)", x = "\nLoading", y = "")
 
-## Component 2
-loadings_X2<-loadings[loadings$Component=="X2",]
-X2_sort<-loadings_X2$variable[order(loadings_X2$Loading)]
-loadings_X2$variable<-factor(loadings_X2$variable, levels =  X2_sort)
+functions_component1_plot
 
-functions_component2_plot<-ggplot(loadings_X2, aes(Loading, variable)) +
-  geom_point(aes(colour=Component))+
-  theme(legend.position = "none")+
-  ggtitle("Component 2")
 
-## Component 3
-loadings_X3<-loadings[loadings$Component=="X3",]
-X3_sort<-loadings_X3$variable[order(loadings_X3$Loading)]
-loadings_X3$variable<-factor(loadings_X3$variable, levels =  X3_sort)
-
-functions_component3_plot<-ggplot(loadings_X3, aes(Loading, variable)) +
-  geom_point(aes(colour=Component))+
-  theme(legend.position = "none")+
-  ggtitle("Component 3")
-
-#plot(component1_plot + component2_plot + component3_plot)
-
-grid.arrange(functions_component1_plot, functions_component2_plot,
-             functions_component3_plot, nrow=1)
-
+# ## Component 2
+# loadings_X2<-loadings[loadings$Component=="X2",]
+# X2_sort<-loadings_X2$variable[order(loadings_X2$Loading)]
+# loadings_X2$variable<-factor(loadings_X2$variable, levels =  X2_sort)
+# 
+# functions_component2_plot<-ggplot(loadings_X2, aes(Loading, variable)) +
+#   geom_point(aes(colour=Component))+
+#   theme(legend.position = "none")+
+#   ggtitle("Component 2")
+# 
+# ## Component 3
+# loadings_X3<-loadings[loadings$Component=="X3",]
+# X3_sort<-loadings_X3$variable[order(loadings_X3$Loading)]
+# loadings_X3$variable<-factor(loadings_X3$variable, levels =  X3_sort)
+# 
+# functions_component3_plot<-ggplot(loadings_X3, aes(Loading, variable)) +
+#   geom_point(aes(colour=Component))+
+#   theme(legend.position = "none")+
+#   ggtitle("Component 3")
+# 
+# #plot(component1_plot + component2_plot + component3_plot)
+# 
+# grid.arrange(functions_component1_plot, functions_component2_plot,
+#              functions_component3_plot, nrow=1)
+# 
 
 
 
@@ -1144,7 +1154,71 @@ summary(fc_m2)
 Anova(fc_m2)
 AIC(fc_m2)
 visreg(fc_m2)
-visreg(fc_m2, xvar = 'warfare_freq', by = 'group.structure2')
+#visreg(fc_m2, xvar = 'warfare_freq', by = 'group.structure2')
+
+
+## Rstanarm models
+library(rstanarm)
+library(bayesplot)
+
+# Qualities model
+qc_stan_m <- stan_glmer(
+  qualities_component1 ~ 
+    subsistence +
+    c_cultural_complexity +
+    pop_density +
+    com_size +
+    group.structure2 +
+    (1|d_culture/doc_ID),
+  prior_intercept = normal(0,1),
+  prior = normal(0,1),
+  algorithm = c("sampling"),
+  family = gaussian(link = "identity"),
+  iter=4000,
+  data=leader_text2
+)
+
+summary(qc_stan_m,
+        pars = c(),
+        probs = c(0.025, 0.975),
+        digits = 2)
+
+qc_m_post <- as.matrix(qc_stan_m)
+prior_summary(qc_stan_m)
+
+mcmc_areas(qc_m_post[,c(2:19)], )
+mcmc_intervals(qc_m_post[,c(2:19)])
+#launch_shinystan(qc_stan_m)
+#mcmc_trace(qc_m_post[,c(1:5)])
+
+# Functions model
+fc_stan_m <- stan_glmer(
+  functions_component1 ~ 
+    subsistence +
+    c_cultural_complexity +
+    pop_density +
+    com_size +
+    group.structure2 +
+    (1|d_culture/doc_ID),
+  prior_intercept = normal(0,1),
+  prior = normal(0,1),
+  algorithm = c("sampling"),
+  family = gaussian(link = "identity"),
+  iter=4000,
+  data=leader_text2
+)
+
+summary(fc_stan_m)
+fc_m_post <- as.matrix(fc_stan_m)
+
+#mcmc_areas(fc_stan_m[,c(1:19)], )
+mcmc_intervals(fc_m_post[,c(2:19)])
+#launch_shinystan(fc_stan_m)
+
+# Stan models
+
+
+
 
 # Heatmaps -----------------------------------------------------------------
 heatmap_data<-leader_text2[,c(quality_vars, "group.structure2")]
@@ -1184,6 +1258,7 @@ aheatmap(t(as.matrix(heatmap_data[,c(quality_vars)])),
 
 
 # Save RData envrionment --------------------------------------------------
+view(leadershipdata::documents)
 
 save.image(file = "Leader2.Rdata")
 
