@@ -24,7 +24,6 @@ library(lme4)
 library(dplyr)
 library(tidyr)
 library(tidybayes)
-library(ggplot2)
 library(cowplot)
 library(brms)
 library(ggstance)
@@ -33,8 +32,6 @@ library(ggpubr)
 library(bayesplot)
 
 library(magrittr)
-library(forcats)
-library(purrr)
 library(modelr)
 library(ggridges)
 library(RColorBrewer)
@@ -1127,8 +1124,8 @@ qc_m2 <- lmer(
     #functions_component1 +
     subsistence +
     c_cultural_complexity +
-    pop_density2 +
-    com_size2 +
+    pop_density +
+    com_size +
     group.structure2 +
     # warfare_freq +
     (1|d_culture/doc_ID),
