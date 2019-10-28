@@ -21,6 +21,24 @@ library(visreg)
 library(effects)
 library(lme4)
 #library(patchwork)
+library(dplyr)
+library(tidyr)
+library(tidybayes)
+library(ggplot2)
+library(cowplot)
+library(brms)
+library(ggstance)
+library(rstanarm)
+library(ggpubr)
+library(bayesplot)
+
+library(magrittr)
+library(forcats)
+library(purrr)
+library(modelr)
+library(ggridges)
+library(RColorBrewer)
+library(gganimate)
 
 
 # Create functions --------------------------------------------------------
@@ -437,7 +455,8 @@ plot.variable.support = ggplot(d_melt, aes(value, Variable, xmin=y_negse, xmax=y
   theme_bw() +
   theme(strip.text.y = element_text(angle=0))+
   scale_shape_manual(name="", values=c(17,16), labels=c('Cultures', 'Text records'))+
-  scale_fill_manual(name="", values=c("red", "blue"), labels=c('Cultures', 'Text records'))
+  scale_fill_manual(name="", values=c("red", "blue"), labels=c('Cultures', 'Text records')) +
+  labs(x="\nValue",y="")
 plot.variable.support
 
 
@@ -568,7 +587,8 @@ plot.variable.support_costs_benefits = ggplot(d_melt_cb, aes(value, Variable, xm
   theme_bw() +
   theme(strip.text.y = element_text(angle=0))+
   scale_shape_manual(name="", values=c(17,16), labels=c('Cultures', 'Text records'))+
-  scale_fill_manual(name="", values=c("red", "blue"), labels=c('Cultures', 'Text records'))
+  scale_fill_manual(name="", values=c("red", "blue"), labels=c('Cultures', 'Text records'))+
+  labs(x="\nValue",y="")
 plot.variable.support_costs_benefits
 
 
@@ -1083,7 +1103,7 @@ leader_text2$pop_density <-
   ordered(
     leader_text2$pop_density,
     levels = c(
-      "≤ 1 person / 1-5 sq. mile", 
+      #"≤ 1 person / 1-5 sq. mile", 
       "1-25 persons / sq. mile", 
       "26-100 persons / sq. mile",
       "101-500 persons / sq. mile",
@@ -1093,13 +1113,22 @@ leader_text2$pop_density <-
 
 leader_text2<-left_join(leader_text2, sccs_vars, by=c("d_culture"="c_culture_code"))
 
+#Set com size2 contrast to cubic function
+leader_text2$com_size2<-leader_text2$com_size
+contrasts(leader_text2$com_size2, 1) <- contr.poly(5)[,3]
+
+# Set pop density2 contrast to quadratic function
+leader_text2$pop_density2<-leader_text2$pop_density
+contrasts(leader_text2$pop_density2, 1) <- contr.poly(4)[,2]
+
+
 qc_m2 <- lmer(
   qualities_component1 ~ 
     #functions_component1 +
     subsistence +
     c_cultural_complexity +
-    pop_density +
-    com_size +
+    pop_density2 +
+    com_size2 +
     group.structure2 +
     # warfare_freq +
     (1|d_culture/doc_ID),
@@ -1144,7 +1173,7 @@ fc_m2 <- lmer(
     subsistence +
     c_cultural_complexity +
     pop_density +
-    com_size +
+    com_size2 +
     group.structure2 +
     # warfare_freq +
     (1|d_culture/doc_ID),
@@ -1158,46 +1187,101 @@ visreg(fc_m2)
 
 
 ## Rstanarm models
-library(rstanarm)
-library(bayesplot)
+
+options(mc.cores = parallel::detectCores())
 
 # Qualities model
+
 qc_stan_m <- stan_glmer(
   qualities_component1 ~ 
     subsistence +
     c_cultural_complexity +
-    pop_density +
-    com_size +
+    pop_density2 +
+    com_size2 +
     group.structure2 +
     (1|d_culture/doc_ID),
-  prior_intercept = normal(0,1),
-  prior = normal(0,1),
+  prior = normal(0, 1),
+  prior_intercept = normal(0, 1),
   algorithm = c("sampling"),
   family = gaussian(link = "identity"),
   iter=4000,
   data=leader_text2
 )
 
+prior_summary(qc_stan_m)
 summary(qc_stan_m,
         pars = c(),
         probs = c(0.025, 0.975),
         digits = 2)
 
+median(bayes_R2(qc_stan_m))
+
 qc_m_post <- as.matrix(qc_stan_m)
 prior_summary(qc_stan_m)
 
-mcmc_areas(qc_m_post[,c(2:19)], )
-mcmc_intervals(qc_m_post[,c(2:19)])
-#launch_shinystan(qc_stan_m)
+# Community size and pop density distributions
+mcmc_areas(qc_m_post[,c(7:10)], prob_outer = .95)
+
+# Group structure distritions
+theme(classic)
+mcmc_areas(qc_m_post[,c(7:14)], 
+           prob_outer = .95,
+           point_est = "mean"
+           )
+
+# All effects
+mcmc_intervals(qc_m_post[,c(2:14)])
+
+launch_shinystan(qc_stan_m)
 #mcmc_trace(qc_m_post[,c(1:5)])
+
+# ggpubr plots
+qc_m_post_df<-data.frame(qc_m_post)
+ggdensity(qc_m_post_df, x="c_cultural_complexity", fill = "lightgrey",
+          add = "mean", rug=T)
+
+
+# tidybase plots
+qc_m_post_df_plot<-qc_m_post_df[,c(2:14)]
+qc_m_post_df_plot_long<-gather(qc_m_post_df_plot, variable, value)
+
+theme_set(theme_tidybayes())
+qc_bayes_model_post_plot <- qc_m_post_df_plot_long %>% 
+  ggplot(aes(x=value, y=variable))+
+  geom_halfeyeh()+
+  vline_0() +
+  scale_y_discrete(labels=rev(c("Subsistence:Pastoralists",
+                            "Subsistence:Mixed",
+                            "Subsistence:Hunter-gatherers",
+                            "Subsistence:Horticulturalists",
+                            "Population density",
+                            "Group:State-level",
+                            "Group:Social",
+                            "Group:Religeous",
+                            "Group:Political",
+                            "Group:Other",
+                            "Goupr:Military",
+                            "Community size",
+                            "Cultural complexity")))+
+  labs(x="\nPosterior distribution", y="Covariate\n")
+  
+
+qc_bayes_model_post_plot
+
+#Full tidybayes method
+
+ggplot(qc_bayes_model_post_plot, aes(y = variable, x = value)) +
+  geom_halfeyeh()
+
+
 
 # Functions model
 fc_stan_m <- stan_glmer(
   functions_component1 ~ 
     subsistence +
     c_cultural_complexity +
-    pop_density +
-    com_size +
+    pop_density2 +
+    com_size2 +
     group.structure2 +
     (1|d_culture/doc_ID),
   prior_intercept = normal(0,1),
@@ -1209,10 +1293,17 @@ fc_stan_m <- stan_glmer(
 )
 
 summary(fc_stan_m)
+median(bayes_R2(fc_stan_m))
+
 fc_m_post <- as.matrix(fc_stan_m)
 
-#mcmc_areas(fc_stan_m[,c(1:19)], )
-mcmc_intervals(fc_m_post[,c(2:19)])
+# Community size distributions
+mcmc_areas(fc_m_post[,c(14:17)], prob_outer = .95)
+
+# Group structure distributions
+mcmc_areas(fc_m_post[,c(14:19)], prob_outer = .95)
+
+mcmc_intervals(fc_m_post[,c(2:14)])
 #launch_shinystan(fc_stan_m)
 
 # Stan models
