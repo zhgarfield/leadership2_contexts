@@ -1248,8 +1248,9 @@ qc_m_post_df_plot_long<-gather(qc_m_post_df_plot, variable, value)
 theme_set(theme_tidybayes())
 qc_bayes_model_post_plot <- qc_m_post_df_plot_long %>% 
   ggplot(aes(x=value, y=variable))+
-  geom_halfeyeh()+
+  geom_halfeyeh(trim = TRUE)+
   vline_0() +
+  xlim(-10,10) +
   scale_y_discrete(labels=rev(c("Subsistence:Pastoralists",
                             "Subsistence:Mixed",
                             "Subsistence:Hunter-gatherers",
