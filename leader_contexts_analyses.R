@@ -1127,8 +1127,8 @@ qc_m2 <- lmer(
     #functions_component1 +
     subsistence +
     c_cultural_complexity +
-    pop_density2 +
-    com_size2 +
+    pop_density +
+    com_size +
     group.structure2 +
     # warfare_freq +
     (1|d_culture/doc_ID),
