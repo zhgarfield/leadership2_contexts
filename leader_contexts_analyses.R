@@ -7,35 +7,32 @@
 # Load data library -------------------------------------------------------
 library(leadershipdata)
 
-load("leader_text2.rda")
+# load("leader_text2.rda")
 
 # Load libraries ----------------------------------------------------------
 library(tidyverse)
 library(NMF)
 library(dendextend)
 library(logisticPCA)
-library(tibble)
 library(gridExtra)
 library(car)
 library(visreg)
 library(effects)
 library(lme4)
 #library(patchwork)
-library(dplyr)
-library(tidyr)
-library(tidybayes)
-library(cowplot)
-library(brms)
-library(ggstance)
-library(rstanarm)
-library(ggpubr)
-library(bayesplot)
+# library(tidybayes)
+# library(cowplot)
+# library(brms)
+# library(ggstance)
+# library(rstanarm)
+# library(ggpubr)
+# library(bayesplot)
 
 library(magrittr)
 library(modelr)
 library(ggridges)
 library(RColorBrewer)
-library(gganimate)
+# library(gganimate)
 
 
 # Create functions --------------------------------------------------------
