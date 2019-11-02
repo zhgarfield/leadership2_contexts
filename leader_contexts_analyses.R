@@ -13,6 +13,7 @@ library(leadershipdata)
 library(tidyverse)
 library(forcats)
 library(NMF)
+library(pvclust)
 library(dendextend)
 library(logisticPCA)
 library(gridExtra)
@@ -630,6 +631,10 @@ pca_data_qualities <-left_join(pca_data_qualities, leader_cult, by = "d_culture"
 # Fix names
 pca_data_qualities2 <- pca_data_qualities[quality_vars]
 names(pca_data_qualities2) <- var_names[names(pca_data_qualities2)]
+
+# Cluster anaysis
+
+m <- pvclust(pca_data_qualities2, method.hclust = 'ward', method.dist = 'correlation')
 
 #Set components
 k=3
