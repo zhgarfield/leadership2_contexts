@@ -607,7 +607,13 @@ plot.variable.support_costs_benefits
 #Create dataframe of variables for logistic PCA of qualities
 pca_data_qualities<-leader_text2[,c(quality_vars, "cs_textrec_ID", "group.structure2")]
 #Remove -1s for now
-pca_data_qualities[quality_vars==-1]<-0
+# pca_data_qualities[quality_vars==-1]<-0 # This code makes no sense
+
+pca_data_qualities <- pca_data_qualities %>% 
+  mutate_if(
+    is.numeric, function(x) ifelse(x < 0, 0, x) # Remove -1's
+  )
+
 #Remove rows with all 0s
 pca_data_qualities<-pca_data_qualities[rowSums(pca_data_qualities[quality_vars])>0,]
 
@@ -632,16 +638,16 @@ logsvd_model_qualities = logisticSVD(pca_data_qualities2, k = k)
 logsvd_model_qualities
 
 #Cross validate optimal m
-logpca_cv_qualities = cv.lpca(pca_data_qualities2, ks = k, ms = 1:10)
-plot(logpca_cv_qualities)
+# logpca_cv_qualities = cv.lpca(pca_data_qualities2, ks = k, ms = 1:10)
+# plot(logpca_cv_qualities)
 
 # Need to cross validate both k and m
-# cvlpca <- cv.lpca(pca_data_qualities2, ks = 1:20, ms = 5:10)
+# This takes a long time
+qual_cvlpca <- cv.lpca(pca_data_qualities2, ks = 1:20, ms = 5:10)
+plot(qual_cvlpca)
 # optimal values seem to be
-# k = 6
-# m = 9 or 10
-k = 6
-m = 10
+k = 10
+m = 12
 logpca_model_qualities = logisticPCA(pca_data_qualities2, k = k, m = m, main_effects = T)
 clogpca_model_qualities = convexLogisticPCA(pca_data_qualities2, k = k, m = which.min(logpca_cv_qualities))
 
@@ -689,28 +695,28 @@ ggplot(qual_loadings, aes(Loading, variable)) +
 
 # Plot individual components
 ## Component 1
-qual_loadings_X1<-qual_loadings[qual_loadings$Component=="X1",]
-X1_sort<-qual_loadings_X1$variable[order(qual_loadings_X1$Loading)]
-qual_loadings_X1$variable<-factor(qual_loadings_X1$variable, levels =  X1_sort)
+# qual_loadings_X1<-qual_loadings[qual_loadings$Component=="X1",]
+# X1_sort<-qual_loadings_X1$variable[order(qual_loadings_X1$Loading)]
+# qual_loadings_X1$variable<-factor(qual_loadings_X1$variable, levels =  X1_sort)
 
 qualities_component1_plot <-
-  ggplot(qual_loadings_X1, aes(Loading, variable, colour=Loading)) +
-  ggalt::geom_lollipop(horizontal = T, size = 1) +
-  scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue') +
+  ggplot(logpca_model_loadings, aes(X1, fct_reorder(variable, X1), colour=X1)) +
+  ggalt::geom_lollipop(horizontal = T, size = 1, show.legend = FALSE) +
+  scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue', name = 'Loading') +
   theme_bw(15) +
-  labs(title = "Leader qualities PC 1 (Knowledge vs. Dominance)", x = "\nLoading", y = "")
+  labs(title = "Leader qualities PC 1", x = "\nLoading", y = "")
 
 qualities_component1_plot
 
 ## Component 2
-qual_loadings_X2<-qual_loadings[qual_loadings$Component=="X2",]
-X2_sort<-qual_loadings_X2$variable[order(qual_loadings_X2$Loading)]
-qual_loadings_X2$variable<-factor(qual_loadings_X2$variable, levels =  X2_sort)
+# qual_loadings_X2<-qual_loadings[qual_loadings$Component=="X2",]
+# X2_sort<-qual_loadings_X2$variable[order(qual_loadings_X2$Loading)]
+# qual_loadings_X2$variable<-factor(qual_loadings_X2$variable, levels =  X2_sort)
 
 qualities_component2_plot <-
-  ggplot(qual_loadings_X2, aes(Loading, variable, colour=Loading)) +
-  ggalt::geom_lollipop(horizontal = T, size = 1) +
-  scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue') +
+  ggplot(logpca_model_loadings, aes(X2, fct_reorder(variable, X2), colour=X2)) +
+  ggalt::geom_lollipop(horizontal = T, size = 1, show.legend = FALSE) +
+  scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue', name = 'Loading') +
   theme_bw(15) +
   labs(title = "Leader qualities PC 2", x = "\nLoading", y = "")
 
@@ -741,7 +747,13 @@ grid.arrange(qualities_component1_plot, qualities_component2_plot,
 #Create dataframe of variables for logistic PCA of qualities
 pca_data_functions<-leader_text2[,c(function_vars, "cs_textrec_ID", "group.structure2")]
 #Remove -1s for now
-pca_data_functions[function_vars==-1]<-0
+# pca_data_functions[function_vars==-1]<-0 # This code makes no sense
+
+pca_data_functions <- pca_data_functions %>% 
+  mutate_if(
+    is.numeric, function(x) ifelse(x < 0, 0, x)
+  )
+
 #Remove rows with all 0s
 pca_data_functions<-pca_data_functions[rowSums(pca_data_functions[function_vars])>0,]
 
@@ -759,13 +771,16 @@ names(pca_data_functions2) <- var_names[names(pca_data_functions2)]
 logsvd_model_functions = logisticSVD(pca_data_functions2, k = k)
 logsvd_model_functions
 
-#Cross validate optimal m
-logpca_cv_function = cv.lpca(pca_data_functions2, ks = k, ms = 1:10)
+#Cross validate optimal k, m
+# Takes a long time
+logpca_cv_function = cv.lpca(pca_data_functions2, ks = 1:20, ms = 1:15)
 plot(logpca_cv_function)
+# Optimal values?
+k <- 10
+m <- 11
 
-
-logpca_model_functions = logisticPCA(pca_data_functions2, k = k, m = which.min(logpca_cv_function), main_effects = T)
-clogpca_model_functions = convexLogisticPCA(pca_data_functions2, k = k, m = which.min(logpca_cv_function))
+logpca_model_functions = logisticPCA(pca_data_functions2, k = k, m = m, main_effects = T)
+clogpca_model_functions = convexLogisticPCA(pca_data_functions2, k = k, m = m)
 
 #Plots
 
@@ -810,19 +825,29 @@ ggplot(loadings_functions, aes(Loading, variable)) +
 
 # Plot individual components
 ## Component 1
-functions_loadings_X1<-loadings_functions[loadings_functions$Component=="X1",]
-functions_X1_sort<-functions_loadings_X1$variable[order(functions_loadings_X1$Loading)]
-functions_loadings_X1$variable<-factor(functions_loadings_X1$variable, levels =  functions_X1_sort)
+# functions_loadings_X1<-loadings_functions[loadings_functions$Component=="X1",]
+# functions_X1_sort<-functions_loadings_X1$variable[order(functions_loadings_X1$Loading)]
+# functions_loadings_X1$variable<-factor(functions_loadings_X1$variable, levels =  functions_X1_sort)
 
 functions_component1_plot <-
-  ggplot(functions_loadings_X1, aes(Loading, fct_reorder(variable, Loading), colour=Loading)) +
-  ggalt::geom_lollipop(horizontal = T, size = 1) +
+  ggplot(logpca_model_functions_loadings, aes(X1, fct_reorder(variable, X1), colour=X1)) +
+  ggalt::geom_lollipop(horizontal = T, size = 1, show.legend = FALSE) +
   scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue') +
   theme_bw(15) +
-  labs(title = "Leader functions PC 1 (Mediation vs. Organization)", x = "\nLoading", y = "")
+  labs(title = "Leader functions PC 1", x = "\nLoading", y = "")
 
 functions_component1_plot
 
+functions_component2_plot <-
+  ggplot(logpca_model_functions_loadings, aes(X2, fct_reorder(variable, X2), colour=X2)) +
+  ggalt::geom_lollipop(horizontal = T, size = 1, show.legend = FALSE) +
+  scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue') +
+  theme_bw(15) +
+  labs(title = "Leader functions PC 2", x = "\nLoading", y = "")
+
+functions_component2_plot
+
+functions_component1_plot + functions_component2_plot
 
 # ## Component 2
 # loadings_X2<-loadings[loadings$Component=="X2",]
