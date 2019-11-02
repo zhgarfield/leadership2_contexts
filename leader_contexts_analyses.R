@@ -11,6 +11,7 @@ library(leadershipdata)
 
 # Load libraries ----------------------------------------------------------
 library(tidyverse)
+library(forcats)
 library(NMF)
 library(dendextend)
 library(logisticPCA)
@@ -19,7 +20,7 @@ library(car)
 library(visreg)
 library(effects)
 library(lme4)
-#library(patchwork)
+library(patchwork)
 # library(tidybayes)
 # library(cowplot)
 # library(brms)
@@ -624,8 +625,14 @@ logsvd_model_qualities
 logpca_cv_qualities = cv.lpca(pca_data_qualities2, ks = k, ms = 1:10)
 plot(logpca_cv_qualities)
 
-
-logpca_model_qualities = logisticPCA(pca_data_qualities2, k = k, m = which.min(logpca_cv_qualities), main_effects = T)
+# Need to cross validate both k and m
+# cvlpca <- cv.lpca(pca_data_qualities2, ks = 1:20, ms = 5:10)
+# optimal values seem to be
+# k = 6
+# m = 9 or 10
+k = 6
+m = 10
+logpca_model_qualities = logisticPCA(pca_data_qualities2, k = k, m = m, main_effects = T)
 clogpca_model_qualities = convexLogisticPCA(pca_data_qualities2, k = k, m = which.min(logpca_cv_qualities))
 
 #Plots
@@ -637,6 +644,7 @@ plot(logsvd_model_qualities, type = "trace")
 
 plot(logsvd_model_qualities, type = "scores")+ 
   geom_point(aes(colour=pca_data_qualities$subsistence)) + 
+  stat_ellipse(aes(colour=pca_data_qualities$subsistence)) +
   ggtitle("Exponential Family PCA") +
   scale_colour_brewer(palette = "Set1")
 
@@ -680,7 +688,7 @@ qualities_component1_plot <-
   ggalt::geom_lollipop(horizontal = T, size = 1) +
   scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue') +
   theme_bw(15) +
-  labs(title = "Leader qualities PC 1 (Prestige vs. Dominance)", x = "\nLoading", y = "")
+  labs(title = "Leader qualities PC 1 (Knowledge vs. Dominance)", x = "\nLoading", y = "")
 
 qualities_component1_plot
 
@@ -689,10 +697,16 @@ qual_loadings_X2<-qual_loadings[qual_loadings$Component=="X2",]
 X2_sort<-qual_loadings_X2$variable[order(qual_loadings_X2$Loading)]
 qual_loadings_X2$variable<-factor(qual_loadings_X2$variable, levels =  X2_sort)
 
-qualities_component2_plot<-ggplot(qual_loadings_X2, aes(Loading, variable)) +
-  geom_point(aes(colour=Component))+
-  theme(legend.position = "none")+
-  ggtitle("Component 2")
+qualities_component2_plot <-
+  ggplot(qual_loadings_X2, aes(Loading, variable, colour=Loading)) +
+  ggalt::geom_lollipop(horizontal = T, size = 1) +
+  scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue') +
+  theme_bw(15) +
+  labs(title = "Leader qualities PC 2", x = "\nLoading", y = "")
+
+qualities_component2_plot
+
+qualities_component1_plot + qualities_component2_plot
 
 ## Component 3
 qual_loadings_X3<-qual_loadings[qual_loadings$Component=="X3",]
@@ -791,7 +805,7 @@ functions_X1_sort<-functions_loadings_X1$variable[order(functions_loadings_X1$Lo
 functions_loadings_X1$variable<-factor(functions_loadings_X1$variable, levels =  functions_X1_sort)
 
 functions_component1_plot <-
-  ggplot(functions_loadings_X1, aes(Loading, variable, colour=Loading)) +
+  ggplot(functions_loadings_X1, aes(Loading, fct_reorder(variable, Loading), colour=Loading)) +
   ggalt::geom_lollipop(horizontal = T, size = 1) +
   scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue') +
   theme_bw(15) +
