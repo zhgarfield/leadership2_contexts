@@ -379,7 +379,7 @@ var_names <- c(
   "functions_control.calendar"     = "Control calander",
   "functions_control.immigration"  = "Control immigration",
   "functions_distribute.resources" = "Distribute resources",
-  "functions_group.representative" = "Group repsenetative",
+  "functions_group.representative" = "Group representative",
   "functions_medicinal"           = "Medicinal functions",
   "functions_moral.authority"     = "Moral authority",
   "functions_policymaking"        =  "Policy making",
@@ -470,7 +470,7 @@ y_negse=numeric(0)
 
 models = list(list('Leadership benefits', leader_benefit_vars),
               list('Leadership costs', leader_cost_vars),
-              list('Follower beneits', follower_benefit_vars),
+              list('Follower benefits', follower_benefit_vars),
               list('Follower costs', follower_cost_vars))
 
 
