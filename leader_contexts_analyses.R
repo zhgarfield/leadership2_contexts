@@ -147,15 +147,20 @@ text_doc_cultureIDs<-left_join(textID_docID,docID_cultureID, by="doc_ID")
 
 leader_text2<-left_join(leader_text2, text_doc_cultureIDs, by="cs_textrec_ID")
 
-
-by_culture = leader_text2 %>% 
+by_culture <- leader_text2 %>% 
+  dplyr::select(
+    d_culture,
+    one_of(
+      c(quality_vars,
+        function_vars,
+        leader_benefit_vars,
+        leader_cost_vars,
+        follower_benefit_vars,
+        follower_cost_vars)
+      )
+    ) %>%
   group_by(d_culture) %>%
-  dplyr::select(d_culture, one_of(c(quality_vars, function_vars,
-                                    leader_benefit_vars, leader_cost_vars,
-                                    follower_benefit_vars, follower_cost_vars))) %>%
-  summarise_each(funs(mean))
-
-
+  summarise_each(lst(mean))
 
 # Culturel level variable manipulations -----------------------------------
 
@@ -240,7 +245,12 @@ authorID_textID<-leader_text_original[,c("author_ID","cs_textrec_ID")]
 all_data <- left_join(leader_text2, authorID_textID)
 
 # Remove negative values from vars
-all_data[all_data==-1]<-0
+# all_data[all_data==-1]<-0 # Some vars are factors, so this code won't work
+
+all_data <- all_data %>% 
+  mutate_if(
+    is.numeric, function(x) ifelse(x < 0, 0, x)
+  )
 
 #Groups of variables to model support
 model_vars<-c(quality_vars, function_vars)
