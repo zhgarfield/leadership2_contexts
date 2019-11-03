@@ -7,7 +7,7 @@
 # Load data library -------------------------------------------------------
 library(leadershipdata)
 
-# load("leader_text2.rda")
+load("leader_text2.rda")
 
 # Load libraries ----------------------------------------------------------
 library(tidyverse)
@@ -22,6 +22,7 @@ library(visreg)
 library(effects)
 library(lme4)
 library(patchwork)
+library(pvclust)
 # library(tidybayes)
 # library(cowplot)
 # library(brms)
@@ -171,6 +172,8 @@ leader_cult<-de_factor(leader_cult)
 #Subset culture vars of interest
 culture_vars<-leader_cult[,c("d_culture","subsistence","c_cultural_complexity", "settlement_fixity", "pop_density","com_size")]
 
+leader_text2<-left_join(leader_text2, culture_vars)
+
 # Add more SCCS variables
 load("sccs.RData")
 sccs<-data.frame(sccs)
@@ -187,11 +190,14 @@ sccs_vars<-left_join(sccs, sccs_ehraf_ID[c('SCCS.', 'c_culture_code')], by = "SC
 sccs_vars<-na.omit(sccs_vars) # Some eHRAF cultures do not map to SCCS cultures
 sccs_vars<-sccs_vars[,c("c_culture_code","V1648")]
 
+
+
 # Convert warfare levels to interval var
 sccs_vars$warfare_freq <- as.numeric(sccs_vars$V1648)
 sccs_vars$warfare_freq <- ifelse(sccs_vars$warfare_freq %in% c(1,20), NA, sccs_vars$warfare_freq)
 sccs_vars$warfare_freq <- 19 - sccs_vars$warfare_freq
 
+leader_text2<-left_join(leader_text2, sccs_vars, by=c("d_culture"="c_culture_code"))
 
 # Heatmaps -----------------------------------------------------------------
 heatmap_data<-leader_text2[,c(quality_vars, "group.structure2")]
@@ -640,7 +646,7 @@ pvrect(m)
 
 #Set components
 k=3
-#Fit the SVD with k = 6. 6 is the minimum for 80% of the variance
+
 logsvd_model_qualities = logisticSVD(pca_data_qualities2, k = k)
 logsvd_model_qualities
 
@@ -1048,7 +1054,7 @@ ggplot(leader_text2, aes(qualities_component1, functions_component1))+
        y="Functions component: Mediation - Organization\n")
 
 # Cultural complexity
-leader_text2<-left_join(leader_text2, culture_vars)
+
 ggplot(leader_text2, aes(c_cultural_complexity, qualities_component1))+
   geom_point(aes(colour=subsistence))
 
@@ -1166,7 +1172,7 @@ leader_text2$pop_density <-
       )
   )
 
-leader_text2<-left_join(leader_text2, sccs_vars, by=c("d_culture"="c_culture_code"))
+
 
 # #Set com size2 contrast to cubic function
 # leader_text2$com_size2<-leader_text2$com_size
