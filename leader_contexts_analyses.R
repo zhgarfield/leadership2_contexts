@@ -634,7 +634,9 @@ names(pca_data_qualities2) <- var_names[names(pca_data_qualities2)]
 
 # Cluster anaysis
 
-m <- pvclust(pca_data_qualities2, method.hclust = 'ward', method.dist = 'correlation')
+m <- pvclust(pca_data_qualities2, method.hclust = 'ward', method.dist = 'correlation', nboot = 2000)
+plot(m)
+pvrect(m)
 
 #Set components
 k=3
@@ -771,6 +773,10 @@ pca_data_functions <-left_join(pca_data_functions, culture_vars, by = "d_culture
 pca_data_functions2 <- pca_data_functions[function_vars]
 names(pca_data_functions2) <- var_names[names(pca_data_functions2)]
 
+# pvclust
+m <- pvclust(pca_data_functions2, method.hclust = 'ward', method.dist = 'correlation', nboot = 2000)
+plot(m)
+pvrect(m, alpha = 0.9)
 
 #Fit the SVD 
 logsvd_model_functions = logisticSVD(pca_data_functions2, k = k)
