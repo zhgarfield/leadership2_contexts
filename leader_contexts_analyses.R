@@ -1100,7 +1100,8 @@ leader_text2$pop_density <-
   ordered(
     leader_text2$pop_density,
     levels = c(
-      #"≤ 1 person / 1-5 sq. mile", 
+      "1 or less person / 1-5 sq. mile", 
+      "1-5 persons / sq. mile",
       "1-25 persons / sq. mile", 
       "26-100 persons / sq. mile",
       "101-500 persons / sq. mile",
@@ -1110,13 +1111,13 @@ leader_text2$pop_density <-
 
 leader_text2<-left_join(leader_text2, sccs_vars, by=c("d_culture"="c_culture_code"))
 
-#Set com size2 contrast to cubic function
-leader_text2$com_size2<-leader_text2$com_size
-contrasts(leader_text2$com_size2, 1) <- contr.poly(5)[,3]
-
-# Set pop density2 contrast to quadratic function
-leader_text2$pop_density2<-leader_text2$pop_density
-contrasts(leader_text2$pop_density2, 1) <- contr.poly(4)[,2]
+# #Set com size2 contrast to cubic function
+# leader_text2$com_size2<-leader_text2$com_size
+# contrasts(leader_text2$com_size2, 1) <- contr.poly(5)[,3]
+# 
+# # Set pop density2 contrast to quadratic function
+# leader_text2$pop_density2<-leader_text2$pop_density
+# contrasts(leader_text2$pop_density2, 1) <- contr.poly(4)[,2]
 
 
 qc_m2 <- lmer(
@@ -1124,10 +1125,10 @@ qc_m2 <- lmer(
     #functions_component1 +
     subsistence +
     c_cultural_complexity +
-    pop_density +
+    #pop_density +
     com_size +
     group.structure2 +
-    # warfare_freq +
+    #warfare_freq +
     (1|d_culture/doc_ID),
   data=leader_text2
   )
@@ -1136,6 +1137,7 @@ Anova(qc_m2)
 AIC(qc_m2)
 vif(qc_m2)
 visreg(qc_m2)
+
 plot(allEffects(qc_m2))
 # visreg(qc_m2, by = 'c_cultural_complexity', xvar = 'pop_density')
 # visreg(qc_m2, by = 'group.structure2', xvar = 'warfare_freq')
@@ -1169,8 +1171,8 @@ fc_m2 <- lmer(
     #qualities_component1 +
     subsistence +
     c_cultural_complexity +
-    pop_density +
-    com_size2 +
+    #pop_density +
+    com_size +
     group.structure2 +
     # warfare_freq +
     (1|d_culture/doc_ID),
@@ -1193,8 +1195,8 @@ qc_stan_m <- stan_glmer(
   qualities_component1 ~ 
     subsistence +
     c_cultural_complexity +
-    pop_density2 +
-    com_size2 +
+    pop_density +
+    com_size +
     group.structure2 +
     (1|d_culture/doc_ID),
   prior = normal(0, 1),
@@ -1220,14 +1222,14 @@ prior_summary(qc_stan_m)
 mcmc_areas(qc_m_post[,c(7:10)], prob_outer = .95)
 
 # Group structure distritions
-theme(classic)
+
 mcmc_areas(qc_m_post[,c(7:14)], 
            prob_outer = .95,
            point_est = "mean"
            )
 
 # All effects
-mcmc_intervals(qc_m_post[,c(2:14)])
+mcmc_intervals(qc_m_post[,c(2:20)])
 
 launch_shinystan(qc_stan_m)
 #mcmc_trace(qc_m_post[,c(1:5)])
