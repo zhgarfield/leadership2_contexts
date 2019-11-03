@@ -7,35 +7,34 @@
 # Load data library -------------------------------------------------------
 library(leadershipdata)
 
-load("leader_text2.rda")
+# load("leader_text2.rda")
 
 # Load libraries ----------------------------------------------------------
 library(tidyverse)
+library(forcats)
 library(NMF)
+library(pvclust)
 library(dendextend)
 library(logisticPCA)
-library(tibble)
 library(gridExtra)
 library(car)
 library(visreg)
 library(effects)
 library(lme4)
-#library(patchwork)
-library(dplyr)
-library(tidyr)
-library(tidybayes)
-library(cowplot)
-library(brms)
-library(ggstance)
-library(rstanarm)
-library(ggpubr)
-library(bayesplot)
+library(patchwork)
+# library(tidybayes)
+# library(cowplot)
+# library(brms)
+# library(ggstance)
+# library(rstanarm)
+# library(ggpubr)
+# library(bayesplot)
 
 library(magrittr)
 library(modelr)
 library(ggridges)
 library(RColorBrewer)
-library(gganimate)
+# library(gganimate)
 
 
 # Create functions --------------------------------------------------------
@@ -149,15 +148,20 @@ text_doc_cultureIDs<-left_join(textID_docID,docID_cultureID, by="doc_ID")
 
 leader_text2<-left_join(leader_text2, text_doc_cultureIDs, by="cs_textrec_ID")
 
-
-by_culture = leader_text2 %>% 
+by_culture <- leader_text2 %>% 
+  dplyr::select(
+    d_culture,
+    one_of(
+      c(quality_vars,
+        function_vars,
+        leader_benefit_vars,
+        leader_cost_vars,
+        follower_benefit_vars,
+        follower_cost_vars)
+      )
+    ) %>%
   group_by(d_culture) %>%
-  dplyr::select(d_culture, one_of(c(quality_vars, function_vars,
-                                    leader_benefit_vars, leader_cost_vars,
-                                    follower_benefit_vars, follower_cost_vars))) %>%
-  summarise_each(funs(mean))
-
-
+  summarise_each(lst(mean))
 
 # Culturel level variable manipulations -----------------------------------
 
@@ -242,7 +246,12 @@ authorID_textID<-leader_text_original[,c("author_ID","cs_textrec_ID")]
 all_data <- left_join(leader_text2, authorID_textID)
 
 # Remove negative values from vars
-all_data[all_data==-1]<-0
+# all_data[all_data==-1]<-0 # Some vars are factors, so this code won't work
+
+all_data <- all_data %>% 
+  mutate_if(
+    is.numeric, function(x) ifelse(x < 0, 0, x)
+  )
 
 #Groups of variables to model support
 model_vars<-c(quality_vars, function_vars)
@@ -382,7 +391,7 @@ var_names <- c(
   "functions_control.calendar"     = "Control calander",
   "functions_control.immigration"  = "Control immigration",
   "functions_distribute.resources" = "Distribute resources",
-  "functions_group.representative" = "Group repsenetative",
+  "functions_group.representative" = "Group representative",
   "functions_medicinal"           = "Medicinal functions",
   "functions_moral.authority"     = "Moral authority",
   "functions_policymaking"        =  "Policy making",
@@ -473,7 +482,7 @@ y_negse=numeric(0)
 
 models = list(list('Leadership benefits', leader_benefit_vars),
               list('Leadership costs', leader_cost_vars),
-              list('Follower beneits', follower_benefit_vars),
+              list('Follower benefits', follower_benefit_vars),
               list('Follower costs', follower_cost_vars))
 
 
@@ -599,7 +608,13 @@ plot.variable.support_costs_benefits
 #Create dataframe of variables for logistic PCA of qualities
 pca_data_qualities<-leader_text2[,c(quality_vars, "cs_textrec_ID", "group.structure2")]
 #Remove -1s for now
-pca_data_qualities[quality_vars==-1]<-0
+# pca_data_qualities[quality_vars==-1]<-0 # This code makes no sense
+
+pca_data_qualities <- pca_data_qualities %>% 
+  mutate_if(
+    is.numeric, function(x) ifelse(x < 0, 0, x) # Remove -1's
+  )
+
 #Remove rows with all 0s
 pca_data_qualities<-pca_data_qualities[rowSums(pca_data_qualities[quality_vars])>0,]
 
@@ -617,6 +632,12 @@ pca_data_qualities <-left_join(pca_data_qualities, leader_cult, by = "d_culture"
 pca_data_qualities2 <- pca_data_qualities[quality_vars]
 names(pca_data_qualities2) <- var_names[names(pca_data_qualities2)]
 
+# Cluster anaysis
+
+m <- pvclust(pca_data_qualities2, method.hclust = 'ward', method.dist = 'correlation', nboot = 2000)
+plot(m)
+pvrect(m)
+
 #Set components
 k=3
 #Fit the SVD with k = 6. 6 is the minimum for 80% of the variance
@@ -624,11 +645,17 @@ logsvd_model_qualities = logisticSVD(pca_data_qualities2, k = k)
 logsvd_model_qualities
 
 #Cross validate optimal m
-logpca_cv_qualities = cv.lpca(pca_data_qualities2, ks = k, ms = 1:10)
-plot(logpca_cv_qualities)
+# logpca_cv_qualities = cv.lpca(pca_data_qualities2, ks = k, ms = 1:10)
+# plot(logpca_cv_qualities)
 
-
-logpca_model_qualities = logisticPCA(pca_data_qualities2, k = k, m = which.min(logpca_cv_qualities), main_effects = T)
+# Need to cross validate both k and m
+# This takes a long time
+qual_cvlpca <- cv.lpca(pca_data_qualities2, ks = 1:20, ms = 5:10)
+plot(qual_cvlpca)
+# optimal values seem to be
+k = 10
+m = 12
+logpca_model_qualities = logisticPCA(pca_data_qualities2, k = k, m = m, main_effects = T)
 clogpca_model_qualities = convexLogisticPCA(pca_data_qualities2, k = k, m = which.min(logpca_cv_qualities))
 
 #Plots
@@ -640,6 +667,7 @@ plot(logsvd_model_qualities, type = "trace")
 
 plot(logsvd_model_qualities, type = "scores")+ 
   geom_point(aes(colour=pca_data_qualities$subsistence)) + 
+  stat_ellipse(aes(colour=pca_data_qualities$subsistence)) +
   ggtitle("Exponential Family PCA") +
   scale_colour_brewer(palette = "Set1")
 
@@ -674,28 +702,34 @@ ggplot(qual_loadings, aes(Loading, variable)) +
 
 # Plot individual components
 ## Component 1
-qual_loadings_X1<-qual_loadings[qual_loadings$Component=="X1",]
-X1_sort<-qual_loadings_X1$variable[order(qual_loadings_X1$Loading)]
-qual_loadings_X1$variable<-factor(qual_loadings_X1$variable, levels =  X1_sort)
+# qual_loadings_X1<-qual_loadings[qual_loadings$Component=="X1",]
+# X1_sort<-qual_loadings_X1$variable[order(qual_loadings_X1$Loading)]
+# qual_loadings_X1$variable<-factor(qual_loadings_X1$variable, levels =  X1_sort)
 
 qualities_component1_plot <-
-  ggplot(qual_loadings_X1, aes(Loading, variable, colour=Loading)) +
-  ggalt::geom_lollipop(horizontal = T, size = 1) +
-  scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue') +
+  ggplot(logpca_model_loadings, aes(X1, fct_reorder(variable, X1), colour=X1)) +
+  ggalt::geom_lollipop(horizontal = T, size = 1, show.legend = FALSE) +
+  scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue', name = 'Loading') +
   theme_bw(15) +
-  labs(title = "Leader qualities PC 1 (Prestige vs. Dominance)", x = "\nLoading", y = "")
+  labs(title = "Leader qualities PC 1", x = "\nLoading", y = "")
 
 qualities_component1_plot
 
 ## Component 2
-qual_loadings_X2<-qual_loadings[qual_loadings$Component=="X2",]
-X2_sort<-qual_loadings_X2$variable[order(qual_loadings_X2$Loading)]
-qual_loadings_X2$variable<-factor(qual_loadings_X2$variable, levels =  X2_sort)
+# qual_loadings_X2<-qual_loadings[qual_loadings$Component=="X2",]
+# X2_sort<-qual_loadings_X2$variable[order(qual_loadings_X2$Loading)]
+# qual_loadings_X2$variable<-factor(qual_loadings_X2$variable, levels =  X2_sort)
 
-qualities_component2_plot<-ggplot(qual_loadings_X2, aes(Loading, variable)) +
-  geom_point(aes(colour=Component))+
-  theme(legend.position = "none")+
-  ggtitle("Component 2")
+qualities_component2_plot <-
+  ggplot(logpca_model_loadings, aes(X2, fct_reorder(variable, X2), colour=X2)) +
+  ggalt::geom_lollipop(horizontal = T, size = 1, show.legend = FALSE) +
+  scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue', name = 'Loading') +
+  theme_bw(15) +
+  labs(title = "Leader qualities PC 2", x = "\nLoading", y = "")
+
+qualities_component2_plot
+
+qualities_component1_plot + qualities_component2_plot
 
 ## Component 3
 qual_loadings_X3<-qual_loadings[qual_loadings$Component=="X3",]
@@ -720,7 +754,13 @@ grid.arrange(qualities_component1_plot, qualities_component2_plot,
 #Create dataframe of variables for logistic PCA of qualities
 pca_data_functions<-leader_text2[,c(function_vars, "cs_textrec_ID", "group.structure2")]
 #Remove -1s for now
-pca_data_functions[function_vars==-1]<-0
+# pca_data_functions[function_vars==-1]<-0 # This code makes no sense
+
+pca_data_functions <- pca_data_functions %>% 
+  mutate_if(
+    is.numeric, function(x) ifelse(x < 0, 0, x)
+  )
+
 #Remove rows with all 0s
 pca_data_functions<-pca_data_functions[rowSums(pca_data_functions[function_vars])>0,]
 
@@ -733,18 +773,25 @@ pca_data_functions <-left_join(pca_data_functions, culture_vars, by = "d_culture
 pca_data_functions2 <- pca_data_functions[function_vars]
 names(pca_data_functions2) <- var_names[names(pca_data_functions2)]
 
+# pvclust
+m <- pvclust(pca_data_functions2, method.hclust = 'ward', method.dist = 'correlation', nboot = 2000)
+plot(m)
+pvrect(m, alpha = 0.9)
 
 #Fit the SVD 
 logsvd_model_functions = logisticSVD(pca_data_functions2, k = k)
 logsvd_model_functions
 
-#Cross validate optimal m
-logpca_cv_function = cv.lpca(pca_data_functions2, ks = k, ms = 1:10)
+#Cross validate optimal k, m
+# Takes a long time
+logpca_cv_function = cv.lpca(pca_data_functions2, ks = 1:20, ms = 1:15)
 plot(logpca_cv_function)
+# Optimal values?
+k <- 10
+m <- 11
 
-
-logpca_model_functions = logisticPCA(pca_data_functions2, k = k, m = which.min(logpca_cv_function), main_effects = T)
-clogpca_model_functions = convexLogisticPCA(pca_data_functions2, k = k, m = which.min(logpca_cv_function))
+logpca_model_functions = logisticPCA(pca_data_functions2, k = k, m = m, main_effects = T)
+clogpca_model_functions = convexLogisticPCA(pca_data_functions2, k = k, m = m)
 
 #Plots
 
@@ -789,19 +836,29 @@ ggplot(loadings_functions, aes(Loading, variable)) +
 
 # Plot individual components
 ## Component 1
-functions_loadings_X1<-loadings_functions[loadings_functions$Component=="X1",]
-functions_X1_sort<-functions_loadings_X1$variable[order(functions_loadings_X1$Loading)]
-functions_loadings_X1$variable<-factor(functions_loadings_X1$variable, levels =  functions_X1_sort)
+# functions_loadings_X1<-loadings_functions[loadings_functions$Component=="X1",]
+# functions_X1_sort<-functions_loadings_X1$variable[order(functions_loadings_X1$Loading)]
+# functions_loadings_X1$variable<-factor(functions_loadings_X1$variable, levels =  functions_X1_sort)
 
 functions_component1_plot <-
-  ggplot(functions_loadings_X1, aes(Loading, variable, colour=Loading)) +
-  ggalt::geom_lollipop(horizontal = T, size = 1) +
+  ggplot(logpca_model_functions_loadings, aes(X1, fct_reorder(variable, X1), colour=X1)) +
+  ggalt::geom_lollipop(horizontal = T, size = 1, show.legend = FALSE) +
   scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue') +
   theme_bw(15) +
-  labs(title = "Leader functions PC 1 (Mediation vs. Organization)", x = "\nLoading", y = "")
+  labs(title = "Leader functions PC 1", x = "\nLoading", y = "")
 
 functions_component1_plot
 
+functions_component2_plot <-
+  ggplot(logpca_model_functions_loadings, aes(X2, fct_reorder(variable, X2), colour=X2)) +
+  ggalt::geom_lollipop(horizontal = T, size = 1, show.legend = FALSE) +
+  scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue') +
+  theme_bw(15) +
+  labs(title = "Leader functions PC 2", x = "\nLoading", y = "")
+
+functions_component2_plot
+
+functions_component1_plot + functions_component2_plot
 
 # ## Component 2
 # loadings_X2<-loadings[loadings$Component=="X2",]
