@@ -44,12 +44,16 @@ de_factor <- function(df){
 df %>% dplyr::mutate_if(is.factor, as.character) -> df
 }
 
+
+# Compute values ----------------------------------------------------------
+
+male_leader_pct <- signif(100*sum(leader_text2$demo_sex=='male', na.rm=T)/nrow(leader_text2), 3)
+female_leader_pct <- signif(100*sum(leader_text2$demo_sex=='female', na.rm=T)/nrow(leader_text2), 2)
+
 # Recode variables --------------------------------------------------------
 
 # Add sex
 leader_text2 <- left_join(leader_text2, leader_text_original[c("cs_textrec_ID", "demo_sex")])
-male_leader_pct <- signif(100*sum(leader_text2$demo_sex=='male', na.rm=T)/nrow(leader_text2), 3)
-female_leader_pct <- signif(100*sum(leader_text2$demo_sex=='female', na.rm=T)/nrow(leader_text2), 2)
 
 # Collapse group structure types
 
