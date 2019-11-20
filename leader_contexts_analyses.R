@@ -50,35 +50,6 @@ df %>% dplyr::mutate_if(is.factor, as.character) -> df
 male_leader_pct <- signif(100*sum(leader_text2$demo_sex=='male', na.rm=T)/nrow(leader_text2), 3)
 female_leader_pct <- signif(100*sum(leader_text2$demo_sex=='female', na.rm=T)/nrow(leader_text2), 2)
 
-# Recode variables --------------------------------------------------------
-
-# Add sex
-leader_text2 <- left_join(leader_text2, leader_text_original[c("cs_textrec_ID", "demo_sex")])
-
-# Aggregate group structure types
-
-group_str <- c(
-  "state-level group" = "state-level group",
-  "religeous group" = "religious group", # correct spelling
-  "political group" = "political group",
-  "military group" = "military group",
-  "economic group" = "economic group",
-  "criminal group" = "economic group",
-  "labor group" = "economic group",
-  "subsistence group" = "economic group",
-  "age-group" = "social group",
-  "domestic group" = "social group",
-  "kin group" = "social group",
-  "local group" = "social group",
-  "performance group" = "social group",
-  "other" = "other",
-  "multiple domains" = "other",
-  "unkown" = "other"
-)
-
-leader_text2$group.structure2 <- leader_text2$group.structure.coded
-leader_text2$group.structure2 <- group_str[leader_text2$group.structure2]
-
 # Create vectors of variable names by type --------------------------------
 
 lt2vars <- names(leader_text2)
@@ -94,10 +65,10 @@ follower_cost_vars <- lt2vars[str_detect(lt2vars, 'follower.costs')]
 
 # Aggregate at Culture level ----------------------------------------------
 
-textID_docID<-de_factor(leader_text_original[,c("cs_textrec_ID","doc_ID")])
-docID_cultureID<-de_factor(documents[,c("d_ID","d_culture")])
-docID_cultureID$doc_ID<-docID_cultureID$d_ID
-docID_cultureID<-docID_cultureID[,c("d_culture","doc_ID")]
+textID_docID <- leader_text_original[c("cs_textrec_ID","doc_ID")]
+docID_cultureID <- documents[c("d_ID","d_culture")]
+docID_cultureID$doc_ID <- docID_cultureID$d_ID
+docID_cultureID <- docID_cultureID[c("d_culture","doc_ID")]
 
 
 text_doc_cultureIDs<-left_join(textID_docID,docID_cultureID, by="doc_ID")
