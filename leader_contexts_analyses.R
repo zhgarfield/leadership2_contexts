@@ -38,7 +38,7 @@ library(RColorBrewer)
 
 
 # Create functions --------------------------------------------------------
-# Converts factors to charachter vecrtors in data frame
+# Converts factors to character vectors in data frame
 de_factor <- function(df){
 df %>% dplyr::mutate_if(is.factor, as.character) -> df
 }
@@ -67,74 +67,18 @@ leader_text2$group.structure2[leader_text2$group.structure.coded=="performance g
 leader_text2$group.structure2[leader_text2$group.structure.coded=="multiple domains"]="other"
 leader_text2$group.structure2[leader_text2$group.structure.coded=="unkown"]="other"
 
+# Create vectors of variable names by type --------------------------------
 
-# Create named lists of variables by group --------------------------------
+lt2vars <- names(leader_text2)
 
-# Functions,
-function_vars = c("function_bestow.mate" ,  "function_organize.cooperation"                ,             
-"function_political.appointments"        ,   "function_resolve.conflcit"                   ,
-"functions_construction.infrastructure"  ,  
-"functions_control.calendar"             ,   "functions_control.economics"                 ,
-"functions_control.immigration"          ,   "functions_council.member"                    ,
-"functions_distribute.resources"         ,   "functions_group.determination"               ,
-"functions_group.representative"         ,   "functions_hospitality"                       ,
-"functions_medicinal"                    ,   "functions_military.command"                  ,
-"functions_moral.authority"              ,   "functions_new.settlement"                    ,
-"functions_policymaking"                 ,   "functions_prosocial.investment"              ,
-"functions_protection"                   ,   "functions_provide.counsel"                   ,
-"functions_provide.subsistence"          ,   "functions_punishment"                        ,
-"functions_ritual"                       ,   "functions_serve.leader"                      ,
-"functions_social.functions"             ,   "functions_strategic.planning")
+# This includes "function_context" which is not included in original vector
+function_vars <- lt2vars[str_detect(lt2vars, 'function')]
 
-# Qualities
-quality_vars = c("qualities_artistic.performance"       ,        "qualities_drug.consumption"             ,       "qualities_exp.accomplished",                  
-                 "qualities_generous"                   ,        "qualities_high.status"                  ,     
-                 "qualities_wealthy"                    ,        "qualities.age"                          ,     
-                 "qualities.aggressive"                 ,        "qualities.ambition"                     ,     
-                 "qualities.attractive"                 ,        "qualities.bravery"                      ,     
-                 "qualities.charisma"                   ,        "qualities.coercive.authority"           ,     
-                 "qualities.confident"                  ,        "qualities.culturally.conservative"      ,     
-                 "qualities.culturally.progressive"     ,        "qualities.decisive"                     ,     
-                 "qualities.fairness"                   ,        "qualities.favorable.personality"        ,     
-                 "qualities.feared"                     ,        "qualities.high.quality.spouse"          ,     
-                 "qualities.honest"                     ,        "qualities.humble"                       ,     
-                 "qualities.industriousness"            ,        "qualities.ingroup.member"               ,     
-                 "qualities.innovative"                 ,        "qualities.interpersonal.skills"         ,     
-                 "qualities.killer"                     ,        "qualities.knowlageable.intellect"       ,     
-                 "qualities.loyalty"                    ,        "qualities.many.children"                ,     
-                 "qualities.oratory.skill"              ,        "qualities.physical.health"              ,     
-                  "qualities.physically.strong"         ,         "qualities.polygynous"                  ,      
-                  "qualities.proper.behavior"           ,         "qualities.prosocial"                   ,      
-                  "qualities.social.contacts"           ,         "qualities.strategic.nepotism"          ,     
-                  "qualities.strategic.planner"         ,         "qualities.supernatural"                ,    
-                  "qualities.xenophobic")
-
-# Leader benefits vars
-leader_benefit_vars = c("leader.benefits_fitness",                     
-                       "leader.benefits_mating","leader.benefits_other",                       
-                       "leader.benefits_reduced.risk.harm.conflict","leader.benefits_resource_food",               
-                       "leader.benefits_social.services","leader.benefits_social.status.reputation",    
-                       "leader.benefits_territory", "leader.benefits_resource_other")
-# Leader costs vars
-leader_cost_vars = c("leader.costs_fitness.costs",                  
-                    "leader.costs_increased.risk.harm.conflict","leader.costs_other",                          
-                    "leader.costs_resource_food.cost","leader.costs_resources_other.cost",           
-                    "leader.costs_social.status","leader.costs_territory.cost",                 
-                    "leader.costs.mating.cost","leader.costs.social.services")
-
-# Follower benefits vars
-follower_benefit_vars = c("follower.benefits_fitness",                     
-                        "follower.benefits_mating","follower.benefits_other",                       
-                        "follower.benefits_reduced.risk.harm.conflict","follower.benefits_resource_food",               
-                        "follower.benefits_social.services","follower.benefits_social.status.reputation",    
-                        "follower.benefits_territory","follower.benefits_resource_other")
-# Follower costs vars
-follower_cost_vars = c("follower.costs_fitness",                  
-                     "follower.costs_increased.risk.harm.conflict","follower.costs_other",                          
-                     "follower.costs_resource_food","follower.costs_resource_other",           
-                     "follower.costs_social.status","follower.costs_territory",                 
-                     "follower.costs_mating","follower.costs_social.services")
-
+quality_vars <- lt2vars[str_detect(lt2vars, 'qualities')]
+leader_benefit_vars <- lt2vars[str_detect(lt2vars, 'leader.benefits')]
+leader_cost_vars <- lt2vars[str_detect(lt2vars, 'leader.costs')]
+follower_benefit_vars <- lt2vars[str_detect(lt2vars, 'follower.benefits')]
+follower_cost_vars <- lt2vars[str_detect(lt2vars, 'follower.costs')]
 
 # Aggregate at Culture level ----------------------------------------------
 
@@ -161,7 +105,7 @@ by_culture <- leader_text2 %>%
       )
     ) %>%
   group_by(d_culture) %>%
-  summarise_each(lst(mean))
+  summarise_all(mean)
 
 # Culturel level variable manipulations -----------------------------------
 
@@ -634,9 +578,9 @@ names(pca_data_qualities2) <- var_names[names(pca_data_qualities2)]
 
 # Cluster anaysis
 
-m <- pvclust(pca_data_qualities2, method.hclust = 'ward', method.dist = 'correlation', nboot = 2000)
-plot(m)
-pvrect(m)
+m_pvclust_qual <- pvclust(pca_data_qualities2, method.hclust = 'ward', method.dist = 'correlation', nboot = 2000)
+plot(m_pvclust_qual)
+pvrect(m_pvclust_qual)
 
 #Set components
 k=3
@@ -656,12 +600,12 @@ plot(qual_cvlpca)
 k = 10
 m = 12
 logpca_model_qualities = logisticPCA(pca_data_qualities2, k = k, m = m, main_effects = T)
-clogpca_model_qualities = convexLogisticPCA(pca_data_qualities2, k = k, m = which.min(logpca_cv_qualities))
+# clogpca_model_qualities = convexLogisticPCA(pca_data_qualities2, k = k, m = which.min(logpca_cv_qualities))
 
 #Plots
 
 plot(logpca_model_qualities, type = "trace")
-plot(clogpca_model_qualities, type = "trace")
+# plot(clogpca_model_qualities, type = "trace")
 plot(logsvd_model_qualities, type = "trace")
 
 
@@ -674,6 +618,7 @@ plot(logsvd_model_qualities, type = "scores")+
 # Indicate group structure of log PCA model
 plot(logpca_model_qualities, type = "scores") + 
   geom_point(aes(colour=pca_data_qualities$group.structure2)) + 
+  stat_ellipse(aes(colour=pca_data_qualities$group.structure2)) + 
   ggtitle("Logistic PCA") +
   scale_colour_brewer(palette = "Set1")
 
@@ -684,10 +629,10 @@ plot(logpca_model_qualities, type = "scores") +
   scale_colour_brewer(palette = "Set1")
 
 
-plot(clogpca_model_qualities, type = "scores") + 
-  geom_point(aes(colour=pca_data_qualities$group.structure2)) + 
-  ggtitle("Convex Logistic PCA")+
-  scale_colour_brewer(palette = "Set1")
+# plot(clogpca_model_qualities, type = "scores") +
+#   geom_point(aes(colour=pca_data_qualities$group.structure2)) + 
+#   ggtitle("Convex Logistic PCA")+
+#   scale_colour_brewer(palette = "Set1")
 
 
 # Associate logistic PCA model with variables
@@ -774,9 +719,9 @@ pca_data_functions2 <- pca_data_functions[function_vars]
 names(pca_data_functions2) <- var_names[names(pca_data_functions2)]
 
 # pvclust
-m <- pvclust(pca_data_functions2, method.hclust = 'ward', method.dist = 'correlation', nboot = 2000)
-plot(m)
-pvrect(m, alpha = 0.9)
+m_pvclust_fun <- pvclust(pca_data_functions2, method.hclust = 'ward', method.dist = 'correlation', nboot = 2000)
+plot(m_pvclust_fun)
+pvrect(m_pvclust_fun, alpha = 0.9)
 
 #Fit the SVD 
 logsvd_model_functions = logisticSVD(pca_data_functions2, k = k)
@@ -1404,10 +1349,71 @@ aheatmap(t(as.matrix(heatmap_data[,c(quality_vars)])),
 
 
 # Save RData envrionment --------------------------------------------------
-view(leadershipdata::documents)
 
 save.image(file = "Leader2.Rdata")
 
 
 
+# Old code ----------------------------------------------------------------
 
+# Functions,
+# function_vars = c("function_bestow.mate" ,  "function_organize.cooperation"                ,             
+# "function_political.appointments"        ,   "function_resolve.conflcit"                   ,
+# "functions_construction.infrastructure"  ,  
+# "functions_control.calendar"             ,   "functions_control.economics"                 ,
+# "functions_control.immigration"          ,   "functions_council.member"                    ,
+# "functions_distribute.resources"         ,   "functions_group.determination"               ,
+# "functions_group.representative"         ,   "functions_hospitality"                       ,
+# "functions_medicinal"                    ,   "functions_military.command"                  ,
+# "functions_moral.authority"              ,   "functions_new.settlement"                    ,
+# "functions_policymaking"                 ,   "functions_prosocial.investment"              ,
+# "functions_protection"                   ,   "functions_provide.counsel"                   ,
+# "functions_provide.subsistence"          ,   "functions_punishment"                        ,
+# "functions_ritual"                       ,   "functions_serve.leader"                      ,
+# "functions_social.functions"             ,   "functions_strategic.planning")
+
+# quality_vars = c("qualities_artistic.performance"       ,        "qualities_drug.consumption"             ,       "qualities_exp.accomplished",                  
+#                  "qualities_generous"                   ,        "qualities_high.status"                  ,     
+#                  "qualities_wealthy"                    ,        "qualities.age"                          ,     
+#                  "qualities.aggressive"                 ,        "qualities.ambition"                     ,     
+#                  "qualities.attractive"                 ,        "qualities.bravery"                      ,     
+#                  "qualities.charisma"                   ,        "qualities.coercive.authority"           ,     
+#                  "qualities.confident"                  ,        "qualities.culturally.conservative"      ,     
+#                  "qualities.culturally.progressive"     ,        "qualities.decisive"                     ,     
+#                  "qualities.fairness"                   ,        "qualities.favorable.personality"        ,     
+#                  "qualities.feared"                     ,        "qualities.high.quality.spouse"          ,     
+#                  "qualities.honest"                     ,        "qualities.humble"                       ,     
+#                  "qualities.industriousness"            ,        "qualities.ingroup.member"               ,     
+#                  "qualities.innovative"                 ,        "qualities.interpersonal.skills"         ,     
+#                  "qualities.killer"                     ,        "qualities.knowlageable.intellect"       ,     
+#                  "qualities.loyalty"                    ,        "qualities.many.children"                ,     
+#                  "qualities.oratory.skill"              ,        "qualities.physical.health"              ,     
+#                   "qualities.physically.strong"         ,         "qualities.polygynous"                  ,      
+#                   "qualities.proper.behavior"           ,         "qualities.prosocial"                   ,      
+#                   "qualities.social.contacts"           ,         "qualities.strategic.nepotism"          ,     
+#                   "qualities.strategic.planner"         ,         "qualities.supernatural"                ,    
+#                   "qualities.xenophobic")
+
+# leader_benefit_vars = c("leader.benefits_fitness",                     
+#                        "leader.benefits_mating","leader.benefits_other",                       
+#                        "leader.benefits_reduced.risk.harm.conflict","leader.benefits_resource_food",               
+#                        "leader.benefits_social.services","leader.benefits_social.status.reputation",    
+#                        "leader.benefits_territory", "leader.benefits_resource_other")
+
+# leader_cost_vars = c("leader.costs_fitness.costs",                  
+#                     "leader.costs_increased.risk.harm.conflict","leader.costs_other",                          
+#                     "leader.costs_resource_food.cost","leader.costs_resources_other.cost",           
+#                     "leader.costs_social.status","leader.costs_territory.cost",                 
+#                     "leader.costs.mating.cost","leader.costs.social.services")
+
+# follower_benefit_vars = c("follower.benefits_fitness",                     
+#                         "follower.benefits_mating","follower.benefits_other",                       
+#                         "follower.benefits_reduced.risk.harm.conflict","follower.benefits_resource_food",               
+#                         "follower.benefits_social.services","follower.benefits_social.status.reputation",    
+#                         "follower.benefits_territory","follower.benefits_resource_other")
+
+# follower_cost_vars = c("follower.costs_fitness",                  
+#                      "follower.costs_increased.risk.harm.conflict","follower.costs_other",                          
+#                      "follower.costs_resource_food","follower.costs_resource_other",           
+#                      "follower.costs_social.status","follower.costs_territory",                 
+#                      "follower.costs_mating","follower.costs_social.services")
