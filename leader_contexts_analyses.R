@@ -54,8 +54,9 @@ female_leader_pct <- signif(100*sum(leader_text2$demo_sex=='female', na.rm=T)/nr
 
 lt2vars <- names(leader_text2)
 
-# This includes "function_context" which is not included in original vector
+# This includes "functions_context" which is not included in original vector
 function_vars <- lt2vars[str_detect(lt2vars, 'function')]
+function_vars <- function_vars[function_vars != "functions_context"]
 
 quality_vars <- lt2vars[str_detect(lt2vars, 'qualities')]
 leader_benefit_vars <- lt2vars[str_detect(lt2vars, 'leader.benefits')]
@@ -65,17 +66,14 @@ follower_cost_vars <- lt2vars[str_detect(lt2vars, 'follower.costs')]
 
 # Aggregate at Culture level ----------------------------------------------
 
-textID_docID <- leader_text_original[c("cs_textrec_ID","doc_ID")]
-docID_cultureID <- documents[c("d_ID","d_culture")]
-docID_cultureID$doc_ID <- docID_cultureID$d_ID
-docID_cultureID <- docID_cultureID[c("d_culture","doc_ID")]
-
-
-text_doc_cultureIDs<-left_join(textID_docID,docID_cultureID, by="doc_ID")
-
-leader_text2<-left_join(leader_text2, text_doc_cultureIDs, by="cs_textrec_ID")
+# df that links the ids of texts, docs, and cultures
+text_doc_cultureID <-
+  leader_text_original %>% 
+  dplyr::select(cs_textrec_ID, doc_ID) %>% 
+  left_join(documents[c('d_ID', 'd_culture')], by = c("doc_ID" = "d_ID"))
 
 by_culture <- leader_text2 %>% 
+  left_join(text_doc_cultureIDs, by="cs_textrec_ID") %>% 
   dplyr::select(
     d_culture,
     one_of(
@@ -94,9 +92,9 @@ by_culture <- leader_text2 %>%
 
 # Rename culture name in leader_cult data
 leader_cult$d_culture<-leader_cult$c_culture_code
-leader_cult<-de_factor(leader_cult)
+
 #Subset culture vars of interest
-culture_vars<-leader_cult[,c("d_culture","subsistence","c_cultural_complexity", "settlement_fixity", "pop_density","com_size")]
+culture_vars<-leader_cult[c("d_culture","subsistence","c_cultural_complexity", "settlement_fixity", "pop_density","com_size")]
 
 leader_text2<-left_join(leader_text2, culture_vars)
 
@@ -1447,3 +1445,11 @@ save.image(file = "Leader2.Rdata")
 #                      "follower.costs_resource_food","follower.costs_resource_other",           
 #                      "follower.costs_social.status","follower.costs_territory",                 
 #                      "follower.costs_mating","follower.costs_social.services")
+
+# textID_docID <- leader_text_original[c("cs_textrec_ID","doc_ID")]
+# docID_cultureID <- documents[c("d_ID","d_culture")]
+# docID_cultureID$doc_ID <- docID_cultureID$d_ID
+# docID_cultureID <- docID_cultureID[c("d_culture","doc_ID")]
+# 
+# 
+# text_doc_cultureID <-left_join(textID_docID,docID_cultureID, by="doc_ID")
