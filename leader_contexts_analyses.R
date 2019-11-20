@@ -1149,6 +1149,16 @@ func_clust <- pvclust(pca_data_functions2, method.hclust = 'ward', method.dist =
 plot(func_clust)
 pvrect(func_clust, alpha = 0.9)
 
+qual_func_vars <- leader_text2 %>% 
+  select(matches("functions|qualities")) %>% 
+  select(-functions_context) %>% 
+  select(-contains("component"))
+
+qual_func_clust <- pvclust(qual_func_vars, method.hclust = 'ward', method.dist = 'correlation', nboot = 2000)
+plot(qual_func_clust)
+pvrect(qual_func_clust)
+
+
 # Exploratory models ------------------------------------------------------
 
 # qc_m<-glm(qualities_component1 ~ c_cultural_complexity + com_size + subsistence, 
