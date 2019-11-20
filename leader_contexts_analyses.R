@@ -55,22 +55,29 @@ female_leader_pct <- signif(100*sum(leader_text2$demo_sex=='female', na.rm=T)/nr
 # Add sex
 leader_text2 <- left_join(leader_text2, leader_text_original[c("cs_textrec_ID", "demo_sex")])
 
-# Collapse group structure types
+# Aggregate group structure types
 
-leader_text2$group.structure2<-leader_text2$group.structure.coded
+group_str <- c(
+  "state-level group" = "state-level group",
+  "religeous group" = "religious group", # correct spelling
+  "political group" = "political group",
+  "military group" = "military group",
+  "economic group" = "economic group",
+  "criminal group" = "economic group",
+  "labor group" = "economic group",
+  "subsistence group" = "economic group",
+  "age-group" = "social group",
+  "domestic group" = "social group",
+  "kin group" = "social group",
+  "local group" = "social group",
+  "performance group" = "social group",
+  "other" = "other",
+  "multiple domains" = "other",
+  "unkown" = "other"
+)
 
-leader_text2$group.structure2[leader_text2$group.structure.coded=="criminal group"]="economic group"
-leader_text2$group.structure2[leader_text2$group.structure.coded=="labor group"]="economic group"
-leader_text2$group.structure2[leader_text2$group.structure.coded=="subsistence group"]="economic group"
-
-leader_text2$group.structure2[leader_text2$group.structure.coded=="age-group"]="social group"
-leader_text2$group.structure2[leader_text2$group.structure.coded=="domestic group"]="social group"
-leader_text2$group.structure2[leader_text2$group.structure.coded=="kin group"]="social group"
-leader_text2$group.structure2[leader_text2$group.structure.coded=="local group"]="social group"
-leader_text2$group.structure2[leader_text2$group.structure.coded=="performance group"]="social group"
-
-leader_text2$group.structure2[leader_text2$group.structure.coded=="multiple domains"]="other"
-leader_text2$group.structure2[leader_text2$group.structure.coded=="unkown"]="other"
+leader_text2$group.structure2 <- leader_text2$group.structure.coded
+leader_text2$group.structure2 <- group_str[leader_text2$group.structure2]
 
 # Create vectors of variable names by type --------------------------------
 
@@ -1394,6 +1401,19 @@ save.image(file = "Leader2.Rdata")
 
 
 # Old code ----------------------------------------------------------------
+
+# leader_text2$group.structure2[leader_text2$group.structure.coded=="criminal group"]="economic group"
+# leader_text2$group.structure2[leader_text2$group.structure.coded=="labor group"]="economic group"
+# leader_text2$group.structure2[leader_text2$group.structure.coded=="subsistence group"]="economic group"
+# 
+# leader_text2$group.structure2[leader_text2$group.structure.coded=="age-group"]="social group"
+# leader_text2$group.structure2[leader_text2$group.structure.coded=="domestic group"]="social group"
+# leader_text2$group.structure2[leader_text2$group.structure.coded=="kin group"]="social group"
+# leader_text2$group.structure2[leader_text2$group.structure.coded=="local group"]="social group"
+# leader_text2$group.structure2[leader_text2$group.structure.coded=="performance group"]="social group"
+# 
+# leader_text2$group.structure2[leader_text2$group.structure.coded=="multiple domains"]="other"
+# leader_text2$group.structure2[leader_text2$group.structure.coded=="unkown"]="other"
 
 # Functions,
 # function_vars = c("function_bestow.mate" ,  "function_organize.cooperation"                ,             
