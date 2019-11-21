@@ -101,20 +101,14 @@ leader_text2<-left_join(leader_text2, culture_vars)
 # Add more SCCS variables
 load("sccs.RData")
 sccs<-data.frame(sccs)
-sccs<-sccs[,c("SCCS.","V1648")] # ID, Frequency of warfare
+sccs<-sccs[c("SCCS.","V1648")] # ID, Frequency of warfare
+
 sccs_ehraf_ID<-distinct(read.csv("sccs_ehraf_IDs.csv")) # Some dupes in csv file
 sccs_ehraf_ID$c_culture_code<-sccs_ehraf_ID$OWC
 
-sccs_ehraf_our_sample<-left_join(leader_cult, sccs_ehraf_ID)
-sccs_ehraf_our_sample<-sccs_ehraf_our_sample[,c("c_name","c_culture_code",
-                                                "SCCS.")]
-sccs_ehraf_our_sample<-sccs_ehraf_our_sample[!is.na(sccs_ehraf_our_sample$SCCS.)==T,]
-
 sccs_vars<-left_join(sccs, sccs_ehraf_ID[c('SCCS.', 'c_culture_code')], by = "SCCS.")
 sccs_vars<-na.omit(sccs_vars) # Some eHRAF cultures do not map to SCCS cultures
-sccs_vars<-sccs_vars[,c("c_culture_code","V1648")]
-
-
+sccs_vars<-sccs_vars[c("c_culture_code","V1648")]
 
 # Convert warfare levels to interval var
 sccs_vars$warfare_freq <- as.numeric(sccs_vars$V1648)
@@ -1453,3 +1447,7 @@ save.image(file = "Leader2.Rdata")
 # 
 # 
 # text_doc_cultureID <-left_join(textID_docID,docID_cultureID, by="doc_ID")
+
+# sccs_ehraf_our_sample<-left_join(leader_cult, sccs_ehraf_ID)
+# sccs_ehraf_our_sample<-sccs_ehraf_our_sample[c("c_name", "c_culture_code", "SCCS.")]
+# sccs_ehraf_our_sample<-sccs_ehraf_our_sample[!is.na(sccs_ehraf_our_sample$SCCS.)==T,]
