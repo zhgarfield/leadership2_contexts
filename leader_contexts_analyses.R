@@ -21,7 +21,7 @@ library(car)
 library(visreg)
 library(effects)
 library(lme4)
-#library(patchwork)
+library(patchwork)
 library(pvclust)
 # library(tidybayes)
 # library(cowplot)
@@ -44,6 +44,23 @@ de_factor <- function(df){
 df %>% dplyr::mutate_if(is.factor, as.character) -> df
 }
 
+logisticPCA_loadings_plot <- function(m, data){
+  df <- data.frame(m$U)
+  df$variable <- names(data)
+  p1 <-
+    ggplot(df, aes(X1, fct_reorder(variable, X1), colour=X1)) +
+    ggalt::geom_lollipop(horizontal = T, size = 1, show.legend = FALSE) +
+    scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue', name = 'Loading') +
+    theme_bw(15) +
+    labs(title = "PC 1", x = "\nLoading", y = "")
+  p2<-
+    ggplot(df, aes(X2, fct_reorder(variable, X2), colour=X2)) +
+    ggalt::geom_lollipop(horizontal = T, size = 1, show.legend = FALSE) +
+    scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue', name = 'Loading') +
+    theme_bw(15) +
+    labs(title = "PC 2", x = "\nLoading", y = "")
+  p1 + p2
+}
 
 # Compute values ----------------------------------------------------------
 
@@ -138,7 +155,7 @@ heatmap_data<-heatmap_data[rowSums(heatmap_data[,c(quality_vars)]) > 0, ]
 #   #rotate(order = rownames(data)[order(-data$Respect)]) %>%
 #   set("branches_k_color", k = 3)
 
-aheatmap(t(as.matrix(heatmap_data[,c(quality_vars)])),
+aheatmap(t(as.matrix(heatmap_data[c(quality_vars)])),
          width = 15, height = 10,
          #Rowv  = Rowv,
          #Colv = Colv,
@@ -558,7 +575,13 @@ names(pca_data_qualities2) <- var_names[names(pca_data_qualities2)]
 
 # Cluster anaysis
 
-m_pvclust_qual <- pvclust(pca_data_qualities2, method.hclust = 'ward', method.dist = 'correlation', nboot = 2000)
+m_pvclust_qual <- pvclust(
+  pca_data_qualities2, 
+  method.hclust = 'ward', 
+  method.dist = 'correlation', 
+  nboot = 10000,
+  parallel = T
+  )
 plot(m_pvclust_qual)
 pvrect(m_pvclust_qual)
 
@@ -586,26 +609,11 @@ plot(m_lpca_qualk2, type = "scores") +
   geom_point() + 
   geom_text(aes(label = pca_data_qualities$Name))
 
-m_lpca_qualk2_loadings <- as.tibble(m_lpca_qualk2$U)
-m_lpca_qualk2_loadings$variable <- names(pca_data_qualities2)
+logisticPCA_loadings_plot(m_lpca_qualk2, data = pca_data_qualities2)
 
-k2qualities_component1_plot <-
-  ggplot(m_lpca_qualk2_loadings, aes(V1, fct_reorder(variable, V1), colour=V1)) +
-  ggalt::geom_lollipop(horizontal = T, size = 1, show.legend = FALSE) +
-  scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue', name = 'Loading') +
-  theme_bw(15) +
-  labs(title = "Leader qualities PC 1", x = "\nLoading", y = "")
-
-k2qualities_component1_plot
-
-k2qualities_component2_plot <-
-  ggplot(m_lpca_qualk2_loadings, aes(V2, fct_reorder(variable, V2), colour=V2)) +
-  ggalt::geom_lollipop(horizontal = T, size = 1, show.legend = FALSE) +
-  scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue', name = 'Loading') +
-  theme_bw(15) +
-  labs(title = "Leader qualities PC 2", x = "\nLoading", y = "")
-
-k2qualities_component2_plot
+# Add PC scores to df
+pca_data_qualities$PC1qk2 <- m_lpca_qualk2$PCs[,1]
+pca_data_qualities$PC2qk2 <- m_lpca_qualk2$PCs[,2]
 
 # cross validate optimal k, m
 #qual_cvlpca <- cv.lpca(pca_data_qualities2, ks = 1:20, ms = 5:15)
@@ -642,69 +650,8 @@ plot(logpca_model_qualities, type = "scores") +
   ggtitle("Logistic PCA") +
   scale_colour_brewer(palette = "Set1")
 
+logisticPCA_loadings_plot(logpca_model_qualities)
 
-# plot(clogpca_model_qualities, type = "scores") +
-#   geom_point(aes(colour=pca_data_qualities$group.structure2)) + 
-#   ggtitle("Convex Logistic PCA")+
-#   scale_colour_brewer(palette = "Set1")
-
-
-# Associate logistic PCA model with variables
-logpca_model_loadings<-data.frame(logpca_model_qualities$U)
-logpca_model_loadings$variable<-names(pca_data_qualities2)
-
-qual_loadings<- gather(logpca_model_loadings, key = Component, value =  Loading, -variable)
-
-ggplot(qual_loadings, aes(Loading, variable)) +
-  geom_point(aes(colour=Component)) +
-  facet_wrap(vars(Component))
-
-# Plot individual components
-## Component 1
-# qual_loadings_X1<-qual_loadings[qual_loadings$Component=="X1",]
-# X1_sort<-qual_loadings_X1$variable[order(qual_loadings_X1$Loading)]
-# qual_loadings_X1$variable<-factor(qual_loadings_X1$variable, levels =  X1_sort)
-
-qualities_component1_plot <-
-  ggplot(logpca_model_loadings, aes(X1, fct_reorder(variable, X1), colour=X1)) +
-  ggalt::geom_lollipop(horizontal = T, size = 1, show.legend = FALSE) +
-  scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue', name = 'Loading') +
-  theme_bw(15) +
-  labs(title = "Leader qualities PC 1", x = "\nLoading", y = "")
-
-qualities_component1_plot
-
-## Component 2
-# qual_loadings_X2<-qual_loadings[qual_loadings$Component=="X2",]
-# X2_sort<-qual_loadings_X2$variable[order(qual_loadings_X2$Loading)]
-# qual_loadings_X2$variable<-factor(qual_loadings_X2$variable, levels =  X2_sort)
-
-qualities_component2_plot <-
-  ggplot(logpca_model_loadings, aes(X2, fct_reorder(variable, X2), colour=X2)) +
-  ggalt::geom_lollipop(horizontal = T, size = 1, show.legend = FALSE) +
-  scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue', name = 'Loading') +
-  theme_bw(15) +
-  labs(title = "Leader qualities PC 2", x = "\nLoading", y = "")
-
-qualities_component2_plot
-
-#qualities_component1_plot + qualities_component2_plot
-
-## Component 3
-qual_loadings_X3<-qual_loadings[qual_loadings$Component=="X3",]
-X3_sort<-qual_loadings_X3$variable[order(qual_loadings_X3$Loading)]
-qual_loadings_X3$variable<-factor(qual_loadings_X3$variable, levels =  X3_sort)
-
-qualities_component3_plot<-ggplot(qual_loadings_X3, aes(Loading, variable)) +
-  geom_point(aes(colour=Component))+
-  theme(legend.position = "none")+
-  ggtitle("Component 3")
-
-
-
-#plot(component1_plot + component2_plot + component3_plot)
-grid.arrange(qualities_component1_plot, qualities_component2_plot, 
-             qualities_component3_plot, nrow=1)
 
 # PCA Functions -----------------------------------------------------------
 
@@ -740,6 +687,19 @@ pvrect(m_pvclust_fun, alpha = 0.9)
 #Fit the SVD 
 logsvd_model_functions = logisticSVD(pca_data_functions2, k = k)
 logsvd_model_functions
+
+# Cross validate for two PCs only
+
+m_lpca_funk2cv <-  cv.lpca(pca_data_functions2, ks = 2, ms = 1:10)
+plot(m_lpca_funk2cv)
+which.min(m_lpca_funk2cv)
+
+m_lpca_funk2 <- logisticPCA(pca_data_functions2, k = 2, m = 6, main_effects = T)
+plot(m_lpca_funk2, type = 'score')
+
+pca_data_functions$PC1fk2 <- m_lpca_funk2$PCs[,1]
+pca_data_functions$PC2fk2 <- m_lpca_funk2$PCs[,2]
+
 
 #Cross validate optimal k, m
 # Takes a long time
@@ -817,7 +777,7 @@ functions_component2_plot <-
 
 functions_component2_plot
 
-#functions_component1_plot + functions_component2_plot
+functions_component1_plot + functions_component2_plot
 
 # ## Component 2
 # loadings_X2<-loadings[loadings$Component=="X2",]
@@ -871,6 +831,16 @@ logsvd_model_qf = logisticSVD(pca_data_FQ[,c(function_vars, quality_vars)], k = 
 logsvd_model_qf
 
 #Cross validate optimal m
+
+# k = 2
+logpca_cv_qfk2 = cv.lpca(pca_data_FQ[c(function_vars, quality_vars)], ks = 3, ms = 1:10)
+plot(logpca_cv_qfk2)
+which.min(logpca_cv_qfk2)
+
+logpca_model_qfk2 = logisticPCA(pca_data_FQ[,c(function_vars, quality_vars)], k = 3, m = which.min(logpca_cv_qfk2), main_effects = T)
+logisticPCA_loadings_plot(logpca_model_qfk2, data = pca_data_FQ[,c(function_vars, quality_vars)])
+plot(logpca_model_qfk2, type = 'scores')
+
 logpca_cv_qf = cv.lpca(pca_data_FQ[,c(function_vars, quality_vars)], ks = k, ms = 1:10)
 plot(logpca_cv_qf)
 
@@ -1117,7 +1087,12 @@ qual_func_vars <- leader_text2 %>%
   select(-functions_context) %>% 
   select(-contains("component"))
 
-qual_func_clust <- pvclust(qual_func_vars, method.hclust = 'ward', method.dist = 'correlation', nboot = 2000)
+qual_func_clust <- pvclust(
+  qual_func_vars, 
+  method.hclust = 'ward', 
+  method.dist = 'correlation', 
+  nboot = 10000,
+  parallel = T)
 plot(qual_func_clust)
 pvrect(qual_func_clust)
 
@@ -1162,18 +1137,17 @@ leader_text2$pop_density <-
 # leader_text2$pop_density2<-leader_text2$pop_density
 # contrasts(leader_text2$pop_density2, 1) <- contr.poly(4)[,2]
 
-
 qc_m2 <- lmer(
-  qualities_component1 ~ 
+  PC2k2 ~ 
     #functions_component1 +
     subsistence +
     #c_cultural_complexity +
-    #pop_density +
-    #com_size +
+    # pop_density +
+    # com_size +
     group.structure2 +
-    #warfare_freq +
+    # warfare_freq +
     (1|d_culture/doc_ID),
-  data=leader_text2
+  data=pca_data_qualities
   )
 summary(qc_m2)
 Anova(qc_m2)
@@ -1184,6 +1158,26 @@ visreg(qc_m2)
 plot(allEffects(qc_m2))
 # visreg(qc_m2, by = 'c_cultural_complexity', xvar = 'pop_density')
 # visreg(qc_m2, by = 'group.structure2', xvar = 'warfare_freq')
+
+# Model function PCs
+
+fun_m2 <- lmer(
+  PC1fk2 ~ 
+    #functions_component1 +
+    subsistence +
+    #c_cultural_complexity +
+    # pop_density +
+    # com_size +
+    group.structure2 +
+    # warfare_freq +
+    (1|d_culture/doc_ID),
+  data=pca_data_functions
+)
+summary(fun_m2)
+Anova(fun_m2)
+AIC(fun_m2)
+vif(fun_m2)
+visreg(fun_m2)
 
 
 by_culture2 <-
