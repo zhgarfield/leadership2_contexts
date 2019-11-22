@@ -364,7 +364,7 @@ var_names <- c(
   "qualities.physical.health"        = "Physical health",
   "qualities.proper.behavior"        = "Proper behavior",
   "qualities.strategic.nepotism"     = "Strategic nepotism",
-  "qualities.xenophobic"   = "Xenophia"
+  "qualities.xenophobic"   = "Xenophobia"
 )
 
 d_melt$Variable <- var_names[d_melt$Variable]
@@ -574,7 +574,41 @@ logsvd_model_qualities
 
 # Need to cross validate both k and m
 # This takes a long time
-#qual_cvlpca <- cv.lpca(pca_data_qualities2, ks = 1:20, ms = 5:10)
+
+# Assuming k=2, cross validate for optimal m
+# qual_cvlpcak2 <- cv.lpca(pca_data_qualities2, ks = 2, ms = 1:10)
+# plot(qual_cvlpcak2)
+# which.min(qual_cvlpcak2) # m = 7
+m_lpca_qualk2 <- logisticPCA(pca_data_qualities2, k = 2, m = 7, main_effects = T)
+plot(m_lpca_qualk2, type = 'scores')
+
+plot(m_lpca_qualk2, type = "scores") + 
+  geom_point() + 
+  geom_text(aes(label = pca_data_qualities$Name))
+
+m_lpca_qualk2_loadings <- as.tibble(m_lpca_qualk2$U)
+m_lpca_qualk2_loadings$variable <- names(pca_data_qualities2)
+
+k2qualities_component1_plot <-
+  ggplot(m_lpca_qualk2_loadings, aes(V1, fct_reorder(variable, V1), colour=V1)) +
+  ggalt::geom_lollipop(horizontal = T, size = 1, show.legend = FALSE) +
+  scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue', name = 'Loading') +
+  theme_bw(15) +
+  labs(title = "Leader qualities PC 1", x = "\nLoading", y = "")
+
+k2qualities_component1_plot
+
+k2qualities_component2_plot <-
+  ggplot(m_lpca_qualk2_loadings, aes(V2, fct_reorder(variable, V2), colour=V2)) +
+  ggalt::geom_lollipop(horizontal = T, size = 1, show.legend = FALSE) +
+  scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue', name = 'Loading') +
+  theme_bw(15) +
+  labs(title = "Leader qualities PC 2", x = "\nLoading", y = "")
+
+k2qualities_component2_plot
+
+# cross validate optimal k, m
+#qual_cvlpca <- cv.lpca(pca_data_qualities2, ks = 1:20, ms = 5:15)
 #plot(qual_cvlpca)
 # optimal values seem to be
 k = 10
