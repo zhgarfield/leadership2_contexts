@@ -4,10 +4,11 @@
 # https://stats.stackexchange.com/questions/16331/doing-principal-component-analysis-or-factor-analysis-on-binary-data/16335#16335
 # https://cran.r-project.org/web/packages/logisticPCA/vignettes/logisticPCA.html
 
+library(conflicted)
 # Load data library -------------------------------------------------------
 library(leadershipdata)
 
-load("leader_text2.rda")
+# load("leader_text2.rda")
 
 # Load libraries ----------------------------------------------------------
 library(tidyverse)
@@ -39,11 +40,13 @@ library(RColorBrewer)
 
 
 # Create functions --------------------------------------------------------
+
 # Converts factors to character vectors in data frame
 de_factor <- function(df){
 df %>% dplyr::mutate_if(is.factor, as.character) -> df
 }
 
+# loadings plot
 logisticPCA_loadings_plot <- function(m, data){
   df <- data.frame(m$U)
   df$variable <- names(data)
@@ -113,7 +116,10 @@ leader_cult$d_culture<-leader_cult$c_culture_code
 #Subset culture vars of interest
 culture_vars<-leader_cult[c("d_culture","subsistence","c_cultural_complexity", "settlement_fixity", "pop_density","com_size")]
 
-leader_text2<-left_join(leader_text2, culture_vars)
+leader_text2 <-
+  leader_text2 %>% 
+  left_join(text_doc_cultureID) %>% 
+  left_join(culture_vars)
 
 # Add more SCCS variables
 load("sccs.RData")
@@ -539,17 +545,11 @@ plot.variable.support_costs_benefits = ggplot(d_melt_cb, aes(value, Variable, xm
 plot.variable.support_costs_benefits
 
 
+# Prepare data for cluster and PCA analyses -------------------------------
 
+# Qualities data frame
 
-# PCA Qualities ---------------------------------------------------------
-# Logistic PCA on leader qualities
-
-# Create data frames without all 0 rows
-
-#Create dataframe of variables for logistic PCA of qualities
 pca_data_qualities<-leader_text2[,c(quality_vars, "cs_textrec_ID", "group.structure2")]
-#Remove -1s for now
-# pca_data_qualities[quality_vars==-1]<-0 # This code makes no sense
 
 pca_data_qualities <- pca_data_qualities %>% 
   mutate_if(
@@ -573,94 +573,10 @@ pca_data_qualities <-left_join(pca_data_qualities, leader_cult, by = "d_culture"
 pca_data_qualities2 <- pca_data_qualities[quality_vars]
 names(pca_data_qualities2) <- var_names[names(pca_data_qualities2)]
 
-# Cluster anaysis
 
-m_pvclust_qual <- pvclust(
-  pca_data_qualities2, 
-  method.hclust = 'ward', 
-  method.dist = 'correlation', 
-  nboot = 10000,
-  parallel = T
-  )
-plot(m_pvclust_qual)
-pvrect(m_pvclust_qual)
+# Functions data frame
 
-#Set components
-k=3
-
-logsvd_model_qualities = logisticSVD(pca_data_qualities2, k = k)
-logsvd_model_qualities
-
-#Cross validate optimal m
-# logpca_cv_qualities = cv.lpca(pca_data_qualities2, ks = k, ms = 1:10)
-# plot(logpca_cv_qualities)
-
-# Need to cross validate both k and m
-# This takes a long time
-
-# Assuming k=2, cross validate for optimal m
-# qual_cvlpcak2 <- cv.lpca(pca_data_qualities2, ks = 2, ms = 1:10)
-# plot(qual_cvlpcak2)
-# which.min(qual_cvlpcak2) # m = 7
-m_lpca_qualk2 <- logisticPCA(pca_data_qualities2, k = 2, m = 7, main_effects = T)
-plot(m_lpca_qualk2, type = 'scores')
-
-plot(m_lpca_qualk2, type = "scores") + 
-  geom_point() + 
-  geom_text(aes(label = pca_data_qualities$Name))
-
-logisticPCA_loadings_plot(m_lpca_qualk2, data = pca_data_qualities2)
-
-# Add PC scores to df
-pca_data_qualities$PC1qk2 <- m_lpca_qualk2$PCs[,1]
-pca_data_qualities$PC2qk2 <- m_lpca_qualk2$PCs[,2]
-
-# cross validate optimal k, m
-#qual_cvlpca <- cv.lpca(pca_data_qualities2, ks = 1:20, ms = 5:15)
-#plot(qual_cvlpca)
-# optimal values seem to be
-k = 10
-m = 12
-logpca_model_qualities = logisticPCA(pca_data_qualities2, k = k, m = m, main_effects = T)
-# clogpca_model_qualities = convexLogisticPCA(pca_data_qualities2, k = k, m = which.min(logpca_cv_qualities))
-
-#Plots
-
-plot(logpca_model_qualities, type = "trace")
-# plot(clogpca_model_qualities, type = "trace")
-plot(logsvd_model_qualities, type = "trace")
-
-
-plot(logsvd_model_qualities, type = "scores")+ 
-  geom_point(aes(colour=pca_data_qualities$subsistence)) + 
-  stat_ellipse(aes(colour=pca_data_qualities$subsistence)) +
-  ggtitle("Exponential Family PCA") +
-  scale_colour_brewer(palette = "Set1")
-
-# Indicate group structure of log PCA model
-plot(logpca_model_qualities, type = "scores") + 
-  geom_point(aes(colour=pca_data_qualities$group.structure2)) + 
-  stat_ellipse(aes(colour=pca_data_qualities$group.structure2)) + 
-  ggtitle("Logistic PCA") +
-  scale_colour_brewer(palette = "Set1")
-
-# Indicate subsistence stype of log PCA model
-plot(logpca_model_qualities, type = "scores") + 
-  geom_point(aes(colour=pca_data_qualities$subsistence)) + 
-  ggtitle("Logistic PCA") +
-  scale_colour_brewer(palette = "Set1")
-
-logisticPCA_loadings_plot(logpca_model_qualities)
-
-
-# PCA Functions -----------------------------------------------------------
-
-# Logistic PCA on leader functions
-
-#Create dataframe of variables for logistic PCA of qualities
 pca_data_functions<-leader_text2[,c(function_vars, "cs_textrec_ID", "group.structure2")]
-#Remove -1s for now
-# pca_data_functions[function_vars==-1]<-0 # This code makes no sense
 
 pca_data_functions <- pca_data_functions %>% 
   mutate_if(
@@ -679,50 +595,119 @@ pca_data_functions <-left_join(pca_data_functions, culture_vars, by = "d_culture
 pca_data_functions2 <- pca_data_functions[function_vars]
 names(pca_data_functions2) <- var_names[names(pca_data_functions2)]
 
-# pvclust
-m_pvclust_fun <- pvclust(pca_data_functions2, method.hclust = 'ward', method.dist = 'correlation', nboot = 2000)
+# Cluster analysis --------------------------------------------------------
+
+m_pvclust_qual <- pvclust(
+  pca_data_qualities2, 
+  method.hclust = 'ward', 
+  method.dist = 'correlation', 
+  nboot = 10000,
+  parallel = T
+)
+plot(m_pvclust_qual)
+pvrect(m_pvclust_qual)
+
+m_pvclust_fun <- 
+  pvclust(
+    pca_data_functions2, 
+    method.hclust = 'ward', 
+    method.dist = 'correlation', 
+    nboot = 10000,
+    parallel = T
+  )
 plot(m_pvclust_fun)
 pvrect(m_pvclust_fun, alpha = 0.9)
 
-#Fit the SVD 
-logsvd_model_functions = logisticSVD(pca_data_functions2, k = k)
-logsvd_model_functions
 
-# Cross validate for two PCs only
+# Cross-validation for logisticPCA ----------------------------------------
 
+# This takes a long time
+
+# Leader qualities
+qual_cvlpca <- cv.lpca(pca_data_qualities2, ks = 1:20, ms = 5:15)
+plot(qual_cvlpca)
+which.min(qual_cvlpca[9,]) # optimal? k=9, m=11
+
+# Plot all minima
+x <- apply(qual_cvlpca, MARGIN = 1, which.min)
+plot(1:20, qual_cvlpca[cbind(1:20, x)], type='l') # elbows at 9 & 14
+
+kq <- 9
+mq <- 11
+
+# Assuming k=2, cross validate for optimal m
+qual_cvlpcak2 <- cv.lpca(pca_data_qualities2, ks = 2, ms = 1:10)
+plot(qual_cvlpcak2)
+which.min(qual_cvlpcak2) # m = 7
+
+# Leader functions
+
+# Optimal k, m
+fun_cvlpca = cv.lpca(pca_data_functions2, ks = 1:20, ms = 5:15)
+plot(fun_cvlpca)
+
+x <- apply(fun_cvlpca, MARGIN = 1, which.min)
+plot(1:20, fun_cvlpca[cbind(1:20, x)], type='l') # elbows at 5, 10, 15
+
+# Optimal values?
+kf <- 10
+which.min(fun_cvlpca[10,])
+mf <- 13 
+
+# For two PCs only (k=2), cv for optimal m
 m_lpca_funk2cv <-  cv.lpca(pca_data_functions2, ks = 2, ms = 1:10)
 plot(m_lpca_funk2cv)
 which.min(m_lpca_funk2cv)
 
-m_lpca_funk2 <- logisticPCA(pca_data_functions2, k = 2, m = 6, main_effects = T)
+
+# PCA Qualities ---------------------------------------------------------
+
+# For two PCs only; use optimal m
+m_lpca_qualk2 <- logisticPCA(pca_data_qualities2, k = 2, m = which.min(qual_cvlpcak2), main_effects = T)
+plot(m_lpca_qualk2, type = 'scores')
+logisticPCA_loadings_plot(m_lpca_qualk2, data = pca_data_qualities2)
+
+# Add PC scores to df
+pca_data_qualities$PC1qk2 <- m_lpca_qualk2$PCs[,1]
+pca_data_qualities$PC2qk2 <- m_lpca_qualk2$PCs[,2]
+
+# For optimal k, m determined by cv above
+logpca_model_qualities = logisticPCA(pca_data_qualities2, k = kq, m = mq, main_effects = T)
+plot(logpca_model_qualities, type = "scores")
+logisticPCA_loadings_plot(logpca_model_qualities, data = pca_data_qualities2)
+
+# Indicate group structure of log PCA model
+plot(logpca_model_qualities, type = "scores") + 
+  geom_point(aes(colour=pca_data_qualities$group.structure2)) + 
+  stat_ellipse(aes(colour=pca_data_qualities$group.structure2)) + 
+  ggtitle("Logistic PCA") +
+  scale_colour_brewer(palette = "Set1")
+
+# Indicate subsistence stype of log PCA model
+plot(logpca_model_qualities, type = "scores") + 
+  geom_point(aes(colour=pca_data_qualities$subsistence)) + 
+  ggtitle("Logistic PCA") +
+  scale_colour_brewer(palette = "Set1")
+
+
+# PCA Functions -----------------------------------------------------------
+
+# Logistic PCA on leader functions
+
+m_lpca_funk2 <- logisticPCA(pca_data_functions2, k = 2, m = which.min(m_lpca_funk2cv), main_effects = T)
 plot(m_lpca_funk2, type = 'score')
 
 pca_data_functions$PC1fk2 <- m_lpca_funk2$PCs[,1]
 pca_data_functions$PC2fk2 <- m_lpca_funk2$PCs[,2]
 
+# For optimal k, m
+logpca_model_functions = logisticPCA(pca_data_functions2, k = kf, m = mf, main_effects = T)
+plot(logpca_model_functions, type = 'score')
 
-#Cross validate optimal k, m
-# Takes a long time
-#logpca_cv_function = cv.lpca(pca_data_functions2, ks = 1:20, ms = 1:15)
-#plot(logpca_cv_function)
-# Optimal values?
-k <- 10
-m <- 11
-
-logpca_model_functions = logisticPCA(pca_data_functions2, k = k, m = m, main_effects = T)
-clogpca_model_functions = convexLogisticPCA(pca_data_functions2, k = k, m = m)
-
-#Plots
-
-plot(logpca_model_functions, type = "trace")
-plot(clogpca_model_functions, type = "trace")
-plot(logsvd_model_functions, type = "trace")
-
-
-plot(logsvd_model_functions, type = "scores")+ 
-  geom_point(aes(colour=pca_data_functions$subsistence)) + 
-  ggtitle("Exponential Family PCA") +
-  scale_colour_brewer(palette = "Set1")
+# plot(logsvd_model_functions, type = "scores")+ 
+#   geom_point(aes(colour=pca_data_functions$subsistence)) + 
+#   ggtitle("Exponential Family PCA") +
+#   scale_colour_brewer(palette = "Set1")
 
 # Indicate group structure of log PCA model
 plot(logpca_model_functions, type = "scores") + 
@@ -736,11 +721,10 @@ plot(logpca_model_functions, type = "scores") +
   ggtitle("Logistic PCA") +
   scale_colour_brewer(palette = "Set1")
 
-
-plot(clogpca_model_functions, type = "scores") + 
-  geom_point(aes(colour=pca_data_functions$group.structure2)) + 
-  ggtitle("Convex Logistic PCA")+
-  scale_colour_brewer(palette = "Set1")
+# plot(clogpca_model_functions, type = "scores") + 
+#   geom_point(aes(colour=pca_data_functions$group.structure2)) + 
+#   ggtitle("Convex Logistic PCA")+
+#   scale_colour_brewer(palette = "Set1")
 
 
 # Associate logistic PCA model with variables
@@ -827,17 +811,17 @@ pca_data_FQ <-left_join(pca_data_FQ, culture_vars, by = "d_culture")
 
 
 #Fit the SVD 
-logsvd_model_qf = logisticSVD(pca_data_FQ[,c(function_vars, quality_vars)], k = k)
-logsvd_model_qf
+# logsvd_model_qf = logisticSVD(pca_data_FQ[,c(function_vars, quality_vars)], k = k)
+# logsvd_model_qf
 
 #Cross validate optimal m
 
-# k = 2
-logpca_cv_qfk2 = cv.lpca(pca_data_FQ[c(function_vars, quality_vars)], ks = 3, ms = 1:10)
+k = 2
+logpca_cv_qfk2 = cv.lpca(pca_data_FQ[c(function_vars, quality_vars)], ks = k, ms = 1:10)
 plot(logpca_cv_qfk2)
 which.min(logpca_cv_qfk2)
 
-logpca_model_qfk2 = logisticPCA(pca_data_FQ[,c(function_vars, quality_vars)], k = 3, m = which.min(logpca_cv_qfk2), main_effects = T)
+logpca_model_qfk2 = logisticPCA(pca_data_FQ[,c(function_vars, quality_vars)], k = k, m = which.min(logpca_cv_qfk2), main_effects = T)
 logisticPCA_loadings_plot(logpca_model_qfk2, data = pca_data_FQ[,c(function_vars, quality_vars)])
 plot(logpca_model_qfk2, type = 'scores')
 
@@ -850,15 +834,15 @@ logpca_model_qf = logisticPCA(pca_data_FQ[,c(function_vars, quality_vars)], k = 
 
 #Plots
 
-plot(logpca_model_qf, type = "trace")
+# plot(logpca_model_qf, type = "trace")
 #plot(clogpca_model, type = "trace")
-plot(logsvd_model_qf, type = "trace")
+# plot(logsvd_model_qf, type = "trace")
 
 
-plot(logsvd_model_qf, type = "scores")+ 
-  geom_point(aes(colour=pca_data_FQ$subsistence)) + 
-  ggtitle("Exponential Family PCA") +
-  scale_colour_brewer(palette = "Set1")
+# plot(logsvd_model_qf, type = "scores")+ 
+#   geom_point(aes(colour=pca_data_FQ$subsistence)) + 
+#   ggtitle("Exponential Family PCA") +
+#   scale_colour_brewer(palette = "Set1")
 
 # Indicate group structure of log PCA model
 plot(logpca_model_qf, type = "scores") + 
@@ -1221,6 +1205,24 @@ AIC(fc_m2)
 visreg(fc_m2)
 #visreg(fc_m2, xvar = 'warfare_freq', by = 'group.structure2')
 
+# Predict top functions
+
+m <- glmer(
+  qualities.knowlageable.intellect ~
+    subsistence +
+    c_cultural_complexity +
+    # pop_density +
+    # com_size +
+    # group.structure2 +
+    # warfare_freq +
+    (1|d_culture/doc_ID),
+  family = binomial,
+  data=leader_text2,
+  control = glmerControl(optimizer = c("Nelder_Mead"))
+)
+summary(m)
+Anova(m)
+visreg(m, scale = 'response')
 
 ## Rstanarm models
 
