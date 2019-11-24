@@ -644,6 +644,6 @@ logpca_cv_qfk2 = cv.lpca(pca_data_FQ[c(function_vars, quality_vars)], ks = 2, ms
 plot(logpca_cv_qfk2)
 which.min(logpca_cv_qfk2)
 
-# Save RData envrionment --------------------------------------------------
+# Save all objects --------------------------------------------------
 
-save.image(file = "Leader2.Rdata")
+save(list=ls(), file = "Leader2.Rdata")
