@@ -9,7 +9,7 @@ bibliography: Leader2.bib
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=F)
-load("Leader2.Rdata")
+source('analyses2.R')
 library(pander)
 ```
 
@@ -127,15 +127,39 @@ To reduce the dimensionality of the `r length(quality_vars)` quality variables a
 
 # Results
 
-The geographic distribution of the cultures in our sample is displayed in Figure X, with cultures labeled by mode of subsistence and represented by a symbol proportional to the number of documents that provide ethnographic texts for that culture (for details, see Table S1). The `r nrow(leader_text2)` text records from `r length(unique(leadershipdata::documents$d_ID))` unique documents describing `r length(unique(leader_text2$d_culture))` cultures were generally short, with a median word count of X, a mean of X, and standard deviation of X. The vast majority of text records pertained to male leadership (`r male_leader_pct`%) and very few pertained to female leadership (`r female_leader_pct`%), with some records not sex-specific.
+The geographic distribution of the cultures in our sample is displayed in Figure \@ref(fig:geographic), with cultures labeled by mode of subsistence and represented by a symbol proportional to the number of documents that provide ethnographic texts for that culture (for details, see Table S1). The `r nrow(leader_text2)` text records from `r length(unique(leadershipdata::documents$d_ID))` unique documents describing `r length(unique(leader_text2$d_culture))` cultures were generally short, with a median word count of X, a mean of X, and standard deviation of X. The vast majority of text records pertained to male leadership (`r male_leader_pct`%) and very few pertained to female leadership (`r female_leader_pct`%), with some records not sex-specific.
+
+```{r geographic, fig.width=15, fig.cap="The geographical distributions of cultures in this analysis. Symbol shapes indicate mode of subsistence and symbol size indicates the number of documents available for that culture."}
+library(maps)
+world_map <- map_data("world")
+p_map <- ggplot(world_map, aes(x = long, y = lat)) +
+  geom_polygon(aes(group = group), fill="lightgray", colour = "white") +
+  geom_point(
+    data = leader_cult, 
+    aes(
+      c_longitude, 
+      c_latitude, 
+      colour = subsistence, 
+      shape = subsistence, 
+      size = documents
+    )
+  ) +
+  coord_fixed() +
+  labs(x='', y='', shape = 'Subsistence', colour = 'Subsistence', size = 'Documents') +
+  guides(shape = guide_legend(override.aes = list(size = 4))) +
+  theme_bw(15)
+p_map
+# ggsave(filename = 'Figures/map.pdf', p_map)
+```
+
 
 <!-- NEED TO DISCUSS 1187 and split records.  -->
 
 ## Variable distributions
 
-For each of the `r length(quality_vars) + length(function_vars) + length(leader_cost_vars) + length(leader_benefit_vars) + length(follower_benefit_vars) + length(follower_cost_vars)` coded variables (see Table X), we computed the percentage of text records that provided support, estimating standard errors using a binomial generalized linear mixed effects model with a random intercept for author nested within culture. See Figure \@ref(fig:varsupport).
+For each of the `r length(c(quality_vars, function_vars, leader_cost_vars, leader_benefit_vars, follower_benefit_vars, follower_cost_vars))` coded variables (see Table X), we computed the percentage of text records that provided support, estimating standard errors using a binomial generalized linear mixed effects model with a random intercept for author nested within culture. See Figure \@ref(fig:varsupport).
 
-```{r varsupport, fig.width=15, fig.height=8, fig.cap="Support for each coded variable. Blue circles: percent of text records with evidence of support. Red triangles: percent of cultures with evidence of support."}
+```{r varsupport, fig.width=15, fig.height=15, fig.cap="Support for each coded variable of leader functions (top) and qualities (bottom). Blue circles: percent of text records with evidence of support (95% CI computed with a binomial mixed effects models with random intercept for author nested within culture). Red triangles: percent of cultures with evidence of support (95% CI computed with a cluster bootstrap)."}
 plot.variable.support
 ```
 
@@ -145,23 +169,36 @@ The most common *qualities* of leaders are being of high social status (document
 
 Leaders are most commonly receiving benefits in the form of greater access to resources and increased social status. Recieving social services and mating benefits are also relatively frequent benefits of leadership cross-culturally. The costs follow the potential benefits and leaders stand to lose their high social status and greater access to resources. Followers on the other hand most commonly benefit from leadership systems through receiving resources and social services. Mating and fitness benefits are relatively rare for followers. Followers most frequently encur costs in the form of resources lost and in providing social services. For both leaders and followers, individuals stand to lose what they are able to gain. The clear differences lie in leaders' opportunities for increased social status and matting opportunities. See Figure \@ref(fig:varsupportcb).
 
-```{r varsupportcb, echo=FALSE, warning=FALSE, message=F, fig.width=15, fig.height=11, fig.cap="Support for each coded variable. Blue circles: percent of text records with evidence of support. Red triangles: percent of cultures with evidence of support."}
+```{r varsupportcb, echo=FALSE, warning=FALSE, message=F, fig.width=15, fig.height=11, fig.cap="Support for each coded variable for the costs and benefits of leadership and followership. Blue circles: percent of text records with evidence of support (95% CI computed with a binomial mixed effects models with random intercept for author nested within culture). Red triangles: percent of cultures with evidence of support (95% CI computed with a cluster bootstrap)."}
 plot.variable.support_costs_benefits
 ```
 
-## Principle components analyses
+## Cluster analyses
 
-A three-rank logistic PCA on the `r length(quality_vars)` coded leader quality variables with $m$ set at `r logpca_model_qualities$m` via cross-validation explained `r signif(logpca_model_qualities$prop_deviance_expl, 3)*100`% of the deviance and converged following `r logpca_model_qualities$iters` iterations. We draw on the first of the three leader quality components for interpretation and additional analyses and identify this component as a *Prestige vs. Dominance* measure. Low values on Leader qualities PC 1 (Prestige vs. Dominance) are strongly associated with the variables *Experienced/accomplished* and *Knowledgeable/intelligence* and moderately associated with *Oratory skill* and *Innovative*. High values are strongly associated with *Polygnous* and *Coercive authority* and moderately associated with *Many children* and *High quality spouse*. Therefore, the "dominance" side of the *Prestige vs. Dominance* component is also closely liked to reproduction. Measures of physical formidability and aggressiveness are also moderately associated with the "dominance" side of this component. See Figure \@ref(fig:qualitiesPCplot).  
-
-```{r qualitiesPCplot, fig.width=9, fig.height=7, fig.cap="Logistic PCA loadings of coded leader qualitiy variables on the first of three components."}
-qualities_component1_plot
+```{r qualcluster, fig.cap="Cluster analysis of leader quality variables. Distances are $1 - cor$. Ward agglomeration method. p-values computed with 10,000 bootstrap samples using the pvclust package [@pvclust2015]."}
+plot(m_pvclust_qual)
+pvrect(m_pvclust_qual, alpha = 0.9)
 ```
 
-Similarly, a three-rank logistic PCA on the `r length(function_vars)` coded leader function variables with $m$ set at `r logpca_model_functions$m` via cross-validation explained `r signif(logpca_model_functions$prop_deviance_expl, 3)*100`% of the deviance and converged following `r logpca_model_functions$iters` iterations. The first Leader functions component distinguishes between interpersonal mediation functions and group organizational and social functions, we define as a *Mediation vs. Organization* measures. Low values on Leader functions PC 1 (Mediation vs. Organization) are strongly associated with the variables *Resolve conflict* and *Provide counsel/direction* and moderately associated with *Political appointments* and *Punishment*, whereas high values are strongly associated with *Social functions* and *Organize cooperation* and moderately associated with *Ritual functions*. See Figure \@ref(fig:functionsPCplot).
+```{r funcluster, fig.cap="Cluster analysis of leader function variables. Distances are $1 - cor$. Ward agglomeration method. p-values computed with 10,000 bootstrap samples using the pvclust package [@pvclust2015]."}
+plot(m_pvclust_fun)
+pvrect(m_pvclust_fun, alpha = 0.9)
+```
 
 
-```{r functionsPCplot, fig.width=9, fig.height=7, fig.cap="Logistic PCA loadings of coded leader function variables on the first of three components."}
-functions_component1_plot
+## Principle components analyses
+
+A three-rank logistic PCA on the `r length(quality_vars)` coded leader quality variables with $m$ set at `r logpca_model_qualities$m` via cross-validation explained `r signif(logpca_model_qualities$prop_deviance_expl, 3)*100`% of the deviance. We draw on the first of the three leader quality components for interpretation and additional analyses and identify this component as a *Prestige vs. Dominance* measure. Low values on Leader qualities PC 1 (Prestige vs. Dominance) are strongly associated with the variables *Experienced/accomplished* and *Knowledgeable/intelligence* and moderately associated with *Oratory skill* and *Innovative*. High values are strongly associated with *Polygnous* and *Coercive authority* and moderately associated with *Many children* and *High quality spouse*. Therefore, the "dominance" side of the *Prestige vs. Dominance* component is also closely liked to reproduction. Measures of physical formidability and aggressiveness are also moderately associated with the "dominance" side of this component. See Figure \@ref(fig:qualitiesPCplot).  
+
+```{r qualitiesPCplot, fig.width=15, fig.height=10, fig.cap="Logistic PCA loadings of coded leader qualitiy variables on the first two components."}
+logisticPCA_loadings_plot(logpca_model_qualities, data = pca_data_qualities2)
+```
+
+Similarly, a three-rank logistic PCA on the `r length(function_vars)` coded leader function variables with $m$ set at `r logpca_model_functions$m` via cross-validation explained `r signif(logpca_model_functions$prop_deviance_expl, 3)*100`% of the deviance. The first Leader functions component distinguishes between interpersonal mediation functions and group organizational and social functions, we define as a *Mediation vs. Organization* measures. Low values on Leader functions PC 1 (Mediation vs. Organization) are strongly associated with the variables *Resolve conflict* and *Provide counsel/direction* and moderately associated with *Political appointments* and *Punishment*, whereas high values are strongly associated with *Social functions* and *Organize cooperation* and moderately associated with *Ritual functions*. See Figure \@ref(fig:functionsPCplot).
+
+
+```{r functionsPCplot, fig.width=15, fig.height=10, fig.cap="Logistic PCA loadings of coded leader function variables on the first two components."}
+logisticPCA_loadings_plot(logpca_model_functions, data = pca_data_functions2)
 ```
 
 ## Exploring population-level variation
@@ -174,7 +211,7 @@ We drew on the Standard Cross-Cultural Sample (SCCS) database [@murdock_standard
 
 
 ```{r, fig.height=20, fig.width=9}
-qc_bayes_model_post_plot
+# qc_bayes_model_post_plot
 ```
 
 # Discussion
