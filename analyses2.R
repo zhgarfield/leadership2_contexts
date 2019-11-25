@@ -589,38 +589,77 @@ aheatmap(t(as.matrix(heatmap_data[,c(quality_vars)])),
 
 # Variable support plots --------------------------------------------------
 
-percent<-c("0%","10%","20%","30%","40%","50%","60%","70%","80%","90%","100%")
-# Plot code
+# Functions & qualities
+
 plot.variable.support = ggplot(d_melt, aes(value, Variable, xmin=y_negse, xmax=y_se, colour=Type, shape=Type)) + 
   geom_errorbarh() + 
   geom_point() +
-  scale_x_continuous(breaks=seq(0,1,.1), labels=percent, limits=c(0,1)) +
+  scale_x_continuous(breaks=seq(0,1,.1), labels=scales::percent, limits=c(0,1)) +
   scale_colour_discrete(name='', labels=c('Cultures', 'Text records')) +
-  #labs(x='\nPercent', y='') +
-  facet_grid(Model~., scales = "free_y", space='free') +
-  facet_wrap(~Model, scales = "free_y") +
-  theme_bw() +
+  facet_wrap(~Model, ncol = 1, scales = "free_y") +
   theme(strip.text.y = element_text(angle=0))+
   scale_shape_manual(name="", values=c(17,16), labels=c('Cultures', 'Text records'))+
   scale_fill_manual(name="", values=c("red", "blue"), labels=c('Cultures', 'Text records')) +
-  labs(x="\nValue",y="")
+  labs(x="",y="") +
+  theme_bw(15) 
 plot.variable.support
 
-percent<-c("0%","10%","20%","30%","40%","50%","60%","70%","80%","90%","100%")
-# Plot code
+# Leader/follower benefits and costs
+
+format_label <- function(lbl){
+  relabel <- c(
+    leader.benefits_fitness = 'Fitness',
+    leader.benefits_mating = 'Mating',
+    leader.benefits_other = 'Other',
+    leader.benefits_reduced.risk.harm.conflict = 'Reduced risk of harm',
+    leader.benefits_resource_food = 'Food',
+    leader.benefits_resource_other = 'Other resource',
+    leader.benefits_social.services = 'Social services',
+    leader.benefits_social.status.reputation = 'Increased status',
+    leader.benefits_territory = 'Territory',
+    leader.costs_fitness.costs = 'Fitness cost',
+    leader.costs_increased.risk.harm.conflict = 'Increased risk of harm',
+    leader.costs_other = 'Other cost',
+    leader.costs_resource_food.cost = 'Food cost',
+    leader.costs_resources_other.cost = 'Other resource',
+    leader.costs_social.status = 'Reduced social status',
+    leader.costs_territory.cost = 'Loss of territory',
+    leader.costs.mating.cost = 'Mating cost',
+    leader.costs.social.services = 'Loss of social services',
+    follower.benefits_fitness = 'Fitness',
+    follower.benefits_mating = 'Mating',
+    follower.benefits_other = 'Other',
+    follower.benefits_reduced.risk.harm.conflict = 'Reduced risk of harm',
+    follower.benefits_resource_food = 'Food',
+    follower.benefits_resource_other = 'Other resource',
+    follower.benefits_social.services = 'Social services',
+    follower.benefits_social.status.reputation = 'Increased status',
+    follower.benefits_territory = 'Territory',
+    follower.costs_fitness = 'Fitness cost',
+    follower.costs_increased.risk.harm.conflict = 'Increased risk of harm',
+    follower.costs_mating = 'Mating cost',
+    follower.costs_other = 'Other cost',
+    follower.costs_resource_food = 'Food cost',
+    follower.costs_resource_other = 'Other resource cost',
+    follower.costs_social.services = 'Loss of social services',
+    follower.costs_social.status = 'Reduced social status',
+    follower.costs_territory = 'Loss of territory'
+  )
+  return(relabel[lbl])
+}
+
 plot.variable.support_costs_benefits = ggplot(d_melt_cb, aes(value, Variable, xmin=y_negse, xmax=y_se, colour=Type, shape=Type)) + 
   geom_errorbarh() + 
   geom_point() +
-  scale_x_continuous(breaks=seq(0,1,.1), labels=percent, limits=c(0,1)) +
+  scale_x_continuous(breaks=seq(0,1,.1), labels=scales::percent, limits=c(0, 0.8)) +
+  scale_y_discrete(labels = format_label) +
   scale_colour_discrete(name='', labels=c('Cultures', 'Text records')) +
-  #labs(x='\nPercent', y='') +
-  facet_grid(Model~., scales = "free_y", space='free') +
-  facet_wrap(~Model, scales = "free_y") +
-  theme_bw() +
+  facet_wrap(~Model, ncol = 1, scales = "free_y") +
   theme(strip.text.y = element_text(angle=0))+
   scale_shape_manual(name="", values=c(17,16), labels=c('Cultures', 'Text records'))+
   scale_fill_manual(name="", values=c("red", "blue"), labels=c('Cultures', 'Text records'))+
-  labs(x="\nValue",y="")
+  labs(x="",y="") +
+  theme_bw(15)
 plot.variable.support_costs_benefits
 
 
