@@ -39,6 +39,28 @@ library(RColorBrewer)
 
 load("Leader2.Rdata")
 
+
+# Functions ---------------------------------------------------------------
+
+# loadings plot
+logisticPCA_loadings_plot <- function(m, data){
+  df <- data.frame(m$U)
+  df$variable <- names(data)
+  p1 <-
+    ggplot(df, aes(X1, fct_reorder(variable, X1), colour=X1)) +
+    ggalt::geom_lollipop(horizontal = T, size = 1, show.legend = FALSE) +
+    scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue', name = 'Loading') +
+    theme_bw(15) +
+    labs(title = "PC 1", x = "\nLoading", y = "")
+  p2<-
+    ggplot(df, aes(X2, fct_reorder(variable, X2), colour=X2)) +
+    ggalt::geom_lollipop(horizontal = T, size = 1, show.legend = FALSE) +
+    scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue', name = 'Loading') +
+    theme_bw(15) +
+    labs(title = "PC 2", x = "\nLoading", y = "")
+  p1 + p2
+}
+
 # PCA Qualities ---------------------------------------------------------
 
 # For two PCs only; use optimal m
@@ -563,3 +585,53 @@ aheatmap(t(as.matrix(heatmap_data[,c(quality_vars)])),
          #   ),
          treeheight = 50,
          filename = 'heatmap_qualities.pdf')
+
+
+# Variable support plots --------------------------------------------------
+
+percent<-c("0%","10%","20%","30%","40%","50%","60%","70%","80%","90%","100%")
+# Plot code
+plot.variable.support = ggplot(d_melt, aes(value, Variable, xmin=y_negse, xmax=y_se, colour=Type, shape=Type)) + 
+  geom_errorbarh() + 
+  geom_point() +
+  scale_x_continuous(breaks=seq(0,1,.1), labels=percent, limits=c(0,1)) +
+  scale_colour_discrete(name='', labels=c('Cultures', 'Text records')) +
+  #labs(x='\nPercent', y='') +
+  facet_grid(Model~., scales = "free_y", space='free') +
+  facet_wrap(~Model, scales = "free_y") +
+  theme_bw() +
+  theme(strip.text.y = element_text(angle=0))+
+  scale_shape_manual(name="", values=c(17,16), labels=c('Cultures', 'Text records'))+
+  scale_fill_manual(name="", values=c("red", "blue"), labels=c('Cultures', 'Text records')) +
+  labs(x="\nValue",y="")
+plot.variable.support
+
+percent<-c("0%","10%","20%","30%","40%","50%","60%","70%","80%","90%","100%")
+# Plot code
+plot.variable.support_costs_benefits = ggplot(d_melt_cb, aes(value, Variable, xmin=y_negse, xmax=y_se, colour=Type, shape=Type)) + 
+  geom_errorbarh() + 
+  geom_point() +
+  scale_x_continuous(breaks=seq(0,1,.1), labels=percent, limits=c(0,1)) +
+  scale_colour_discrete(name='', labels=c('Cultures', 'Text records')) +
+  #labs(x='\nPercent', y='') +
+  facet_grid(Model~., scales = "free_y", space='free') +
+  facet_wrap(~Model, scales = "free_y") +
+  theme_bw() +
+  theme(strip.text.y = element_text(angle=0))+
+  scale_shape_manual(name="", values=c(17,16), labels=c('Cultures', 'Text records'))+
+  scale_fill_manual(name="", values=c("red", "blue"), labels=c('Cultures', 'Text records'))+
+  labs(x="\nValue",y="")
+plot.variable.support_costs_benefits
+
+
+# Cluster plots -----------------------------------------------------------
+
+plot(m_pvclust_qual)
+pvrect(m_pvclust_qual)
+
+plot(m_pvclust_fun)
+pvrect(m_pvclust_fun, alpha = 0.9)
+
+plot(qual_func_clust)
+pvrect(qual_func_clust)
+
