@@ -5,6 +5,7 @@
 # https://cran.r-project.org/web/packages/logisticPCA/vignettes/logisticPCA.html
 
 library(conflicted)
+conflict_prefer("which", "base")
 
 # Load data library -------------------------------------------------------
 library(leadershipdata)
@@ -36,42 +37,7 @@ library(RColorBrewer)
 
 # Then load computed objects
 
-load("Leader2.Rdata") 
-
-# Heatmaps -----------------------------------------------------------------
-heatmap_data<-leader_text2[,c(quality_vars, "group.structure2")]
-
-#Temporary, -1 and 1 coudl 0 out
-heatmap_data<-heatmap_data[rowSums(heatmap_data[,c(quality_vars)]) > 0, ]
-
-# Rowv  <-
-#   t(as.matrix(heatmap_data)) %>%
-#   dist %>% # Cluster rows (variables) by Spearman rank correlation
-#   hclust(method = 'ward.D') %>%
-#   as.dendrogram %>%
-#   #rotate(order= colnames(data[vars])[order(data[vars][1,])]) %>%
-#   set("branches_k_color", k = 4)
-#
-# Colv  <- heatmap_data %>%
-#   dist %>% # Cluster columns (participants) by Euclidean metric
-#   hclust(method = 'ward.D') %>%
-#   as.dendrogram %>%
-#   #rotate(order = rownames(data)[order(-data$Respect)]) %>%
-#   set("branches_k_color", k = 3)
-
-aheatmap(t(as.matrix(heatmap_data[c(quality_vars)])),
-         width = 15, height = 10,
-         #Rowv  = Rowv,
-         #Colv = Colv,
-         distfun = "euclidean",
-         hclustfun = "ward",
-         cellheight = 5,
-         annCol = list(
-           Group = heatmap_data$group.structure2),
-         # annColors = list(
-         #   ),
-         treeheight = 50,
-         filename = 'heatmap_qualities.pdf')
+load("Leader2.Rdata")
 
 # PCA Qualities ---------------------------------------------------------
 
@@ -81,17 +47,18 @@ plot(m_lpca_qualk2, type = 'scores')
 logisticPCA_loadings_plot(m_lpca_qualk2, data = pca_data_qualities2)
 
 # Add PC scores to df
-pca_data_qualities$PC1k2 <- m_lpca_qualk2$PCs[,1]
-pca_data_qualities$PC2k2 <- m_lpca_qualk2$PCs[,2]
+pca_data_qualities$qPC1k2 <- m_lpca_qualk2$PCs[,1]
+pca_data_qualities$qPC2k2 <- m_lpca_qualk2$PCs[,2]
+leader_text2 <- left_join(leader_text2, pca_data_qualities[c('cs_textrec_ID', 'qPC1k2', 'qPC2k2')])
 
-# For optimal k, m determined by cv above
+# For optimal k, m determined by cv in initialcompute.R
 logpca_model_qualities = logisticPCA(pca_data_qualities2, k = kq, m = mq, main_effects = T)
 plot(logpca_model_qualities, type = "scores")
 logisticPCA_loadings_plot(logpca_model_qualities, data = pca_data_qualities2)
 
-pca_data_qualities$PC1 <- logpca_model_qualities$PCs[,1]
-pca_data_qualities$PC2 <- logpca_model_qualities$PCs[,2]
-
+pca_data_qualities$qPC1 <- logpca_model_qualities$PCs[,1]
+pca_data_qualities$qPC2 <- logpca_model_qualities$PCs[,2]
+leader_text2 <- left_join(leader_text2, pca_data_qualities[c('cs_textrec_ID', 'qPC1', 'qPC2')])
 
 # Indicate group structure of log PCA model
 plot(logpca_model_qualities, type = "scores") + 
@@ -114,16 +81,18 @@ plot(logpca_model_qualities, type = "scores") +
 m_lpca_funk2 <- logisticPCA(pca_data_functions2, k = 2, m = which.min(m_lpca_funk2cv), main_effects = T)
 plot(m_lpca_funk2, type = 'score')
 
-pca_data_functions$PC1k2 <- m_lpca_funk2$PCs[,1]
-pca_data_functions$PC2k2 <- m_lpca_funk2$PCs[,2]
+pca_data_functions$fPC1k2 <- m_lpca_funk2$PCs[,1]
+pca_data_functions$fPC2k2 <- m_lpca_funk2$PCs[,2]
+leader_text2 <- left_join(leader_text2, pca_data_functions[c('cs_textrec_ID', 'fPC1k2', 'fPC2k2')])
 
 # For optimal k, m
 logpca_model_functions = logisticPCA(pca_data_functions2, k = kf, m = mf, main_effects = T)
 plot(logpca_model_functions, type = 'score')
 logisticPCA_loadings_plot(logpca_model_functions, data = pca_data_functions2)
 
-pca_data_functions$PC1 <- logpca_model_functions$PCs[,1]
-pca_data_functions$PC2 <- logpca_model_functions$PCs[,2]
+pca_data_functions$fPC1 <- logpca_model_functions$PCs[,1]
+pca_data_functions$fPC2 <- logpca_model_functions$PCs[,2]
+leader_text2 <- left_join(leader_text2, pca_data_functions[c('cs_textrec_ID', 'fPC1', 'fPC2')])
 
 # Indicate group structure of log PCA model
 plot(logpca_model_functions, type = "scores") + 
@@ -137,22 +106,23 @@ plot(logpca_model_functions, type = "scores") +
   ggtitle("Logistic PCA") +
   scale_colour_brewer(palette = "Set1")
 
-
 # PCA Qualities & Functions -----------------------------------------------
 
-logpca_model_qfk2 = logisticPCA(pca_data_FQ[c(function_vars, quality_vars)], k = 2, mqf = which.min(logpca_cv_qfk2), main_effects = T)
+logpca_model_qfk2 = logisticPCA(pca_data_FQ[c(function_vars, quality_vars)], k = 2, m = which.min(logpca_cv_qfk2), main_effects = T)
 plot(logpca_model_qfk2, type = 'scores')
 logisticPCA_loadings_plot(logpca_model_qfk2, data = pca_data_FQ[,c(function_vars, quality_vars)])
 
-pca_data_FQ$PC1k2 <- logpca_model_qfk2$PCs[,1]
-pca_data_FQ$PC2k2 <- logpca_model_qfk2$PCs[,2]
+pca_data_FQ$fqPC1k2 <- logpca_model_qfk2$PCs[,1]
+pca_data_FQ$fqPC2k2 <- logpca_model_qfk2$PCs[,2]
+leader_text2 <- left_join(leader_text2, pca_data_FQ[c('cs_textrec_ID', 'fqPC1k2', 'fqPC2k2')])
 
 logpca_model_qf = logisticPCA(pca_data_FQ[c(function_vars, quality_vars)], k = kqf, m = which.min(logpca_cv_qf), main_effects = T)
 plot(logpca_model_qf, type = "scores")
 logisticPCA_loadings_plot(logpca_model_qf, data = pca_data_FQ[c(function_vars, quality_vars)])
 
-pca_data_FQ$PC1 <- logpca_model_qf$PCs[,1]
-pca_data_FQ$PC2 <- logpca_model_qf$PCs[,2]
+pca_data_FQ$fqPC1 <- logpca_model_qf$PCs[,1]
+pca_data_FQ$fqPC2 <- logpca_model_qf$PCs[,2]
+leader_text2 <- left_join(leader_text2, pca_data_FQ[c('cs_textrec_ID', 'fqPC1', 'fqPC2')])
 
 # Indicate group structure of log PCA model
 plot(logpca_model_qf, type = "scores") + 
@@ -165,62 +135,6 @@ plot(logpca_model_qf, type = "scores") +
   geom_point(aes(colour=pca_data_FQ$subsistence)) + 
   ggtitle("Logistic PCA") +
   scale_colour_brewer(palette = "Set1")
-
-# Components df ----------------------------------------------------
-
-components_data<- left_join(pca_data_qualities, pca_data_functions, by = "cs_textrec_ID")
-components_data <- left_join(components_data, pca_data_FQ, by = "cs_textrec_ID")
-
-components_data <- components_data[,c("cs_textrec_ID","qualities_component1",
-                                      "functions_component1", 'qf_component1', "subsistence")]
-
-leader_text2<-left_join(leader_text2, 
-                        components_data[,c("cs_textrec_ID", "qualities_component1", "functions_component1","qf_component1")],
-                        by="cs_textrec_ID")
-
-
-# Exploring components ----------------------------------------------------
-
-agg_data<-leader_text2[leader_text2$subsistence=="agriculturalists",]
-agg_lm<-lm(functions_component1~qualities_component1, data=agg_data)
-
-hg_data<-leader_text2[leader_text2$subsistence=="hunter gatherers",]
-hg_lm<-lm(functions_component1~qualities_component1, data=hg_data)
-
-hort_data<-leader_text2[leader_text2$subsistence=="horticulturalists",]
-hort_lm<-lm(functions_component1~qualities_component1, data=hort_data)
-
-past_data<-leader_text2[leader_text2$subsistence=="pastoralists",]
-past_lm<-lm(functions_component1~qualities_component1, data=past_data)
-
-#Plotting qualities and functions components and by subsistence
-ggplot(leader_text2, aes(qualities_component1, functions_component1))+
-  geom_point(aes(colour=subsistence))+
-  #geom_smooth(method='lm')+
-  geom_abline(slope = agg_lm$coefficients[2], intercept = agg_lm$coefficients[1], color="red") +
-  geom_abline(slope = hg_lm$coefficients[2], intercept = hg_lm$coefficients[1], color="green") +
-  geom_abline(slope = hort_lm$coefficients[2], intercept = hort_lm$coefficients[1], color="darkolivegreen3") +
-  geom_abline(slope = past_lm$coefficients[2], intercept = past_lm$coefficients[1], color="purple") +
-  labs(x="\nQualities component: Prestige - Dominance", 
-       y="Functions component: Mediation - Organization\n")
-
-#Plotting qualities and functions components by group type
-ggplot(leader_text2, aes(qualities_component1, functions_component1))+
-  geom_point(aes(colour=group.structure2))+
-  #geom_smooth(method='lm')+
-  #geom_abline(slope = agg_lm$coefficients[2], intercept = agg_lm$coefficients[1], color="red") +
-  #geom_abline(slope = hg_lm$coefficients[2], intercept = hg_lm$coefficients[1], color="green") +
-  #geom_abline(slope = hort_lm$coefficients[2], intercept = hort_lm$coefficients[1], color="darkolivegreen3") +
-  #geom_abline(slope = past_lm$coefficients[2], intercept = past_lm$coefficients[1], color="purple") +
-  labs(x="\nQualities component: Prestige - Dominance", 
-       y="Functions component: Mediation - Organization\n")
-
-# Cultural complexity
-
-ggplot(leader_text2, aes(c_cultural_complexity, qualities_component1))+
-  geom_point(aes(colour=subsistence))
-
-
 
 
 ##### Q & F component
@@ -392,8 +306,8 @@ by_culture2 <-
   leader_text2 %>% 
   group_by(d_culture) %>%
   dplyr::select(d_culture,
-                qualities_component1,
-                functions_component1,
+                qPC1, qPC2,
+                fPC1, fPC2,
                 one_of(
                   c(quality_vars,
                     function_vars,
@@ -402,12 +316,18 @@ by_culture2 <-
                     follower_benefit_vars,
                     follower_cost_vars))) %>%
   summarise_all(mean, na.rm=T) %>% 
-  left_join(leader_cult[c('d_culture', 'c_name', 'region', 'subsistence')]) %>% 
+  left_join(leader_cult[c('d_culture', 'c_name', 'region', 'subsistence')]) 
+
+p_culture_qPC1 <- by_culture2 %>%
   mutate(
-    c_name = fct_reorder(c_name, qualities_component1, mean)
+    c_name = fct_reorder(c_name, qPC1)
   ) %>% 
-  ggplot(aes(qualities_component1, c_name)) + geom_point()
-by_culture2
+  ggplot(aes(qPC1, c_name)) + geom_point()
+p_culture_qPC1
+
+p_culture_qPC1_fPC1 <- by_culture2 %>% 
+  ggplot(aes(qPC1, fPC2, colour = subsistence)) + geom_point() + stat_ellipse()
+p_culture_qPC1_fPC1
 
 # Leader functions
 
@@ -575,6 +495,41 @@ options(mc.cores = parallel::detectCores())
 
 
 # Heatmaps -----------------------------------------------------------------
+# Heatmaps -----------------------------------------------------------------
+heatmap_data<-leader_text2[,c(quality_vars, "group.structure2")]
+
+#Temporary, -1 and 1 coudl 0 out
+heatmap_data<-heatmap_data[rowSums(heatmap_data[,c(quality_vars)]) > 0, ]
+
+# Rowv  <-
+#   t(as.matrix(heatmap_data)) %>%
+#   dist %>% # Cluster rows (variables) by Spearman rank correlation
+#   hclust(method = 'ward.D') %>%
+#   as.dendrogram %>%
+#   #rotate(order= colnames(data[vars])[order(data[vars][1,])]) %>%
+#   set("branches_k_color", k = 4)
+#
+# Colv  <- heatmap_data %>%
+#   dist %>% # Cluster columns (participants) by Euclidean metric
+#   hclust(method = 'ward.D') %>%
+#   as.dendrogram %>%
+#   #rotate(order = rownames(data)[order(-data$Respect)]) %>%
+#   set("branches_k_color", k = 3)
+
+aheatmap(t(as.matrix(heatmap_data[c(quality_vars)])),
+         width = 15, height = 10,
+         #Rowv  = Rowv,
+         #Colv = Colv,
+         distfun = "euclidean",
+         hclustfun = "ward",
+         cellheight = 5,
+         annCol = list(
+           Group = heatmap_data$group.structure2),
+         # annColors = list(
+         #   ),
+         treeheight = 50,
+         filename = 'heatmap_qualities.pdf')
+
 heatmap_data<-leader_text2[,c(quality_vars, "group.structure2")]
 
 #Temporary, -1 and 1 coudl 0 out

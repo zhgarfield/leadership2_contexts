@@ -1,3 +1,8 @@
+
+# This script takes about 90 minutes to run
+# Saves all objects at the end, which are 
+# required for the analysis2.R script
+
 library(conflicted)
 conflict_prefer("which", "base")
 
@@ -631,13 +636,13 @@ which.min(m_lpca_funk2cv)
 
 # Qualities and functions
 
-logpca_cv_qfk2 = cv.lpca(pca_data_FQ[c(function_vars, quality_vars)], ks = 1:20, ms = 5:15)
-plot(logpca_cv_qfk2)
-x <- apply(logpca_cv_qfk2, MARGIN = 1, which.min)
-plot(1:20, logpca_cv_qfk2[cbind(1:20, x)], type='l') # elbows at ??
+logpca_cv_qf = cv.lpca(pca_data_FQ[c(function_vars, quality_vars)], ks = 1:20, ms = 5:15)
+plot(logpca_cv_qf)
+x <- apply(logpca_cv_qf, MARGIN = 1, which.min)
+plot(1:20, logpca_cv_qf[cbind(1:20, x)], type='l') # elbows at 5, 16
 
-# kqf <- ??
-# mqf <- ??
+kqf <- 16
+mqf <- 10
 
 # For k=2 only
 logpca_cv_qfk2 = cv.lpca(pca_data_FQ[c(function_vars, quality_vars)], ks = 2, ms = 1:10)
