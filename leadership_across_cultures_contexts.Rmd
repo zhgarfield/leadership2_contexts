@@ -1,6 +1,6 @@
 ---
 title: "Leader functions and qualities across 59 cultures: an exploratory analysis"
-author: "Zachary J. Garfield, Kristen L. Syme, and Edward H. Hagen"
+author: "Zachary H. Garfield, Kristen L. Syme, and Edward H. Hagen"
 date: "4/25/2019"
 output: 
   bookdown::html_document2
@@ -167,12 +167,6 @@ The most common *functions* leaders serve, which are documented in over 70% of c
 
 The most common *qualities* of leaders are being of high social status (documented in over 90% of cultures), being experienced or accomplished, and being described as knowledgeable or intelligent. Also, in about 70% of cultures leaders maintained coercive authority over followers. Strategic nepotism, generosity, and having a favorable personality are also common leader qualities, documented in over 50% of cultures. Notable infrequent qualities of leaders in these data include charisma and fairness. 
 
-Leaders are most commonly receiving benefits in the form of greater access to resources and increased social status. Recieving social services and mating benefits are also relatively frequent benefits of leadership cross-culturally. The costs follow the potential benefits and leaders stand to lose their high social status and greater access to resources. Followers on the other hand most commonly benefit from leadership systems through receiving resources and social services. Mating and fitness benefits are relatively rare for followers. Followers most frequently encur costs in the form of resources lost and in providing social services. For both leaders and followers, individuals stand to lose what they are able to gain. The clear differences lie in leaders' opportunities for increased social status and matting opportunities. See Figure \@ref(fig:varsupportcb).
-
-```{r varsupportcb, echo=FALSE, warning=FALSE, message=F, fig.width=15, fig.height=11, fig.cap="Support for each coded variable for the costs and benefits of leadership and followership. Blue circles: percent of text records with evidence of support (95% CI computed with a binomial mixed effects models with random intercept for author nested within culture). Red triangles: percent of cultures with evidence of support (95% CI computed with a cluster bootstrap)."}
-plot.variable.support_costs_benefits
-```
-
 ## Cluster analyses
 
 ```{r qualcluster, fig.cap="Cluster analysis of leader quality variables. Distances are $1 - cor$. Ward agglomeration method. p-values computed with 10,000 bootstrap samples using the pvclust package [@pvclust2015]."}
@@ -184,7 +178,6 @@ pvrect(m_pvclust_qual, alpha = 0.9)
 plot(m_pvclust_fun)
 pvrect(m_pvclust_fun, alpha = 0.9)
 ```
-
 
 ## Principle components analyses
 
@@ -199,6 +192,14 @@ Similarly, A logistic PCA on the `r length(quality_vars)` coded leader quality v
 
 ```{r functionsPCplot, fig.width=15, fig.height=10, fig.cap="Logistic PCA loadings of coded leader function variables on the first two components."}
 logisticPCA_loadings_plot(logpca_model_functions, data = pca_data_functions2)
+```
+
+## Benefits and costs of leadership and followership
+
+Leaders are most commonly receiving benefits in the form of greater access to resources and increased social status. Recieving social services and mating benefits are also relatively frequent benefits of leadership cross-culturally. The costs follow the potential benefits and leaders stand to lose their high social status and greater access to resources. Followers on the other hand most commonly benefit from leadership systems through receiving resources and social services. Mating and fitness benefits are relatively rare for followers. Followers most frequently encur costs in the form of resources lost and in providing social services. For both leaders and followers, individuals stand to lose what they are able to gain. The clear differences lie in leaders' opportunities for increased social status and matting opportunities. See Figure \@ref(fig:varsupportcb).
+
+```{r varsupportcb, echo=FALSE, warning=FALSE, message=F, fig.width=15, fig.height=11, fig.cap="Support for each coded variable for the costs and benefits of leadership and followership. Blue circles: percent of text records with evidence of support (95% CI computed with a binomial mixed effects models with random intercept for author nested within culture). Red triangles: percent of cultures with evidence of support (95% CI computed with a cluster bootstrap)."}
+plot.variable.support_costs_benefits
 ```
 
 ## Exploring population-level variation
