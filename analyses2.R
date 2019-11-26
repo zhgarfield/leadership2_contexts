@@ -680,3 +680,14 @@ plot(logpca_model_qf, type = "scores") +
 # NMF ---------------------------------------------------------------------
 # library(NMF)
 # m_nmf <- nmf(t(pca_data_qualities2), rank = 2:10)
+
+# Compute values ----------------------------------------------------------
+
+male_leader_pct <- signif(100*sum(leader_text2$demo_sex=='male', na.rm=T)/nrow(leader_text2), 3)
+female_leader_pct <- signif(100*sum(leader_text2$demo_sex=='female', na.rm=T)/nrow(leader_text2), 2)
+
+intelltxts <- sum(leader_text2$qualities.knowlageable.intellect)
+polytxts <- sum(leader_text2$qualities.polygynous)
+statustxts <- sum(leader_text2$qualities_high.status)
+intellpolytxts <- sum(leader_text2$qualities.polygynous & leader_text2$qualities.knowlageable.intellect)
+statuspolytxts <- sum(leader_text2$qualities.polygynous & leader_text2$qualities_high.status)

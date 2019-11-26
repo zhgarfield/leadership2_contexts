@@ -43,11 +43,6 @@ neg1to0 <- function(df){
     )
 }
 
-# Compute values ----------------------------------------------------------
-
-male_leader_pct <- signif(100*sum(leader_text2$demo_sex=='male', na.rm=T)/nrow(leader_text2), 3)
-female_leader_pct <- signif(100*sum(leader_text2$demo_sex=='female', na.rm=T)/nrow(leader_text2), 2)
-
 # Create vectors of variable names by type --------------------------------
 
 lt2vars <- names(leader_text2)
@@ -309,7 +304,7 @@ var_names <- c(
   "qualities.feared"                = "Feared",
   "qualities.humble"                = "Humility",
   "qualities.innovative"            = "Innovative",
-  "qualities.knowlageable.intellect" = "Knowledgeable/intelligence",
+  "qualities.knowlageable.intellect" = "Knowledgeable/intelligent",
   "qualities.oratory.skill"         = "Oratory skill",
   "qualities.polygynous"            = "Polygnous",
   "qualities.social.contacts"       = "Social contacts",
