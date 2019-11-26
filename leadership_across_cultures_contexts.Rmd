@@ -155,6 +155,15 @@ p_map
 
 <!-- NEED TO DISCUSS 1187 and split records.  -->
 
+## Distribution of text records by group type and sex
+
+The type of group to which a leader text referred was coded into seven categories. Figure \@ref(fig:groupsex) indicates the proportion of text records that were categorized into each of these groups; it also indicates the proportion of male and female leaders of each type of group.
+
+```{r groupsex, fig.width=15, fig.cap="The distribution of text records by group type and leader sex. Areas of the bars are proportional to the number of text records in that category. There were no female leaders in any military or religious group."}
+plot_group_sex
+```
+
+
 ## Variable distributions
 
 For each of the `r length(c(quality_vars, function_vars, leader_cost_vars, leader_benefit_vars, follower_benefit_vars, follower_cost_vars))` coded variables (see Table X), we computed the percentage of text records that provided support, estimating standard errors using a binomial generalized linear mixed effects model with a random intercept for author nested within culture. See Figure \@ref(fig:varsupport).

@@ -4,8 +4,8 @@
 # https://stats.stackexchange.com/questions/16331/doing-principal-component-analysis-or-factor-analysis-on-binary-data/16335#16335
 # https://cran.r-project.org/web/packages/logisticPCA/vignettes/logisticPCA.html
 
-library(conflicted)
-conflict_prefer("which", "base")
+# library(conflicted)
+# conflict_prefer("which", "base")
 
 # Load data library -------------------------------------------------------
 library(leadershipdata)
@@ -28,6 +28,7 @@ library(magrittr)
 library(modelr)
 library(ggridges)
 library(RColorBrewer)
+library(ggmosaic)
 
 # Load precomputed objects ------------------------------------------------
 
@@ -105,39 +106,40 @@ plot.variable.support
 
 format_label <- function(lbl){
   relabel <- c(
-    leader.benefits_fitness = 'Fitness',
+    leader.benefits_fitness = 'Inclusive fitness',
     leader.benefits_mating = 'Mating',
-    leader.benefits_other = 'Other',
+    leader.benefits_other = 'Misc. non-material benefit',
     leader.benefits_reduced.risk.harm.conflict = 'Reduced risk of harm',
     leader.benefits_resource_food = 'Food',
-    leader.benefits_resource_other = 'Other resource',
+    leader.benefits_resource_other = 'Material resources',
     leader.benefits_social.services = 'Social services',
     leader.benefits_social.status.reputation = 'Increased status',
     leader.benefits_territory = 'Territory',
-    leader.costs_fitness.costs = 'Fitness cost',
+    follower.benefits_fitness = 'Inclusive fitness',
+    follower.benefits_mating = 'Mating',
+    follower.benefits_other = 'Misc. non-material benefit',
+    follower.benefits_reduced.risk.harm.conflict = 'Reduced risk of harm',
+    follower.benefits_resource_food = 'Food',
+    follower.benefits_resource_other = 'Material resources',
+    follower.benefits_social.services = 'Social services',
+    follower.benefits_social.status.reputation = 'Increased status',
+    follower.benefits_territory = 'Territory',
+
+    leader.costs_fitness.costs = 'Inclusive fitness cost',
     leader.costs_increased.risk.harm.conflict = 'Increased risk of harm',
-    leader.costs_other = 'Other cost',
+    leader.costs_other = 'Misc. non-material cost',
     leader.costs_resource_food.cost = 'Food cost',
-    leader.costs_resources_other.cost = 'Other resource',
+    leader.costs_resources_other.cost = 'Loss of material resources',
     leader.costs_social.status = 'Reduced social status',
     leader.costs_territory.cost = 'Loss of territory',
     leader.costs.mating.cost = 'Mating cost',
     leader.costs.social.services = 'Loss of social services',
-    follower.benefits_fitness = 'Fitness',
-    follower.benefits_mating = 'Mating',
-    follower.benefits_other = 'Other',
-    follower.benefits_reduced.risk.harm.conflict = 'Reduced risk of harm',
-    follower.benefits_resource_food = 'Food',
-    follower.benefits_resource_other = 'Other resource',
-    follower.benefits_social.services = 'Social services',
-    follower.benefits_social.status.reputation = 'Increased status',
-    follower.benefits_territory = 'Territory',
-    follower.costs_fitness = 'Fitness cost',
+    follower.costs_fitness = 'Inclusive fitness cost',
     follower.costs_increased.risk.harm.conflict = 'Increased risk of harm',
     follower.costs_mating = 'Mating cost',
-    follower.costs_other = 'Other cost',
+    follower.costs_other = 'Misc. non-material cost',
     follower.costs_resource_food = 'Food cost',
-    follower.costs_resource_other = 'Other resource cost',
+    follower.costs_resource_other = 'Loss of material resources',
     follower.costs_social.services = 'Loss of social services',
     follower.costs_social.status = 'Reduced social status',
     follower.costs_territory = 'Loss of territory'
@@ -167,8 +169,8 @@ pvrect(m_pvclust_qual, alpha = 0.9)
 plot(m_pvclust_fun)
 pvrect(m_pvclust_fun, alpha = 0.9)
 
-plot(qual_func_clust)
-pvrect(qual_func_clust, alpha = 0.9)
+# plot(qual_func_clust)
+# pvrect(qual_func_clust, alpha = 0.9)
 
 # PCA Qualities ---------------------------------------------------------
 
@@ -183,6 +185,9 @@ pca_data_qualities$qPC2k2 <- m_lpca_qualk2$PCs[,2]
 leader_text2 <- left_join(leader_text2, pca_data_qualities[c('cs_textrec_ID', 'qPC1k2', 'qPC2k2')])
 
 # For optimal k, m determined by cv in initialcompute.R
+kq <- 8
+mq <- 12
+
 logpca_model_qualities = logisticPCA(pca_data_qualities2, k = kq, m = mq, main_effects = T)
 plot(logpca_model_qualities, type = "scores")
 logisticPCA_loadings_plot(logpca_model_qualities, data = pca_data_qualities2)
@@ -217,6 +222,9 @@ pca_data_functions$fPC2k2 <- m_lpca_funk2$PCs[,2]
 leader_text2 <- left_join(leader_text2, pca_data_functions[c('cs_textrec_ID', 'fPC1k2', 'fPC2k2')])
 
 # For optimal k, m
+kf <- 10 # elbow
+mf <- which.min(fun_cvlpca[kf,])
+
 logpca_model_functions = logisticPCA(pca_data_functions2, k = kf, m = mf, main_effects = T)
 plot(logpca_model_functions, type = 'score')
 logisticPCA_loadings_plot(logpca_model_functions, data = pca_data_functions2)
@@ -239,33 +247,33 @@ plot(logpca_model_functions, type = "scores") +
 
 # PCA Qualities & Functions -----------------------------------------------
 
-logpca_model_qfk2 = logisticPCA(pca_data_FQ[c(function_vars, quality_vars)], k = 2, m = which.min(logpca_cv_qfk2), main_effects = T)
-plot(logpca_model_qfk2, type = 'scores')
-logisticPCA_loadings_plot(logpca_model_qfk2, data = pca_data_FQ[,c(function_vars, quality_vars)])
-
-pca_data_FQ$fqPC1k2 <- logpca_model_qfk2$PCs[,1]
-pca_data_FQ$fqPC2k2 <- logpca_model_qfk2$PCs[,2]
-leader_text2 <- left_join(leader_text2, pca_data_FQ[c('cs_textrec_ID', 'fqPC1k2', 'fqPC2k2')])
-
-logpca_model_qf = logisticPCA(pca_data_FQ[c(function_vars, quality_vars)], k = kqf, m = which.min(logpca_cv_qf), main_effects = T)
-plot(logpca_model_qf, type = "scores")
-logisticPCA_loadings_plot(logpca_model_qf, data = pca_data_FQ[c(function_vars, quality_vars)])
-
-pca_data_FQ$fqPC1 <- logpca_model_qf$PCs[,1]
-pca_data_FQ$fqPC2 <- logpca_model_qf$PCs[,2]
-leader_text2 <- left_join(leader_text2, pca_data_FQ[c('cs_textrec_ID', 'fqPC1', 'fqPC2')])
-
-# Indicate group structure of log PCA model
-plot(logpca_model_qf, type = "scores") + 
-  geom_point(aes(colour=pca_data_FQ$group.structure2)) + 
-  ggtitle("Logistic PCA") +
-  scale_colour_brewer(palette = "Set1")
-
-# Indicate subsistence stype of log PCA model
-plot(logpca_model_qf, type = "scores") + 
-  geom_point(aes(colour=pca_data_FQ$subsistence)) + 
-  ggtitle("Logistic PCA") +
-  scale_colour_brewer(palette = "Set1")
+# logpca_model_qfk2 = logisticPCA(pca_data_FQ[c(function_vars, quality_vars)], k = 2, m = which.min(logpca_cv_qfk2), main_effects = T)
+# plot(logpca_model_qfk2, type = 'scores')
+# logisticPCA_loadings_plot(logpca_model_qfk2, data = pca_data_FQ[,c(function_vars, quality_vars)])
+# 
+# pca_data_FQ$fqPC1k2 <- logpca_model_qfk2$PCs[,1]
+# pca_data_FQ$fqPC2k2 <- logpca_model_qfk2$PCs[,2]
+# leader_text2 <- left_join(leader_text2, pca_data_FQ[c('cs_textrec_ID', 'fqPC1k2', 'fqPC2k2')])
+# 
+# logpca_model_qf = logisticPCA(pca_data_FQ[c(function_vars, quality_vars)], k = kqf, m = which.min(logpca_cv_qf), main_effects = T)
+# plot(logpca_model_qf, type = "scores")
+# logisticPCA_loadings_plot(logpca_model_qf, data = pca_data_FQ[c(function_vars, quality_vars)])
+# 
+# pca_data_FQ$fqPC1 <- logpca_model_qf$PCs[,1]
+# pca_data_FQ$fqPC2 <- logpca_model_qf$PCs[,2]
+# leader_text2 <- left_join(leader_text2, pca_data_FQ[c('cs_textrec_ID', 'fqPC1', 'fqPC2')])
+# 
+# # Indicate group structure of log PCA model
+# plot(logpca_model_qf, type = "scores") + 
+#   geom_point(aes(colour=pca_data_FQ$group.structure2)) + 
+#   ggtitle("Logistic PCA") +
+#   scale_colour_brewer(palette = "Set1")
+# 
+# # Indicate subsistence stype of log PCA model
+# plot(logpca_model_qf, type = "scores") + 
+#   geom_point(aes(colour=pca_data_FQ$subsistence)) + 
+#   ggtitle("Logistic PCA") +
+#   scale_colour_brewer(palette = "Set1")
 
 
 ##### Q & F component
@@ -440,24 +448,75 @@ plot(logpca_model_qf, type = "scores") +
 # p_culture_qPC1_fPC1
 # 
 # # Leader functions
-# 
-# fc_m2 <- lmer(
-#   functions_component1 ~ 
-#     #qualities_component1 +
-#     subsistence +
-#     #c_cultural_complexity +
-#     #pop_density +
-#     #com_size +
-#     group.structure2 +
-#     # warfare_freq +
-#     (1|d_culture/doc_ID),
-#   data=leader_text2
-# )
-# summary(fc_m2)
-# Anova(fc_m2)
-# AIC(fc_m2)
-# visreg(fc_m2)
-# #visreg(fc_m2, xvar = 'warfare_freq', by = 'group.structure2')
+
+m_fPC1 <- lmer(
+  fPC1 ~
+    #qualities_component1 +
+    subsistence +
+    #c_cultural_complexity +
+    #pop_density +
+    #com_size +
+    group.structure2 +
+    # warfare_freq +
+    (1|d_culture/doc_ID),
+  data=leader_text2
+)
+summary(m_fPC1)
+Anova(m_fPC1)
+AIC(m_fPC1)
+visreg(m_fPC1)
+
+m_fPC2 <- lmer(
+  fPC2 ~
+    #qualities_component1 +
+    subsistence +
+    #c_cultural_complexity +
+    #pop_density +
+    #com_size +
+    group.structure2 +
+    # warfare_freq +
+    (1|d_culture/doc_ID),
+  data=leader_text2
+)
+summary(m_fPC2)
+Anova(m_fPC2)
+AIC(m_fPC2)
+visreg(m_fPC2)
+
+# Leader qualities
+
+m_qPC1 <- lmer(
+  qPC1 ~
+    #qualities_component1 +
+    subsistence +
+    #c_cultural_complexity +
+    #pop_density +
+    #com_size +
+    group.structure2 +
+    # warfare_freq +
+    (1|d_culture/doc_ID),
+  data=leader_text2
+)
+summary(m_qPC1)
+Anova(m_qPC1)
+visreg(m_qPC1)
+
+m_qPC2 <- lmer(
+  qPC2 ~
+    #qualities_component1 +
+    subsistence +
+    #c_cultural_complexity +
+    #pop_density +
+    #com_size +
+    group.structure2 +
+    # warfare_freq +
+    (1|d_culture/doc_ID),
+  data=leader_text2
+)
+summary(m_qPC2)
+Anova(m_qPC2)
+visreg(m_qPC2)
+# #visreg(m_fPC1, xvar = 'warfare_freq', by = 'group.structure2')
 # 
 # # Predict top functions
 # 
@@ -691,3 +750,43 @@ polytxts <- sum(leader_text2$qualities.polygynous)
 statustxts <- sum(leader_text2$qualities_high.status)
 intellpolytxts <- sum(leader_text2$qualities.polygynous & leader_text2$qualities.knowlageable.intellect)
 statuspolytxts <- sum(leader_text2$qualities.polygynous & leader_text2$qualities_high.status)
+
+
+# Group structure by sex --------------------------------------------------
+
+xtabs(~group.structure2 + demo_sex, leader_text2)
+
+df_groupsex <- 
+  leader_text2 %>% 
+  dplyr::select(
+    group.structure2,
+    demo_sex
+  ) %>% 
+  dplyr::filter(demo_sex != 'both', demo_sex != 'unknown', group.structure2 != 'other') %>% 
+  mutate(
+    demo_sex = factor(demo_sex, levels = c('male', 'female'))
+  )
+
+# df_groupsex$demo_sex[df_groupsex$demo_sex != 'both',]
+# df_groupsex$demo_sex <- factor(df_groupsex$demo_sex, levels = c('male', 'female', 'both', 'unknown'))
+
+df_groupsex$group.structure2 <- 
+  factor(
+    df_groupsex$group.structure2,
+    levels = c(
+      'residential subgroup',
+      'kin group',
+      'economic group',
+      'political group (community)',
+      'political group (supracommunity)',
+      'religious group',
+      'military group'
+    )
+    )
+
+plot_group_sex <- 
+  ggplot(df_groupsex) + 
+  geom_mosaic(aes(x = product(group.structure2, demo_sex), fill = group.structure2)) +
+  labs(x="", y="", fill = "Group type") +
+  guides(fill = guide_legend(reverse = T)) +
+  theme_bw()

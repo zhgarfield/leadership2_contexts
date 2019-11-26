@@ -285,7 +285,7 @@ var_names <- c(
   "qualities_generous"                 = "Generosity",
   "qualities.age"                      = "Age",
   "qualities.attractive"              = "Attractive",
-  "qualities.coercive.authority"      = "Coercive authority",
+  "qualities.coercive.authority"      = "Authority",
   "qualities.culturally.progressive"  = "Culturally progressive",
   "qualities.favorable.personality"   = "Favorable personality",
   "qualities.honest"                  = "Honesty",
@@ -520,12 +520,12 @@ qual_func_vars <- leader_text2 %>%
   select(-functions_context) %>% 
   select(-contains("component"))
 
-qual_func_clust <- pvclust(
-  qual_func_vars, 
-  method.hclust = 'ward', 
-  method.dist = 'correlation', 
-  nboot = 10000,
-  parallel = T)
+# qual_func_clust <- pvclust(
+#   qual_func_vars, 
+#   method.hclust = 'ward', 
+#   method.dist = 'correlation', 
+#   nboot = 10000,
+#   parallel = T)
 
 # Cross-validation for logisticPCA ----------------------------------------
 
@@ -538,10 +538,10 @@ which.min(qual_cvlpca[9,]) # optimal? k=9, m=11
 
 # Plot all minima
 x <- apply(qual_cvlpca, MARGIN = 1, which.min)
-plot(1:20, qual_cvlpca[cbind(1:20, x)], type='l') # elbows at 9 & 14
+plot(1:20, qual_cvlpca[cbind(1:20, x)], type='l') # elbows at 8 & 13
 
-kq <- 9
-mq <- 11
+kq <- 8
+mq <- 12
 
 # Assuming k=2, cross validate for optimal m
 qual_cvlpcak2 <- cv.lpca(pca_data_qualities2, ks = 2, ms = 1:10)
@@ -555,12 +555,11 @@ fun_cvlpca = cv.lpca(pca_data_functions2, ks = 1:20, ms = 5:15)
 plot(fun_cvlpca)
 
 x <- apply(fun_cvlpca, MARGIN = 1, which.min)
-plot(1:20, fun_cvlpca[cbind(1:20, x)], type='l') # elbows at 5, 10, 15
+plot(1:20, fun_cvlpca[cbind(1:20, x)], type='l') # elbows at 7, 10, 15
 
 # Optimal values?
-kf <- 10
-which.min(fun_cvlpca[10,])
-mf <- 13 
+kf <- 10 # elbow
+mf <- which.min(fun_cvlpca[kf,])
 
 # For two PCs only (k=2), cv for optimal m
 m_lpca_funk2cv <-  cv.lpca(pca_data_functions2, ks = 2, ms = 1:10)
@@ -569,10 +568,10 @@ which.min(m_lpca_funk2cv)
 
 # Qualities and functions
 
-logpca_cv_qf = cv.lpca(pca_data_FQ[c(function_vars, quality_vars)], ks = 1:20, ms = 5:15)
-plot(logpca_cv_qf)
-x <- apply(logpca_cv_qf, MARGIN = 1, which.min)
-plot(1:20, logpca_cv_qf[cbind(1:20, x)], type='l') # elbows at 5, 16
+# logpca_cv_qf = cv.lpca(pca_data_FQ[c(function_vars, quality_vars)], ks = 1:20, ms = 5:15)
+# plot(logpca_cv_qf)
+# x <- apply(logpca_cv_qf, MARGIN = 1, which.min)
+# plot(1:20, logpca_cv_qf[cbind(1:20, x)], type='l') # elbows at 5, 16
 
 kqf <- 16
 mqf <- 10
