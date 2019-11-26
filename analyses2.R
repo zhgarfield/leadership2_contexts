@@ -38,6 +38,8 @@ library(RColorBrewer)
 
 load("Leader2.Rdata")
 
+#+ fig.height=15, fig.width=15
+
 # Functions ---------------------------------------------------------------
 
 # loadings plot
@@ -58,6 +60,28 @@ logisticPCA_loadings_plot <- function(m, data){
     labs(title = "PC 2", x = "\nLoading", y = "")
   p1 + p2
 }
+
+
+# Recode variables --------------------------------------------------------
+
+leader_text2$com_size <-
+  ordered(
+    leader_text2$com_size,
+    levels = c("< 99", "100-199", "200-399", "400-999", "> 1,000")
+  )
+
+leader_text2$pop_density <-
+  ordered(
+    leader_text2$pop_density,
+    levels = c(
+      "1 or less person / 1-5 sq. mile",
+      "1-5 persons / sq. mile",
+      "1-25 persons / sq. mile",
+      "26-100 persons / sq. mile",
+      "101-500 persons / sq. mile",
+      "over 500 persons / sq. mile"
+    )
+  )
 
 # Variable support plots --------------------------------------------------
 
@@ -138,13 +162,13 @@ plot.variable.support_costs_benefits
 # Cluster plots -----------------------------------------------------------
 
 plot(m_pvclust_qual)
-pvrect(m_pvclust_qual)
+pvrect(m_pvclust_qual, alpha = 0.9)
 
 plot(m_pvclust_fun)
 pvrect(m_pvclust_fun, alpha = 0.9)
 
 plot(qual_func_clust)
-pvrect(qual_func_clust)
+pvrect(qual_func_clust, alpha = 0.9)
 
 # PCA Qualities ---------------------------------------------------------
 
@@ -186,6 +210,7 @@ plot(logpca_model_qualities, type = "scores") +
 
 m_lpca_funk2 <- logisticPCA(pca_data_functions2, k = 2, m = which.min(m_lpca_funk2cv), main_effects = T)
 plot(m_lpca_funk2, type = 'score')
+logisticPCA_loadings_plot(m_lpca_funk2, data = pca_data_functions2)
 
 pca_data_functions$fPC1k2 <- m_lpca_funk2$PCs[,1]
 pca_data_functions$fPC2k2 <- m_lpca_funk2$PCs[,2]
@@ -334,28 +359,7 @@ plot(logpca_model_qf, type = "scores") +
 # # plot(qc_m)
 # # visreg(qc_m)
 # # plot(allEffects(qc_m))
-# 
-# leader_text2$com_size <- 
-#   ordered(
-#     leader_text2$com_size,
-#     levels = c("< 99", "100-199", "200-399", "400-999", "> 1,000")
-#     )
-# 
-# leader_text2$pop_density <-
-#   ordered(
-#     leader_text2$pop_density,
-#     levels = c(
-#       "1 or less person / 1-5 sq. mile", 
-#       "1-5 persons / sq. mile",
-#       "1-25 persons / sq. mile", 
-#       "26-100 persons / sq. mile",
-#       "101-500 persons / sq. mile",
-#       "over 500 persons / sq. mile"
-#       )
-#   )
-# 
-# 
-# 
+
 # # #Set com size2 contrast to cubic function
 # # leader_text2$com_size2<-leader_text2$com_size
 # # contrasts(leader_text2$com_size2, 1) <- contr.poly(5)[,3]

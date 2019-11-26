@@ -1,6 +1,6 @@
 ---
-title: "Leadership across cultures and contexts"
-author: "Zachary Garfield, Kristen Syme, and Edward Hagen"
+title: "Leader functions and qualities across 59 cultures: an exploratory analysis"
+author: "Zachary J. Garfield, Kristen L. Syme, and Edward H. Hagen"
 date: "4/25/2019"
 output: 
   bookdown::html_document2
@@ -117,12 +117,12 @@ For additional details on ethnographic sampling and creating of the leadershipda
 
 ## Statistical analysis
 
-We analyze data from our researcher-coded operationalized variables at the text-record level and at the culture-level. Our first goal was to assess the proportion of text records and cultures that provided evidence for each of our coded variables to illustrate the dimensions of leadership (e.g., the qualities, functions, costs and benefits) which are most frequent cross-culturally, in the ethnographic record.  
+We analyzed data from our researcher-coded operationalized variables at the text-record level and at the culture-level. Our first goal was to assess the proportion of text records and cultures that provided evidence for each of our coded variables to discover the qualities, functions, benefits and costs of leadership that are most frequently noted in the ethnographic record.  
 
 <!-- At the text record level, hierarchical cluster analysis was then used to identify natural groupings of all our coded variables. If variables from a model clustered together, and separately from the other variables, that would lend support to the theoretical cohesiveness of that model. If, on the other hand, variables from different models clustered together, that would suggest theoretical models may need revision or that clusters had identified components of a novel theoretical model.  -->
 
 
-To reduce the dimensionality of the `r length(quality_vars)` quality variables and the `r length(function_vars)` we relied on logistic PCA from the Binary Dimensionality Reduction (logisticPCA) package [@logisticPCA]. We specify a $k = 3$ rank solution *a priori* and set $m$ (the value to approximate the saturated model) using cross-validation. Results from logistic PCA stand to (1) reveal which measures (coded variables) distinguish leaders and (2) produce a quantitiave measure of leader qualities and leader functions for additional exploratory analyses. 
+To reduce the dimensionality of the `r length(quality_vars)` quality variables and the `r length(function_vars)` function variables, all of which take binary values (0, 1), we used logistic PCA from the Binary Dimensionality Reduction (logisticPCA) package [@logisticPCA]. Prior to analysis we removed all rows that had no evidence for any variable. We optimized rank, $k$, and $m$ (the value to approximate the saturated model) using cross-validation, per recommendation of the package authors. Results from logistic PCA stand to (1) reveal which measures (coded variables) distinguish leaders and (2) produce a quantitiave measure of leader qualities and leader functions for additional exploratory analyses. 
 
 
 # Results
@@ -188,13 +188,13 @@ pvrect(m_pvclust_fun, alpha = 0.9)
 
 ## Principle components analyses
 
-A three-rank logistic PCA on the `r length(quality_vars)` coded leader quality variables with $m$ set at `r logpca_model_qualities$m` via cross-validation explained `r signif(logpca_model_qualities$prop_deviance_expl, 3)*100`% of the deviance. We draw on the first of the three leader quality components for interpretation and additional analyses and identify this component as a *Prestige vs. Dominance* measure. Low values on Leader qualities PC 1 (Prestige vs. Dominance) are strongly associated with the variables *Experienced/accomplished* and *Knowledgeable/intelligence* and moderately associated with *Oratory skill* and *Innovative*. High values are strongly associated with *Polygnous* and *Coercive authority* and moderately associated with *Many children* and *High quality spouse*. Therefore, the "dominance" side of the *Prestige vs. Dominance* component is also closely liked to reproduction. Measures of physical formidability and aggressiveness are also moderately associated with the "dominance" side of this component. See Figure \@ref(fig:qualitiesPCplot).  
+A logistic PCA on the `r length(quality_vars)` coded leader quality variables, with rank $k=`r dim(logpca_model_qualities$U)[2]`$ optimized by cross-validation, explained `r signif(logpca_model_qualities$prop_deviance_expl, 3)*100`% of the deviance. We draw on the first of the three leader quality components for interpretation and additional analyses and identify this component as a *Prestige vs. Dominance* measure. Low values on Leader qualities PC 1 (Prestige vs. Dominance) are strongly associated with the variables *Experienced/accomplished* and *Knowledgeable/intelligence* and moderately associated with *Oratory skill* and *Innovative*. High values are strongly associated with *Polygnous* and *Coercive authority* and moderately associated with *Many children* and *High quality spouse*. Therefore, the "dominance" side of the *Prestige vs. Dominance* component is also closely liked to reproduction. Measures of physical formidability and aggressiveness are also moderately associated with the "dominance" side of this component. See Figure \@ref(fig:qualitiesPCplot).  
 
 ```{r qualitiesPCplot, fig.width=15, fig.height=10, fig.cap="Logistic PCA loadings of coded leader qualitiy variables on the first two components."}
 logisticPCA_loadings_plot(logpca_model_qualities, data = pca_data_qualities2)
 ```
 
-Similarly, a three-rank logistic PCA on the `r length(function_vars)` coded leader function variables with $m$ set at `r logpca_model_functions$m` via cross-validation explained `r signif(logpca_model_functions$prop_deviance_expl, 3)*100`% of the deviance. The first Leader functions component distinguishes between interpersonal mediation functions and group organizational and social functions, we define as a *Mediation vs. Organization* measures. Low values on Leader functions PC 1 (Mediation vs. Organization) are strongly associated with the variables *Resolve conflict* and *Provide counsel/direction* and moderately associated with *Political appointments* and *Punishment*, whereas high values are strongly associated with *Social functions* and *Organize cooperation* and moderately associated with *Ritual functions*. See Figure \@ref(fig:functionsPCplot).
+Similarly, A logistic PCA on the `r length(quality_vars)` coded leader quality variables, with rank $k=`r dim(logpca_model_functions$U)[2]`$ optimized by cross-validation, `r signif(logpca_model_functions$prop_deviance_expl, 3)*100`% of the deviance. The first Leader functions component distinguishes between interpersonal mediation functions and group organizational and social functions, we define as a *Mediation vs. Organization* measures. Low values on Leader functions PC 1 (Mediation vs. Organization) are strongly associated with the variables *Resolve conflict* and *Provide counsel/direction* and moderately associated with *Political appointments* and *Punishment*, whereas high values are strongly associated with *Social functions* and *Organize cooperation* and moderately associated with *Ritual functions*. See Figure \@ref(fig:functionsPCplot).
 
 
 ```{r functionsPCplot, fig.width=15, fig.height=10, fig.cap="Logistic PCA loadings of coded leader function variables on the first two components."}
