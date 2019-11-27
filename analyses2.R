@@ -168,9 +168,19 @@ plot(m_pvclust_qual)
 pvrect(m_pvclust_qual, alpha = 0.9)
 dev.off()
 
+pdf(file = "Figures/m_pvclust_qual_jaccard.pdf", width=12, height=8)
+plot(m_pvclust_qual_jaccard)
+pvrect(m_pvclust_qual_jaccard, alpha = 0.9)
+dev.off()
+
 pdf(file = "Figures/m_pvclust_fun.pdf", width=12, height=8)
 plot(m_pvclust_fun)
 pvrect(m_pvclust_fun, alpha = 0.9)
+dev.off()
+
+pdf(file = "Figures/m_pvclust_fun_jaccard.pdf", width=12, height=8)
+plot(m_pvclust_fun_jaccard)
+pvrect(m_pvclust_fun_jaccard, alpha = 0.9)
 dev.off()
 
 # plot(qual_func_clust)
@@ -786,7 +796,7 @@ plot_group_subsis <-
   ggplot(df_groups) +
   geom_mosaic(aes(x = product(group, subsistence), fill = group)) +
   labs(x="", y="", fill = "Group type") +
-  guides(fill = NULL) +
+  guides(fill = guide_legend(reverse = T)) +
   theme_bw(15) #+ theme(legend.position = "none") 
 plot_group_subsis
 
