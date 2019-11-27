@@ -163,11 +163,15 @@ plot.variable.support_costs_benefits
 
 # Cluster plots -----------------------------------------------------------
 
+pdf(file = "Figures/m_pvclust_qual.pdf", width=12, height=8)
 plot(m_pvclust_qual)
 pvrect(m_pvclust_qual, alpha = 0.9)
+dev.off()
 
+pdf(file = "Figures/m_pvclust_fun.pdf", width=12, height=8)
 plot(m_pvclust_fun)
 pvrect(m_pvclust_fun, alpha = 0.9)
+dev.off()
 
 # plot(qual_func_clust)
 # pvrect(qual_func_clust, alpha = 0.9)

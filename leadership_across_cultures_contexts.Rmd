@@ -159,7 +159,7 @@ p_map
 
 The type of group to which a leader text referred was coded into seven categories. Figure \@ref(fig:groupsex) indicates the proportion of text records that were categorized into each of these groups; it also indicates the proportion of male and female leaders of each type of group.
 
-```{r groupsex, fig.width=15, fig.cap="The distribution of text records by group type and leader sex. Areas of the bars are proportional to the number of text records in that category. There were no female leaders in any military or religious group."}
+```{r groupsex, fig.width=15, fig.height=15, fig.cap="The distribution of text records by group type and leader sex. Areas of the bars are proportional to the number of text records in that category. There were no female leaders in any military or religious group."}
 plot_group_sex
 ```
 
@@ -179,13 +179,15 @@ The most common *qualities* of leaders are being of high social status (document
 ## Cluster analyses
 
 ```{r qualcluster, fig.cap="Cluster analysis of leader quality variables. Distances are $1 - cor$. Ward agglomeration method. p-values computed with 10,000 bootstrap samples using the pvclust package [@pvclust2015]."}
-plot(m_pvclust_qual)
-pvrect(m_pvclust_qual, alpha = 0.9)
+# plot(m_pvclust_qual)
+# pvrect(m_pvclust_qual, alpha = 0.9)
+knitr::include_graphics("Figures/m_pvclust_qual.final.png")
 ```
 
 ```{r funcluster, fig.cap="Cluster analysis of leader function variables. Distances are $1 - cor$. Ward agglomeration method. p-values computed with 10,000 bootstrap samples using the pvclust package [@pvclust2015]."}
-plot(m_pvclust_fun)
-pvrect(m_pvclust_fun, alpha = 0.9)
+# plot(m_pvclust_fun)
+# pvrect(m_pvclust_fun, alpha = 0.9)
+knitr::include_graphics("Figures/m_pvclust_fun.final.png")
 ```
 
 ## Principle components analyses
