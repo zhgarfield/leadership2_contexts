@@ -127,7 +127,7 @@ To reduce the dimensionality of the `r length(quality_vars)` quality variables a
 
 # Results
 
-The geographic distribution of the cultures in our sample is displayed in Figure \@ref(fig:geographic), with cultures labeled by mode of subsistence and represented by a symbol proportional to the number of documents that provide ethnographic texts for that culture (for details, see Table S1). The `r nrow(leader_text2)` text records from `r length(unique(leadershipdata::documents$d_ID))` unique documents describing `r length(unique(leader_text2$d_culture))` cultures were generally short, with a median word count of X, a mean of X, and standard deviation of X. The vast majority of text records pertained to male leadership (`r male_leader_pct`%) and very few pertained to female leadership (`r female_leader_pct`%), with some records not sex-specific.
+The geographic distribution of the cultures in our sample is displayed in Figure \@ref(fig:geographic), with cultures labeled by mode of subsistence and represented by a symbol proportional to the number of documents that provide ethnographic texts for that culture (for details, see Table S1). The `r nrow(leader_text2)` text records from `r length(unique(leadershipdata::documents$d_ID))` unique documents describing `r length(unique(leader_text2$d_culture))` cultures were generally short, with a median word count of X, a mean of X, and standard deviation of X. The vast majority of text records pertained to male leadership (`r male_leader_pct`%) and very few pertained to female leadership (`r female_leader_pct`%), with some records not sex-specific. There were female leaders in almost all types of groups, however, except military and religious. Female leaders did tend to lead at the kin group and other residential subgroups, though: `r female_residential_pct`% of female leaders led at the residential subgroup level, for instance, compared to `r male_residential_pct`% of male leaders.
 
 ```{r geographic, fig.width=15, fig.cap="The geographical distributions of cultures in this analysis. Symbol shapes indicate mode of subsistence and symbol size indicates the number of documents available for that culture."}
 library(maps)
@@ -155,12 +155,12 @@ p_map
 
 <!-- NEED TO DISCUSS 1187 and split records.  -->
 
-## Distribution of text records by group type and sex
+## Distribution of text records by mode of subsistence and group type
 
-The type of group to which a leader text referred was coded into seven categories. Figure \@ref(fig:groupsex) indicates the proportion of text records that were categorized into each of these groups; it also indicates the proportion of male and female leaders of each type of group.
+The type of group to which a leader text referred was coded into seven categories. Figure \@ref(fig:groupsex) indicates the proportion of text records that were categorized into each of these groups.
 
-```{r groupsex, fig.width=15, fig.height=15, fig.cap="The distribution of text records by group type and leader sex. Areas of the bars are proportional to the number of text records in that category. There were no female leaders in any military or religious group."}
-plot_group_sex
+```{r groupsex, fig.width=20, fig.height=10, fig.cap="The distribution of text records by subsistence and group type. Areas of the bars are proportional to the number of text records in that category."}
+plot_group_subsis #+ plot_group_sex
 ```
 
 

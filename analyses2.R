@@ -758,39 +758,54 @@ statuspolytxts <- sum(leader_text2$qualities.polygynous & leader_text2$qualities
 
 # Group structure by sex --------------------------------------------------
 
-xtabs(~group.structure2 + demo_sex, leader_text2)
-
-df_groupsex <- 
+df_groups <- 
   leader_text2 %>% 
   dplyr::select(
     group.structure2,
-    demo_sex
+    demo_sex,
+    subsistence
   ) %>% 
-  dplyr::filter(demo_sex != 'both', demo_sex != 'unknown', group.structure2 != 'other') %>% 
+  dplyr::filter(group.structure2 != 'other') %>% 
   mutate(
-    demo_sex = factor(demo_sex, levels = c('male', 'female'))
+    demo_sex = factor(demo_sex, levels = c('male', 'female')),
+    group =   factor(
+      group.structure2,
+      levels = c(
+        'residential subgroup',
+        'kin group',
+        'economic group',
+        'political group (community)',
+        'political group (supracommunity)',
+        'religious group',
+        'military group'
+      )
+    )
   )
 
-# df_groupsex$demo_sex[df_groupsex$demo_sex != 'both',]
-# df_groupsex$demo_sex <- factor(df_groupsex$demo_sex, levels = c('male', 'female', 'both', 'unknown'))
+plot_group_subsis <-
+  ggplot(df_groups) +
+  geom_mosaic(aes(x = product(group, subsistence), fill = group)) +
+  labs(x="", y="", fill = "Group type") +
+  guides(fill = NULL) +
+  theme_bw(15) #+ theme(legend.position = "none") 
+plot_group_subsis
 
-df_groupsex$group.structure2 <- 
-  factor(
-    df_groupsex$group.structure2,
-    levels = c(
-      'residential subgroup',
-      'kin group',
-      'economic group',
-      'political group (community)',
-      'political group (supracommunity)',
-      'religious group',
-      'military group'
-    )
-    )
+df_group_sex <- 
+  df_groups %>% 
+  dplyr::filter(
+    demo_sex != 'both', demo_sex != 'unknown'
+  )
 
 plot_group_sex <- 
-  ggplot(df_groupsex) + 
-  geom_mosaic(aes(x = product(group.structure2, demo_sex), fill = group.structure2)) +
+  ggplot(df_group_sex) + 
+  geom_mosaic(aes(x = product(group, demo_sex), fill = group)) +
+  # scale_fill_viridis_d(option = 'B') +
   labs(x="", y="", fill = "Group type") +
   guides(fill = guide_legend(reverse = T)) +
-  theme_bw()
+  theme_bw(15) + theme(axis.text.y=element_blank())
+plot_group_sex
+
+group_sex_tbl <- xtabs(~demo_sex+group.structure2, leader_text2)
+female_residential_pct <- signif(group_sex_tbl['female', 'residential subgroup']/sum(leader_text$demo_sex == 'female'), 3)*100
+male_residential_pct <- signif(group_sex_tbl['male', 'residential subgroup']/sum(leader_text$demo_sex == 'male'), 3)*100
+
