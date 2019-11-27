@@ -69,7 +69,7 @@ Among societies with institutionalized social stratification, such as chiefdoms 
 
 Within state-level societies including non-industrial kingdoms leadership positions are proscribed and institutionalized. Ruling classes, parties, or political bodies monopolize social and political influence and maintain control through a variety of mechanisms including military force, ideological systems, and through the control of information and propaganda. 
 
-Across discplines many theoretical models and empirical findings have implicated high intelligence as an important quality positively associated with effective leadership [@johnson_leadership_2015; @judge_intelligence_2004; @neel_being_1980; @antonakis_does_2009]. Recent evidence from within managerial studies suggests a curvilinear effect in that exceptionally intelligence individuals at high end of the distribution may not be the most effective leaders in contemporary business settings [@antonakis_can_2017].
+Across disciplines many theoretical models and empirical findings have implicated high intelligence as an important quality positively associated with effective leadership [@johnson_leadership_2015; @judge_intelligence_2004; @neel_being_1980; @antonakis_does_2009]. Recent evidence from within managerial studies suggests a curvilinear effect in that exceptionally intelligence individuals at high end of the distribution may not be the most effective leaders in contemporary business settings [@antonakis_can_2017].
 
 
 
@@ -92,7 +92,7 @@ Leaders and high-status individuals are also more likely to be the recipients of
 
 Across diverse populations and organizations, community leaders, political leaders, and organization leaders tend to have greater mating opportunities and therefore, given the aforementioned male-bias in top leadership positions, these leaders also tend to have greater reproductive success. In a phylogenetic multilevel metaanalysis of 288 reported statistical associations among nonindustrial societies, @von_rueden_mens_2016 found that most measures of reproductive success were positively associated with male social status, independent of subsistence type or status measure. 
 
-@von_rueden_leadership_2015 outilne four possible mechanisms by which leaders in small-scale societies might offset the potential costs associated with various leadership roles; leaders may, (1) facilitate collective actions that yield net benefits to themselves or their close kin, (2) claim a fee for their services, such a tax or greater share of returns, (3) recieve reciprocal exchange in other currencies from followers who have benefited from their services, or (4) may gain other social or reproductive benefits by signaling their high quality as a mate and social partner.
+@von_rueden_leadership_2015 outline four possible mechanisms by which leaders in small-scale societies might offset the potential costs associated with various leadership roles; leaders may, (1) facilitate collective actions that yield net benefits to themselves or their close kin, (2) claim a fee for their services, such a tax or greater share of returns, (3) receive reciprocal exchange in other currencies from followers who have benefited from their services, or (4) may gain other social or reproductive benefits by signaling their high quality as a mate and social partner.
 
 
 
@@ -159,11 +159,17 @@ There are numerous approaches to detecting features in matrix data such as ours,
 
 Prior to analysis we removed all rows that had no evidence for any variable, which resulted in `r nrow(pca_data_qualities)` text records for the leader quality variables and `r nrow(pca_data_functions)` text records for the leader function variables. We optimized rank, $k$, and a tuning parameter, $m$ (the value to approximate the saturated model), using cross-validation, per recommendation of the package authors.
 
+<!-- To idenfity natural groupings of variables among the research coded leader quality and leader function measures, we conducted two cluster anlayses using the pvclust package [@suzuki_pvclust:_2015]. These analyses allow us to interpret *post-hoc* (1) the degree to which coded variables relate to established theoretical models, (2) identify potential phenotypic profiles of leaders, and (3) offer empirical and theoretical future directions related to suites of qualities or functions likely to covary. -->
+
+All analyses were conducted with R version...
+
+
 We also performed hierarchical cluster analysis on our quality and function variables. We computed distance between our binary vectors using both $1-cor(x, y)$ and asymmetric binary distance (Jaccard distance), and agglomerated using the Ward algorithm. We assessed the robustness of the clusters using the pvclust package [@suzuki_pvclust2006], which computes an unbiased probability that a cluster appears in bootstrapped samples. We used 10,000 bootstrapped samples.
 
 Our third goal was to determine which leader and follower benefits and costs were most commonly mentioned in the ethnographic record.
 
 Our fourth goal was to explore associations between the principle components of leader qualities and functions, and culture-level variables such as mode of subsistence, social complexity, population density, and group size. We used linear mixed effects models from the lme4 package [@xx], with PC1 and PC2 as outcome variables, culture-level variables as predictors, and documents nested within cultures as grouping variables for random intercepts. 
+>>>>>>> 59ccacb71b5cc33ebe98b5790a61cccb17f65052
 
 # Results
 
@@ -218,11 +224,19 @@ The most common *qualities* of leaders are being of high social status (document
 
 ## Cluster analyses
 
+Within each cluster analyses, we computed the distance between two variables as $1 - cor (v_i,. v_j)$, so that the distance between highly correlated variables is close to $0$, the distance between uncorrelated variables is close to $1$, and the distance between uncorrelated variables us close to $2$. Using the pvclust package [@suzuki_pvclust:_2015] we clustered the variables using the matrix of all pairwise distances using the Ward aggolomeration algorithm. 
+
+Figure \@ref(fig:qualcluster) displays a dendrogram from the cluster analysis of the `r length(quality_vars)` ledaer quality variables and Figure \@ref(fig:funcluster) displays a dendrogram from the cluster analysis of the `r length(function_vars)`. Each cluster analysis includes two estimates of significance for how strongly each cluster within the dendrogram is supported by the data. We rely on the AU (Approximately Unbiased) *p* values, which are computed by multiscale bootstrap resampling and represented as percentages (e.g., clusters with AU values $>95$ are strongly supported, and the top-level clusters are automatically highlighted by rectangles).
+
 ```{r qualcluster, fig.cap="Cluster analysis of leader quality variables. Distances are $1 - cor$. Ward agglomeration method. p-values computed with 10,000 bootstrap samples using the pvclust package [@pvclust2015]."}
 # plot(m_pvclust_qual)
 # pvrect(m_pvclust_qual, alpha = 0.9)
 knitr::include_graphics("Figures/m_pvclust_qual.final.png")
 ```
+
+The leader quality cluster analysis (Figure \@ref(fig:qualcluster)) idenfitified two top-level clusters. Within each top-level cluster we identify two interpretable and generally strongly supported sub-clusters which are annotated with text. Within the first top-level cluster, we identify a dominant/shaman cluster, which suggests a strong link between dominance-based leadership (e.g., *Authority*, *Aggressiveness*, *Feared*) and shamanism (e.g., *Supernatural*, *Artistic performance*). The second sub-cluster includes qualities of leaders related to material, social, and reproductive success. 
+
+
 
 ```{r funcluster, fig.cap="Cluster analysis of leader function variables. Distances are $1 - cor$. Ward agglomeration method. p-values computed with 10,000 bootstrap samples using the pvclust package [@pvclust2015]."}
 # plot(m_pvclust_fun)
@@ -230,15 +244,17 @@ knitr::include_graphics("Figures/m_pvclust_qual.final.png")
 knitr::include_graphics("Figures/m_pvclust_fun.final.png")
 ```
 
+
+
 ## Principle components analyses
 
-A logistic PCA on the `r length(quality_vars)` coded leader quality variables, with rank $k=`r dim(logpca_model_qualities$U)[2]`$ optimized by cross-validation, explained `r signif(logpca_model_qualities$prop_deviance_expl, 3)*100`% of the deviance. We draw on the first two leader quality components for interpretation and additional analyses and identify this component as a *Prestige vs. Dominance* measure. Low values on Leader qualities PC 1 (Prestige vs. Dominance) are strongly associated with the variables *Experienced/accomplished* and *Knowledgeable/intelligence* and moderately associated with *Oratory skill* and *Innovative*. High values are strongly associated with *Polygnous* and *Coercive authority* and moderately associated with *Many children* and *High quality spouse*. Therefore, the "dominance" side of the *Prestige vs. Dominance* component is also closely liked to reproduction. Measures of physical formidability and aggressiveness are also moderately associated with the "dominance" side of this component. See Figure \@ref(fig:qualitiesPCplot).  
+A logistic PCA on the `r length(quality_vars)` coded leader quality variables, with rank $k = `r dim(logpca_model_qualities$U)[2]`$ and  $m = `r logpca_model_qualities$m`$ optimized by cross-validation, explained `r signif(logpca_model_qualities$prop_deviance_expl, 3)*100`% of the deviance. We draw on the first two leader quality components for interpretation and additional analyses. We identify the first component (PC1) as a *Prestige vs. Dominance* measure. Low values on Leader qualities PC 1 are strongly associated with the variables *Experienced/accomplished* and *Knowledgeable/intelligence* and moderately associated with *Confidence* and *Bravery*. High values are strongly associated with *Polygnous* and *Authority* and moderately associated with *High quality spouse*. Therefore, the "dominance" side of the *Prestige vs. Dominance* component is also closely liked to reproduction, as demonstrated in the cluster analysis (Figure \@ref(fig:qualcluster)). Measures of physical formidability and aggressiveness are also moderately associated with the "dominance" side of this component. See Figure \@ref(fig:qualitiesPCplot). The second leader qualities component we identify as an *In-group favoritism vs. Social Status* measure. Low values on the Leader qualities PC 2 are strongly associated with *Aggressiveness*, *Bravery*, *Xenophobia*, and *Loyalty*. High Values are strongly associated with *High status* and moderately associated with *Fairness* and *Age* and *Decisiveness/decision-making*. 
 
 ```{r qualitiesPCplot, fig.width=15, fig.height=10, fig.cap="Logistic PCA loadings of coded leader qualitiy variables on the first two components."}
 logisticPCA_loadings_plot(logpca_model_qualities, data = pca_data_qualities2)
 ```
 
-Similarly, A logistic PCA on the `r length(function_vars)` coded leader function variables, with rank $k=`r dim(logpca_model_functions$U)[2]`$ optimized by cross-validation, `r signif(logpca_model_functions$prop_deviance_expl, 3)*100`% of the deviance. The first Leader functions component distinguishes between interpersonal mediation functions and group organizational and social functions, we define as a *Mediation vs. Organization* measures. Low values on Leader functions PC 1 (Mediation vs. Organization) are strongly associated with the variables *Resolve conflict* and *Provide counsel/direction* and moderately associated with *Political appointments* and *Punishment*, whereas high values are strongly associated with *Social functions* and *Organize cooperation* and moderately associated with *Ritual functions*. See Figure \@ref(fig:functionsPCplot).
+Similarly, A logistic PCA on the `r length(function_vars)` coded leader function variables, with rank $k=`r dim(logpca_model_functions$U)[2]`$ and $m = `r logpca_model_functions$m`$ optimized by cross-validation, `r signif(logpca_model_functions$prop_deviance_expl, 3)*100`% of the deviance. The first Leader functions component distinguishes between social functions and general prosocial function from other more specific leader functions, which we identify as a *Social functions* component. High values on Leader function PC 1 are strongly associated with *Social functions*. The Leader functions PC 2 distinguished between organizational and mediation-based functions, which we identify as a *Organization vs. Mediation* component. Low values on Leader functions PC 2 are strongly associated with the variables *Organize cooperation* and *Political appointments*, whereas high values are strongly associated with *Resolve conflict* and moderately associated with *Provide counsel/direction*. See Figure \@ref(fig:functionsPCplot).
 
 
 ```{r functionsPCplot, fig.width=15, fig.height=10, fig.cap="Logistic PCA loadings of coded leader function variables on the first two components."}
@@ -247,7 +263,9 @@ logisticPCA_loadings_plot(logpca_model_functions, data = pca_data_functions2)
 
 ## Benefits and costs of leadership and followership
 
-Leaders are most commonly receiving benefits in the form of greater access to resources and increased social status. Receiving social services and mating benefits are also relatively frequent benefits of leadership cross-culturally. The costs follow the potential benefits and leaders stand to lose their high social status and greater access to resources. Followers on the other hand most commonly benefit from leadership systems through receiving resources and social services. Mating and fitness benefits are relatively rare for followers. Followers most frequently incur costs in the form of resources lost and in providing social services. For both leaders and followers, individuals stand to lose what they are able to gain. The clear differences lie in leaders' opportunities for increased social status and matting opportunities. See Figure \@ref(fig:varsupportcb).
+Leaders are most commonly receiving benefits in the form of greater access to mateiral resources and increased social status. Receiving social services, mating benefits, and food benefits are also relatively frequent benefits of leadership cross-culturally. The costs follow the potential benefits and leaders stand to lose their high social status and greater access to resources. 
+
+Followers on the other hand also benefit from leadership systems through receiving material resources but otherwise most frequently benefit through social *services* provided. Mating and fitness benefits are relatively rare for followers. Followers most frequently incur costs in the form of material resources lost and in providing social services. For both leaders and followers, individuals stand to lose what they are able to gain. The clear differences lie in leaders' opportunities for increased social status and matting opportunities. See Figure \@ref(fig:varsupportcb).
 
 ```{r varsupportcb, echo=FALSE, warning=FALSE, message=F, fig.width=15, fig.height=11, fig.cap="Support for each coded variable for the costs and benefits of leadership and followership. Blue circles: percent of text records with evidence of support (95% CI computed with a binomial mixed effects models with random intercept for author nested within culture). Red triangles: percent of cultures with evidence of support (95% CI computed with a cluster bootstrap)."}
 plot.variable.support_costs_benefits
@@ -267,6 +285,10 @@ For predictor variables we incorporate additional population-level measures. We 
 ```
 
 # Discussion
+
+## Limitations 
+
+
 
 # References
 
