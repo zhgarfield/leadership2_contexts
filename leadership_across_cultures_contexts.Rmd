@@ -168,8 +168,7 @@ We also performed hierarchical cluster analysis on our quality and function vari
 
 Our third goal was to determine which leader and follower benefits and costs were most commonly mentioned in the ethnographic record.
 
-Our fourth goal was to explore associations between the principle components of leader qualities and functions, and culture-level variables such as mode of subsistence, social complexity, population density, and group size. We used linear mixed effects models from the lme4 package [@xx], with PC1 and PC2 as outcome variables, culture-level variables as predictors, and documents nested within cultures as grouping variables for random intercepts. 
->>>>>>> 59ccacb71b5cc33ebe98b5790a61cccb17f65052
+Our fourth goal was to explore associations between the principle components of leader qualities and functions, and culture-level variables such as mode of subsistence, social complexity, population density, and group size. We used linear mixed effects models from the lme4 package [@bates2015], with PC1 and PC2 as outcome variables, culture-level variables as predictors, and documents nested within cultures as grouping variables for random intercepts. 
 
 # Results
 
