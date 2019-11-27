@@ -225,7 +225,7 @@ The most common *qualities* of leaders are being of high social status (document
 
 ## Cluster analyses
 
-Within each cluster analyses, we computed the distance between two variables as $1 - cor (v_i, v_j)$, so that the distance between highly correlated variables is close to $0$, the distance between uncorrelated variables is close to $1$, and the distance between uncorrelated variables us close to $2$. Using the pvclust package [@suzuki_pvclust:_2015] we clustered the variables using the matrix of all pairwise distances using the Ward aggolomeration algorithm. 
+Within each cluster analyses, we computed the distance between two variables as $1 - cor (v_i, v_j)$, so that the distance between highly correlated variables is close to $0$, the distance between uncorrelated variables is close to $1$, and the distance between uncorrelated variables us close to $2$. Using the pvclust package [@suzuki_pvclust2006] we clustered the variables using the matrix of all pairwise distances using the Ward aggolomeration algorithm. 
 
 Figure \@ref(fig:qualcluster) displays a dendrogram from the cluster analysis of the `r length(quality_vars)` leader quality variables and Figure \@ref(fig:funcluster) displays a dendrogram from the cluster analysis of the `r length(function_vars)` leader function variables. Each cluster analysis includes two estimates of significance for how strongly each cluster within the dendrogram is supported by the data. We rely on the AU (Approximately Unbiased) *p* values, which are computed by multiscale bootstrap resampling and represented as percentages (e.g., clusters with AU values $>95$ are strongly supported, and the top-level clusters are automatically highlighted by rectangles).
 
