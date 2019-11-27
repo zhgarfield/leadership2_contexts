@@ -131,7 +131,7 @@ Here we draw on the same database of 1212 ethnographic paragraphs (termed text r
 
 The operationalized qualities and functions (See Table \@ref(tab:qualfuncvars)) were developed from the ethnographic text records in the database. First ZG read a subset of text records and developed initial variable lists and operationalizations of the qualities and functions in those text records. Then, KS coded all 1212 text records (in a random order) for the operationalized qualities, functions, cost, and benefits, while also creating new variables and operationalizations for additional qualities and functions encountered. After coding half of the random sample KS and ZG revised the operational definitions to produce the final list of variables in Table \@ref(tab:qualfuncvars). ZG then followed the same process of coding the entire sample of 1212 text records for the `r length(c(quality_vars, function_vars, leader_cost_vars, leader_benefit_vars, follower_benefit_vars, follower_cost_vars))` operationalized variables. DISCUSS IRR. ZG and KS then discussed every instance of disagreement between their respective coding to produce a consensus matrix, which is used in the analyses here and added to the published data repository (a data frame named leader_text2).
 
-```{r qualfuncvars, echo=FALSE, message=F, warning=FALSE, eval=F}
+```{r qualfuncvars, echo=FALSE, message=F, warning=FALSE}
 library(readr)
 qual_func_var_tab<-read_csv('func_qual_definitions.csv', na = 'NA')
 library(knitr)
@@ -140,7 +140,7 @@ kable(qual_func_var_tab, caption = "Operational definitions for coded leader qua
 
 Coding operationalizations of the costs and benefits of leadership were developed *a priori* based on our reading of the evolutionary theoretical literature from anthropology and biology. For both followers and leaders, we code if there is evidence of costs or benefits in the following categories: social status, reduced or increased risk of harm or conflict, social services, territory, mating, fitness, food resources, material resources, and other miscellaneous costs or benefits not captured by these categories. See Table \@ref(tab:costbenefitvars).
 
-```{r costbenefitvars, echo=FALSE, message=F, warning=FALSE, eval=F}
+```{r costbenefitvars, echo=FALSE, message=F, warning=FALSE}
 library(readr)
 cost_benefit_vars_tab<-read_csv('costs_benefits.csv', na = 'NA')
 library(knitr)
