@@ -12,6 +12,7 @@ library(leadershipdata)
 
 # Load libraries ----------------------------------------------------------
 library(tidyverse)
+library(tidytext)
 library(forcats)
 library(NMF)
 library(pvclust)
@@ -756,6 +757,8 @@ visreg(m_qPC2)
 
 # Compute values ----------------------------------------------------------
 
+final_record_count <- sum(rowSums(leader_text2[all_study_vars])>0)
+
 male_leader_pct <- signif(100*sum(leader_text2$demo_sex=='male', na.rm=T)/nrow(leader_text2), 3)
 female_leader_pct <- signif(100*sum(leader_text2$demo_sex=='female', na.rm=T)/nrow(leader_text2), 2)
 
@@ -765,6 +768,18 @@ statustxts <- sum(leader_text2$qualities_high.status)
 intellpolytxts <- sum(leader_text2$qualities.polygynous & leader_text2$qualities.knowlageable.intellect)
 statuspolytxts <- sum(leader_text2$qualities.polygynous & leader_text2$qualities_high.status)
 
+# text analysis
+# leader_text has 1000 rows
+# need raw texts for all 1212 rows
+
+textstats <- leader_text %>% 
+  dplyr::select(cs_textrec_ID, raw_text) %>% 
+  unnest_tokens(word, raw_text) %>% 
+  # dplyr::filter(is.na(as.numeric(word))) %>% # filters out numbers, some of which are page numbers
+  group_by(cs_textrec_ID) %>% 
+  summarise(count = n()) %>% 
+  summarise(min = min(count), max = max(count), mean = mean(count), median = median(count), sd = sd(count)) %>% 
+  round(1)
 
 # Group structure by sex --------------------------------------------------
 
