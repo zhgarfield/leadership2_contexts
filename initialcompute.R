@@ -224,8 +224,8 @@ for (m in models){
     intercept = cfs$coefficients[[1]]
     se = cfs$coefficients[[2]]
     value = c(value, logit.inv(intercept))
-    y_se = c(y_se, logit.inv(intercept + se))
-    y_negse = c(y_negse, logit.inv(intercept - se))           
+    y_se = c(y_se, logit.inv(intercept + 2*se))
+    y_negse = c(y_negse, logit.inv(intercept - 2*se))           
     
   }
 }
@@ -370,8 +370,8 @@ for (m in models){
     intercept = cfs$coefficients[[1]]
     se = cfs$coefficients[[2]]
     value = c(value, logit.inv(intercept))
-    y_se = c(y_se, logit.inv(intercept + se))
-    y_negse = c(y_negse, logit.inv(intercept - se))           
+    y_se = c(y_se, logit.inv(intercept + 2*se))
+    y_negse = c(y_negse, logit.inv(intercept - 2*se))           
     
   }
 }
