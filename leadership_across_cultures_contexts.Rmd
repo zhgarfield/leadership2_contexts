@@ -5,6 +5,7 @@ date: "4/25/2019"
 output: 
   bookdown::html_document2
 bibliography: Leader2.bib
+csl: evolution-and-human-behavior.csl
 ---
 
 ```{r setup, include=FALSE}
