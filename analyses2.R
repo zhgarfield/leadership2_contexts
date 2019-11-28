@@ -12,6 +12,7 @@ library(leadershipdata)
 
 # Load libraries ----------------------------------------------------------
 library(tidyverse)
+library(tidytext)
 library(forcats)
 library(NMF)
 library(pvclust)
@@ -83,6 +84,8 @@ leader_text2$pop_density <-
       "over 500 persons / sq. mile"
     )
   )
+
+all_study_vars <- c(function_vars, quality_vars, leader_benefit_vars, leader_cost_vars, follower_benefit_vars, follower_cost_vars)
 
 # Variable support plots --------------------------------------------------
 
@@ -168,20 +171,20 @@ plot(m_pvclust_qual)
 pvrect(m_pvclust_qual, alpha = 0.9)
 dev.off()
 
-pdf(file = "Figures/m_pvclust_qual_jaccard.pdf", width=12, height=8)
-plot(m_pvclust_qual_jaccard)
-pvrect(m_pvclust_qual_jaccard, alpha = 0.9)
-dev.off()
+# pdf(file = "Figures/m_pvclust_qual_jaccard.pdf", width=12, height=8)
+# plot(m_pvclust_qual_jaccard)
+# pvrect(m_pvclust_qual_jaccard, alpha = 0.9)
+# dev.off()
 
 pdf(file = "Figures/m_pvclust_fun.pdf", width=12, height=8)
 plot(m_pvclust_fun)
 pvrect(m_pvclust_fun, alpha = 0.9)
 dev.off()
 
-pdf(file = "Figures/m_pvclust_fun_jaccard.pdf", width=12, height=8)
-plot(m_pvclust_fun_jaccard)
-pvrect(m_pvclust_fun_jaccard, alpha = 0.9)
-dev.off()
+# pdf(file = "Figures/m_pvclust_fun_jaccard.pdf", width=12, height=8)
+# plot(m_pvclust_fun_jaccard)
+# pvrect(m_pvclust_fun_jaccard, alpha = 0.9)
+# dev.off()
 
 # plot(qual_func_clust)
 # pvrect(qual_func_clust, alpha = 0.9)
@@ -756,6 +759,8 @@ visreg(m_qPC2)
 
 # Compute values ----------------------------------------------------------
 
+final_record_count <- sum(rowSums(leader_text2[all_study_vars])>0)
+
 male_leader_pct <- signif(100*sum(leader_text2$demo_sex=='male', na.rm=T)/nrow(leader_text2), 3)
 female_leader_pct <- signif(100*sum(leader_text2$demo_sex=='female', na.rm=T)/nrow(leader_text2), 2)
 
@@ -765,6 +770,18 @@ statustxts <- sum(leader_text2$qualities_high.status)
 intellpolytxts <- sum(leader_text2$qualities.polygynous & leader_text2$qualities.knowlageable.intellect)
 statuspolytxts <- sum(leader_text2$qualities.polygynous & leader_text2$qualities_high.status)
 
+# text analysis
+# leader_text has 1000 rows
+# need raw texts for all 1212 rows
+
+textstats <- leader_text %>% 
+  dplyr::select(cs_textrec_ID, raw_text) %>% 
+  unnest_tokens(word, raw_text) %>% 
+  # dplyr::filter(is.na(as.numeric(word))) %>% # filters out numbers, some of which are page numbers
+  group_by(cs_textrec_ID) %>% 
+  summarise(count = n()) %>% 
+  summarise(min = min(count), max = max(count), mean = mean(count), median = median(count), sd = sd(count)) %>% 
+  round(1)
 
 # Group structure by sex --------------------------------------------------
 
@@ -786,8 +803,8 @@ df_groups <-
         'economic group',
         'political group (community)',
         'political group (supracommunity)',
-        'religious group',
-        'military group'
+        'military group',
+        'religious group'
       )
     )
   )
