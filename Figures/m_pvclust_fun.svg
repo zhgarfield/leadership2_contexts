@@ -12,9 +12,9 @@
    version="1.1"
    id="svg2"
    xml:space="preserve"
-   width="848.31195"
+   width="764.14526"
    height="1042.7133"
-   viewBox="0 0 848.31195 1042.7133"
+   viewBox="0 0 764.14526 1042.7133"
    sodipodi:docname="m_pvclust_fun.svg"
    inkscape:version="0.92.2 5c3e80d, 2017-08-06"><metadata
      id="metadata8"><rdf:RDF><cc:Work
@@ -43,10 +43,10 @@
      fit-margin-right="0"
      fit-margin-bottom="0"
      inkscape:zoom="0.6839332"
-     inkscape:cx="292.56916"
-     inkscape:cy="508.72596"
-     inkscape:window-x="646"
-     inkscape:window-y="230"
+     inkscape:cx="431.47162"
+     inkscape:cy="508.72585"
+     inkscape:window-x="318"
+     inkscape:window-y="25"
      inkscape:window-maximized="0"
      inkscape:current-layer="g10" /><g
      id="g10"
@@ -1091,7 +1091,7 @@
            id="path568"
            inkscape:connector-curvature="0" /></g></g><text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:30px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.75"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.75"
        x="520.88422"
        y="161.08049"
        id="text1377"
@@ -1100,10 +1100,10 @@
          id="tspan1375"
          x="520.88422"
          y="161.08049"
-         style="stroke-width:0.75">Prosocial</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.75">Prosocial</tspan></text>
 <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:30px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.75"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.75"
        x="522.14398"
        y="564.62866"
        id="text1385"
@@ -1112,5 +1112,5 @@
          id="tspan1383"
          x="522.14398"
          y="564.62866"
-         style="stroke-width:0.75">Organization</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.75">Organization</tspan></text>
 </g></svg>
