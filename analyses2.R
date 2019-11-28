@@ -85,6 +85,8 @@ leader_text2$pop_density <-
     )
   )
 
+all_study_vars <- c(function_vars, quality_vars, leader_benefit_vars, leader_cost_vars, follower_benefit_vars, follower_cost_vars)
+
 # Variable support plots --------------------------------------------------
 
 # Functions & qualities
@@ -801,8 +803,8 @@ df_groups <-
         'economic group',
         'political group (community)',
         'political group (supracommunity)',
-        'religious group',
-        'military group'
+        'military group',
+        'religious group'
       )
     )
   )

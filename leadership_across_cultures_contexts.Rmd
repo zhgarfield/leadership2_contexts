@@ -157,18 +157,17 @@ Our second goal was to discover "features" in our data, e.g., to determine if pa
 
 There are numerous approaches to detecting features in matrix data such as ours, many of which employ various dimensionality reduction and clustering techniques. To reduce the dimensionality of the `r length(quality_vars)` leader quality variables and the `r length(function_vars)` leader function variables, all of which take binary values (0, 1), we used logistic PCA from the logisticPCA package. This algorithm projects the natural parameters of the saturated model onto the lower $k-$dimension space that minimizes the Bernoulli deviance [@logisticPCA].
 
-Prior to analysis we removed all rows that had no evidence for any variable, which resulted in `r nrow(pca_data_qualities)` text records for the leader quality variables and `r nrow(pca_data_functions)` text records for the leader function variables. We optimized rank, $k$, and a tuning parameter, $m$ (the value to approximate the saturated model), using cross-validation, per recommendation of the package authors.
+Prior to analysis we removed all rows that had no evidence for any variable, which resulted in `r nrow(pca_data_qualities)` text records for the leader quality variables and `r nrow(pca_data_functions)` text records for the leader function variables. We used cross-validation to optimize rank, $k$, and a tuning parameter, $m$ (the value to approximate the saturated model), per recommendation of the package authors.
 
 <!-- To idenfity natural groupings of variables among the research coded leader quality and leader function measures, we conducted two cluster anlayses using the pvclust package [@suzuki_pvclust:_2015]. These analyses allow us to interpret *post-hoc* (1) the degree to which coded variables relate to established theoretical models, (2) identify potential phenotypic profiles of leaders, and (3) offer empirical and theoretical future directions related to suites of qualities or functions likely to covary. -->
-
-All analyses were conducted with R version...
-
 
 We also performed hierarchical cluster analysis on our quality and function variables. We computed distance between our binary vectors using both $1-cor(x, y)$ and asymmetric binary distance (Jaccard distance), and agglomerated using the Ward algorithm. We assessed the robustness of the clusters using the pvclust package [@suzuki_pvclust2006], which computes an unbiased probability that a cluster appears in bootstrapped samples. We used 10,000 bootstrapped samples.
 
 Our third goal was to determine which leader and follower benefits and costs were most commonly mentioned in the ethnographic record.
 
 Our fourth goal was to explore associations between the principle components of leader qualities and functions, and culture-level variables such as mode of subsistence, social complexity, population density, and group size. We used linear mixed effects models from the lme4 package [@bates2015], with PC1 and PC2 as outcome variables, culture-level variables as predictors, and documents nested within cultures as grouping variables for random intercepts. 
+
+All analyses were conducted with `r R.version.string`.
 
 # Results
 
@@ -276,7 +275,7 @@ plot.variable.support_costs_benefits
 
 To explore potential population variation in the *Prestige vs. Dominance* leader qualities component and the *Mediation vs. Organization* leader functions component, we fit a series of hierarchical linear models at the text-level, using nested random effects of document within culture with these components as outcome measures. 
 
-For predictor variables we incorporate additional population-level measures. We rely on a modified classification of subsistence from the HRAF, collapsing “hunter-gatherers” and “primarily hunter-gatherers” into a single category, “huntergatherers,” and by collapsing “agro-pastoralists” and “pastoralists” into a single “pastoralists” category. We renamed the eHRAF’s “Other” subsistence category, which is applied to societies with various combinations of hunting, fishing, gathering, pastoralism, and horticulture or intensive agriculture, as “mixed.” This produced a subsistence classification with five groups: Hunter-gatherers, Pastoralists, Horticulturalists, Agriculturalists, and Mixed. 
+For predictor variables we incorporate additional population-level measures. We rely on a modified classification of subsistence from the HRAF, collapsing “hunter-gatherers” and “primarily hunter-gatherers” into a single category, “hunter-gatherers,” and by collapsing “agro-pastoralists” and “pastoralists” into a single “pastoralists” category. We renamed the eHRAF’s “Other” subsistence category, which is applied to societies with various combinations of hunting, fishing, gathering, pastoralism, and horticulture or intensive agriculture, as “mixed.” This produced a subsistence classification with five groups: Hunter-gatherers, Pastoralists, Horticulturalists, Agriculturalists, and Mixed. 
 
 <!-- We drew on the Standard Cross-Cultural Sample (SCCS) database [@murdock_standard_1969] for additional population-level measures, which scores 186 cultures on many qualitative or quantitative variables, such as kinship system, dependence on agriculture, and social stratification. Fifty of these cultures are the same as, or very similar to, cultures in the PSF. Specifically, we use the SCCS measures of community size, population density, and cultural complexity. Using these measures as covariates allows us to determine the degree to which, an aggregate measure of cultural complexity, mode of subsistence, or measures of community size and population dispersal most strongly impact the qualities and functions of leaders. We also include our researcher coded measure of group structure (See Table X) as a predictor.   -->
 

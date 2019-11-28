@@ -57,8 +57,6 @@ leader_cost_vars <- lt2vars[str_detect(lt2vars, 'leader.costs')]
 follower_benefit_vars <- lt2vars[str_detect(lt2vars, 'follower.benefits')]
 follower_cost_vars <- lt2vars[str_detect(lt2vars, 'follower.costs')]
 
-all_study_vars <- c(function_vars, quality_vars, leader_benefit_vars, leader_cost_vars, follower_benefit_vars, follower_cost_vars)
-
 # Aggregate at Culture level ----------------------------------------------
 
 # df that links the ids of texts, docs, and cultures
