@@ -229,7 +229,7 @@ Within each cluster analyses, we computed the distance between two variables as 
 
 Figure \@ref(fig:cluster)A displays a dendrogram from the cluster analysis of the `r length(quality_vars)` leader quality variables and Figure \@ref(fig:cluster)B displays a dendrogram from the cluster analysis of the `r length(function_vars)` leader function variables. Each cluster analysis includes two estimates of significance for how strongly each cluster within the dendrogram is supported by the data. We rely on the AU (Approximately Unbiased) *p* values, which are computed by multiscale bootstrap resampling and represented as percentages (e.g., clusters with AU values $>95$ are strongly supported, and the top-level clusters are automatically highlighted by rectangles).
 
-```{r cluster, fig.cap="Cluster analysis of leader quality variables (left) and leader function variables (right). Distances are $1 - cor$. Ward agglomeration method. p-values computed with 10,000 bootstrap samples using the pvclust package [@pvclust2015]."}
+```{r cluster, fig.cap="Cluster analysis of leader quality variables (left) and leader function variables (right). Distances are $1 - cor$. Ward agglomeration method. AU p-values (red) computed with 10,000 bootstrap samples using the pvclust package [@pvclust2015]."}
 # plot(m_pvclust_qual)
 # pvrect(m_pvclust_qual, alpha = 0.9)
 knitr::include_graphics("Figures/m_pvclust.both.png")
