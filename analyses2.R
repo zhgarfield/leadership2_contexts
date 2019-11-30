@@ -485,7 +485,7 @@ AIC(m_fPC1)
 
 m_fPC1_sub_plot <- visreg(m_fPC1, "subsistence", type = "contrast", gg = T) +
   labs(y = "Functions PC 1: \nSocial functions\n",
-       x = "\nSubsistence")
+       x = "\nSubsistence type")
 m_fPC1_group_plot <- visreg(m_fPC1, "group.structure2", type = "contrast", gg = T) + 
   labs(y = "Functions PC 1: \nSocial functions\n",
        x = "\nGroup type")
@@ -511,7 +511,7 @@ AIC(m_fPC2)
 
 m_fPC2_sub_plot <- visreg(m_fPC2, "subsistence", type = "contrast", gg = T) +
   labs(y = "Functions PC 2: \nOrganization vs. Mediation\n",
-       x = "\nSubsistence")
+       x = "\nSubsistence type")
 m_fPC2_group_plot <- visreg(m_fPC2, "group.structure2", type = "contrast", gg = T) +
   labs(y = "Functions PC 2: \nOrganization vs. Mediation\n",
        x = "\nGroup type")
@@ -537,7 +537,7 @@ Anova(m_qPC1)
 
 m_qPC1_sub_plot <- visreg(m_qPC1, "subsistence", type = "contrast", gg = T) +
   labs(y = "Qualities PC 1: \nPrestige vs. Dominance\n",
-       x = "\nSubsistence")
+       x = "\nSubsistence type")
 m_qPC1_group_plot <- visreg(m_qPC1, "group.structure2", type = "contrast", gg = T) +
   labs(y = "Qualities PC 1: \nPrestige vs. Dominance\n",
        x = "\nGroup type")
@@ -561,7 +561,7 @@ Anova(m_qPC2)
 
 m_qPC2_sub_plot <- visreg(m_qPC2, "subsistence", type = "contrast", gg = T) + 
   labs(y = "Qualities PC 2: \nIn-group favoritism vs. Social Status\n",
-       x = "\nSubsistence")
+       x = "\nSubsistence type")
 m_qPC2_group_plot <- visreg(m_qPC2, "group.structure2", type = "contrast", gg = T) +
   labs(y = "Qualities PC 2: \nIn-group favoritism vs. Social Status\n",
        x = "\nGroup type")
