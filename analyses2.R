@@ -481,7 +481,17 @@ m_fPC1 <- lmer(
 summary(m_fPC1)
 Anova(m_fPC1)
 AIC(m_fPC1)
-visreg(m_fPC1)
+
+
+m_fPC1_sub_plot <- visreg(m_fPC1, "subsistence", type = "contrast", gg = T) +
+  labs(y = "Functions PC 1: \nSocial functions\n",
+       x = "\nSubsistence")
+m_fPC1_group_plot <- visreg(m_fPC1, "group.structure2", type = "contrast", gg = T) + 
+  labs(y = "Functions PC 1: \nSocial functions\n",
+       x = "\nGroup type")
+
+m_fPC1_sub_plot + m_fPC1_group_plot
+
 
 m_fPC2 <- lmer(
   fPC2 ~
@@ -498,7 +508,15 @@ m_fPC2 <- lmer(
 summary(m_fPC2)
 Anova(m_fPC2)
 AIC(m_fPC2)
-visreg(m_fPC2)
+
+m_fPC2_sub_plot <- visreg(m_fPC2, "subsistence", type = "contrast", gg = T) +
+  labs(y = "Functions PC 2: \nOrganization vs. Mediation\n",
+       x = "\nSubsistence")
+m_fPC2_group_plot <- visreg(m_fPC2, "group.structure2", type = "contrast", gg = T) +
+  labs(y = "Functions PC 2: \nOrganization vs. Mediation\n",
+       x = "\nGroup type")
+
+m_fPC2_sub_plot + m_fPC2_group_plot
 
 # Leader qualities
 
@@ -516,7 +534,15 @@ m_qPC1 <- lmer(
 )
 summary(m_qPC1)
 Anova(m_qPC1)
-visreg(m_qPC1)
+
+m_qPC1_sub_plot <- visreg(m_qPC1, "subsistence", type = "contrast", gg = T) +
+  labs(y = "Qualities PC 1: \nPrestige vs. Dominance\n",
+       x = "\nSubsistence")
+m_qPC1_group_plot <- visreg(m_qPC1, "group.structure2", type = "contrast", gg = T) +
+  labs(y = "Qualities PC 1: \nPrestige vs. Dominance\n",
+       x = "\nGroup type")
+
+m_qPC1_sub_plot + m_qPC1_group_plot
 
 m_qPC2 <- lmer(
   qPC2 ~
@@ -532,7 +558,17 @@ m_qPC2 <- lmer(
 )
 summary(m_qPC2)
 Anova(m_qPC2)
-visreg(m_qPC2)
+
+m_qPC2_sub_plot <- visreg(m_qPC2, "subsistence", type = "contrast", gg = T) + 
+  labs(y = "Qualities PC 2: \nIn-group favoritism vs. Social Status\n",
+       x = "\nSubsistence")
+m_qPC2_group_plot <- visreg(m_qPC2, "group.structure2", type = "contrast", gg = T) +
+  labs(y = "Qualities PC 2: \nIn-group favoritism vs. Social Status\n",
+       x = "\nGroup type")
+
+m_qPC2_sub_plot + m_qPC2_group_plot
+
+
 # #visreg(m_fPC1, xvar = 'warfare_freq', by = 'group.structure2')
 # 
 # # Predict top functions
@@ -806,16 +842,47 @@ df_groups <-
         'military group',
         'religious group'
       )
-    )
-  )
+    ),
+    subsistence = factor(
+      subsistence,
+      levels = c("hunter gatherers",
+                 "pastoralists",
+                 "mixed",
+                 "horticulturalists",
+                 "agriculturalists"
+                 )
+      )
+)
 
 plot_group_subsis <-
   ggplot(df_groups) +
   geom_mosaic(aes(x = product(group, subsistence), fill = group)) +
   labs(x="", y="", fill = "Group type") +
   guides(fill = guide_legend(reverse = T)) +
-  theme_bw(15) #+ theme(legend.position = "none") 
-plot_group_subsis
+  theme_bw(15) + 
+  theme(axis.text.x = element_text(size=16),
+        axis.text.y = element_text(size=16)) +
+  scale_y_productlist(labels = c("Residential subgroup",
+                                 "Kin group",
+                                 "Economic group",
+                                 "Political group\n(community)",
+                                 "Political group\n(supracommunity)",
+                                 "Military group",
+                                 "Religious group")) +
+  scale_x_productlist(labels = c("Hunter-gatherers",
+                                 "Pastoralists",
+                                 "Mixed",
+                                 "Horticulturalists",
+                                 "Agriculturalists")) + 
+  scale_fill_discrete(labels = c("Residential subgroup",
+                                  "Kin group",
+                                  "Economic group",
+                                  "Political group (community)",
+                                  "Political group (supracommunity)",
+                                  "Military group",
+                                  "Religious group"))
+plot_group_subsis 
+
 
 df_group_sex <- 
   df_groups %>% 
@@ -835,4 +902,11 @@ plot_group_sex
 group_sex_tbl <- xtabs(~demo_sex+group.structure2, leader_text2)
 female_residential_pct <- signif(group_sex_tbl['female', 'residential subgroup']/sum(leader_text$demo_sex == 'female'), 3)*100
 male_residential_pct <- signif(group_sex_tbl['male', 'residential subgroup']/sum(leader_text$demo_sex == 'male'), 3)*100
+
+group_sub_tbl <- xtabs(~subsistence+group.structure2, leader_text2)
+
+hg_residential_pct <- signif(group_sub_tbl['hunter gatherers', 'residential subgroup']/sum(leader_text$subsistence == 'hunter gatherers'), 3)*100
+
+hg_kin_pct <- signif(group_sub_tbl['hunter gatherers', 'kin group']/sum(leader_text$subsistence == 'hunter gatherers'), 3)*100
+hort_kin_pct <- signif(group_sub_tbl['horticulturalists', 'kin group']/sum(leader_text$subsistence == 'horticulturalists'), 3)*100
 
