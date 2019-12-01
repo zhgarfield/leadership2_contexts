@@ -872,7 +872,7 @@ textstats <- leader_text %>%
   summarise(min = min(count), max = max(count), mean = mean(count), median = median(count), sd = sd(count)) %>% 
   round(1)
 
-# Group structure by sex --------------------------------------------------
+# Group structure by subsistence --------------------------------------------------
 
 df_groups <- 
   leader_text2 %>% 
@@ -912,28 +912,34 @@ plot_group_subsis <-
   geom_mosaic(aes(x = product(group, subsistence), fill = group)) +
   labs(x="", y="", fill = "Group type") +
   guides(fill = guide_legend(reverse = T)) +
-  theme_bw(15) + 
-  theme(axis.text.x = element_text(size=16),
-        axis.text.y = element_text(size=16)) +
-  scale_y_productlist(labels = c("Residential subgroup",
-                                 "Kin group",
-                                 "Economic group",
-                                 "Political group\n(community)",
-                                 "Political group\n(supracommunity)",
-                                 "Military group",
-                                 "Religious group")) +
-  scale_x_productlist(labels = c("Hunter-gatherers",
-                                 "Pastoralists",
-                                 "Mixed",
-                                 "Horticulturalists",
-                                 "Agriculturalists")) + 
-  scale_fill_discrete(labels = c("Residential subgroup",
-                                  "Kin group",
-                                  "Economic group",
-                                  "Political group (community)",
-                                  "Political group (supracommunity)",
-                                  "Military group",
-                                  "Religious group"))
+  theme_bw(15) 
+
+# Leave off for now. Might not need this.
+# + 
+#   theme(axis.text.x = element_text(size=16),
+#         axis.text.y = element_text(size=16)) +
+
+# This code screws up the plot somehow
+#   scale_y_productlist(labels = c("Residential subgroup",
+#                                  "Kin group",
+#                                  "Economic group",
+#                                  "Political group\n(community)",
+#                                  "Political group\n(supracommunity)",
+#                                  "Military group",
+#                                  "Religious group")) +
+#   scale_x_productlist(labels = c("Hunter-gatherers",
+#                                  "Pastoralists",
+#                                  "Mixed",
+#                                  "Horticulturalists",
+#                                  "Agriculturalists")) + 
+#   scale_fill_discrete(labels = c("Residential subgroup",
+#                                   "Kin group",
+#                                   "Economic group",
+#                                   "Political group (community)",
+#                                   "Political group (supracommunity)",
+#                                   "Military group",
+#                                   "Religious group"))
+
 plot_group_subsis 
 
 
@@ -952,14 +958,15 @@ plot_group_sex <-
   theme_bw(15) + theme(axis.text.y=element_blank())
 plot_group_sex
 
+
+# Compute values ----------------------------------------------------------
+
 group_sex_tbl <- xtabs(~demo_sex+group.structure2, leader_text2)
 female_residential_pct <- signif(group_sex_tbl['female', 'residential subgroup']/sum(leader_text$demo_sex == 'female'), 3)*100
 male_residential_pct <- signif(group_sex_tbl['male', 'residential subgroup']/sum(leader_text$demo_sex == 'male'), 3)*100
 
 group_sub_tbl <- xtabs(~subsistence+group.structure2, leader_text2)
-
 hg_residential_pct <- signif(group_sub_tbl['hunter gatherers', 'residential subgroup']/sum(leader_text$subsistence == 'hunter gatherers'), 3)*100
-
 hg_kin_pct <- signif(group_sub_tbl['hunter gatherers', 'kin group']/sum(leader_text$subsistence == 'hunter gatherers'), 3)*100
 hort_kin_pct <- signif(group_sub_tbl['horticulturalists', 'kin group']/sum(leader_text$subsistence == 'horticulturalists'), 3)*100
 
