@@ -514,6 +514,14 @@ m_pvclust_qual_jaccard <- pvclust(
   parallel = T
 )
 
+m_pvclust_qual_euc <- pvclust(
+  pca_data_qualities2, 
+  method.hclust = 'ward', 
+  method.dist = 'euclidean', 
+  nboot = 10000,
+  parallel = T
+)
+
 m_pvclust_fun <- 
   pvclust(
     pca_data_functions2, 
@@ -523,12 +531,20 @@ m_pvclust_fun <-
     parallel = T
   )
 
-library(pvclust)
 m_pvclust_fun_jaccard <- 
   pvclust(
     pca_data_functions2, 
     method.hclust = 'ward', 
     method.dist = 'binary', 
+    nboot = 10000,
+    parallel = T
+  )
+
+m_pvclust_fun_euc <- 
+  pvclust(
+    pca_data_functions2, 
+    method.hclust = 'ward', 
+    method.dist = 'euclidean', 
     nboot = 10000,
     parallel = T
   )

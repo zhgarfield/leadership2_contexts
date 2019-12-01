@@ -30,7 +30,7 @@ library(modelr)
 library(ggridges)
 library(RColorBrewer)
 library(ggmosaic)
-
+library(proxy)
 # Load precomputed objects ------------------------------------------------
 
 # First run initialcompute.R, which takes ~90 minutes on my machine,
@@ -680,8 +680,61 @@ visreg(m_qPC2)
 # 
 # 
 # 
-# # Heatmaps -----------------------------------------------------------------
-# # Heatmaps -----------------------------------------------------------------
+# Heatmaps -----------------------------------------------------------------
+
+# Heatmap of qualities with Euclidean distance
+
+heatmap(
+  t(as.matrix(pca_data_qualities2)),
+  hclustfun = function(x) hclust(x, method = 'ward.D'),
+  scale = 'none'
+  )
+
+# aheatmap version
+
+aheatmap(
+  t(as.matrix(pca_data_qualities2)),
+  distfun = "euclidean", 
+  hclustfun = "ward",
+  scale = "none",
+  filename = "Figures/heatmap_qualities_euc.pdf"
+)
+
+aheatmap(
+  t(as.matrix(pca_data_qualities2)),
+  Rowv = c('correlation', 'ward'),
+  Colv = c('euclidean', 'ward'),
+  scale = "none",
+  filename = "Figures/heatmap_qualities_euc_cor.pdf"
+)
+
+# # Heatmap of qualities with cor & binary distance
+
+heatmap(
+  t(as.matrix(pca_data_qualities2)),
+  hclustfun = function(x) hclust(x, method = 'ward.D'),
+  distfun = function(x) proxy::dist(x, method = 'binary'),
+  scale = 'none'
+  )
+
+# Heatmap of functions with Euclidean distance
+
+# heatmap(
+#   t(as.matrix(pca_data_functions2)),
+#   hclustfun = function(x) hclust(x, method = 'ward.D'),
+#   scale = 'none',
+#   main = "Functions with Euclidean distance"
+# )
+# 
+# # Heatmap of functions with cor distance
+# heatmap(
+#   t(as.matrix(pca_data_functions2)),
+#   hclustfun = function(x) hclust(x, method = 'ward.D'),
+#   distfun = function(x) proxy::dist(x, method = 'correlation'),
+#   scale = 'none',
+#   main = "Functions with Correlation distance"
+# )
+
 # heatmap_data<-leader_text2[,c(quality_vars, "group.structure2")]
 # 
 # #Temporary, -1 and 1 coudl 0 out
@@ -801,10 +854,10 @@ df_groups <-
         'residential subgroup',
         'kin group',
         'economic group',
-        'political group (community)',
-        'political group (supracommunity)',
+        'religious group',
         'military group',
-        'religious group'
+        'political group (community)',
+        'political group (supracommunity)'
       )
     )
   )
