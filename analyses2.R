@@ -846,31 +846,6 @@ heatmap(
 # library(NMF)
 # m_nmf <- nmf(t(pca_data_qualities2), rank = 2:10)
 
-# Compute values ----------------------------------------------------------
-
-final_record_count <- sum(rowSums(leader_text2[all_study_vars])>0)
-
-male_leader_pct <- signif(100*sum(leader_text2$demo_sex=='male', na.rm=T)/nrow(leader_text2), 3)
-female_leader_pct <- signif(100*sum(leader_text2$demo_sex=='female', na.rm=T)/nrow(leader_text2), 2)
-
-intelltxts <- sum(leader_text2$qualities.knowlageable.intellect)
-polytxts <- sum(leader_text2$qualities.polygynous)
-statustxts <- sum(leader_text2$qualities_high.status)
-intellpolytxts <- sum(leader_text2$qualities.polygynous & leader_text2$qualities.knowlageable.intellect)
-statuspolytxts <- sum(leader_text2$qualities.polygynous & leader_text2$qualities_high.status)
-
-# text analysis
-# leader_text has 1000 rows
-# need raw texts for all 1212 rows
-
-textstats <- leader_text %>% 
-  dplyr::select(cs_textrec_ID, raw_text) %>% 
-  unnest_tokens(word, raw_text) %>% 
-  # dplyr::filter(is.na(as.numeric(word))) %>% # filters out numbers, some of which are page numbers
-  group_by(cs_textrec_ID) %>% 
-  summarise(count = n()) %>% 
-  summarise(min = min(count), max = max(count), mean = mean(count), median = median(count), sd = sd(count)) %>% 
-  round(1)
 
 # Group structure by subsistence --------------------------------------------------
 
@@ -970,3 +945,26 @@ hg_residential_pct <- signif(group_sub_tbl['hunter gatherers', 'residential subg
 hg_kin_pct <- signif(group_sub_tbl['hunter gatherers', 'kin group']/sum(leader_text$subsistence == 'hunter gatherers'), 3)*100
 hort_kin_pct <- signif(group_sub_tbl['horticulturalists', 'kin group']/sum(leader_text$subsistence == 'horticulturalists'), 3)*100
 
+final_record_count <- sum(rowSums(leader_text2[all_study_vars])>0)
+
+male_leader_pct <- signif(100*sum(leader_text2$demo_sex=='male', na.rm=T)/nrow(leader_text2), 3)
+female_leader_pct <- signif(100*sum(leader_text2$demo_sex=='female', na.rm=T)/nrow(leader_text2), 2)
+
+intelltxts <- sum(leader_text2$qualities.knowlageable.intellect)
+polytxts <- sum(leader_text2$qualities.polygynous)
+statustxts <- sum(leader_text2$qualities_high.status)
+intellpolytxts <- sum(leader_text2$qualities.polygynous & leader_text2$qualities.knowlageable.intellect)
+statuspolytxts <- sum(leader_text2$qualities.polygynous & leader_text2$qualities_high.status)
+
+# text analysis
+# leader_text has 1000 rows
+# need raw texts for all 1212 rows
+
+textstats <- leader_text %>% 
+  dplyr::select(cs_textrec_ID, raw_text) %>% 
+  unnest_tokens(word, raw_text) %>% 
+  # dplyr::filter(is.na(as.numeric(word))) %>% # filters out numbers, some of which are page numbers
+  group_by(cs_textrec_ID) %>% 
+  summarise(count = n()) %>% 
+  summarise(min = min(count), max = max(count), mean = mean(count), median = median(count), sd = sd(count)) %>% 
+  round(1)
