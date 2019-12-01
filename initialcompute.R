@@ -306,7 +306,7 @@ var_names <- c(
   "qualities.innovative"            = "Innovative",
   "qualities.knowlageable.intellect" = "Knowledgeable/intelligent",
   "qualities.oratory.skill"         = "Oratory skill",
-  "qualities.polygynous"            = "Polygnous",
+  "qualities.polygynous"            = "Polygynous",
   "qualities.social.contacts"       = "Social contacts",
   "qualities.supernatural"    = "Supernatural",
   "qualities_exp.accomplished"       = "Experienced/accomplished",
