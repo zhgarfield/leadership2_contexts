@@ -509,10 +509,10 @@ summary(m_fPC2)
 Anova(m_fPC2)
 AIC(m_fPC2)
 
-m_fPC2_sub_plot <- visreg(m_fPC2, "subsistence", type = "contrast", gg = T) +
+m_fPC2_sub_plot <- visreg(m_fPC2, "subsistence", type = "conditional", gg = T) +
   labs(y = "Functions PC 2: \nOrganization vs. Mediation\n",
        x = "\nSubsistence type")
-m_fPC2_group_plot <- visreg(m_fPC2, "group.structure2", type = "contrast", gg = T) +
+m_fPC2_group_plot <- visreg(m_fPC2, "group.structure2", type = "conditional", gg = T) +
   labs(y = "Functions PC 2: \nOrganization vs. Mediation\n",
        x = "\nGroup type")
 
@@ -568,6 +568,26 @@ m_qPC2_group_plot <- visreg(m_qPC2, "group.structure2", type = "contrast", gg = 
 
 m_qPC2_sub_plot + m_qPC2_group_plot
 
+
+
+# TMP models
+
+tmp <- glmer(
+  function_resolve.conflcit ~
+    #qualities_component1 +
+    subsistence +
+    #c_cultural_complexity +
+    #pop_density +
+    #com_size +
+    group.structure2 +
+    # warfare_freq +
+    (1|d_culture/doc_ID),
+  family = binomial(link = "logit"),
+  data=leader_text2
+)
+summary(tmp)
+Anova(tmp)
+visreg(tmp)
 
 # #visreg(m_fPC1, xvar = 'warfare_freq', by = 'group.structure2')
 # 
@@ -909,4 +929,50 @@ hg_residential_pct <- signif(group_sub_tbl['hunter gatherers', 'residential subg
 
 hg_kin_pct <- signif(group_sub_tbl['hunter gatherers', 'kin group']/sum(leader_text$subsistence == 'hunter gatherers'), 3)*100
 hort_kin_pct <- signif(group_sub_tbl['horticulturalists', 'kin group']/sum(leader_text$subsistence == 'horticulturalists'), 3)*100
+
+
+
+# Violin plots of PCs by group vars ---------------------------------------
+
+
+ggplot(pca_data_qualities, aes(group.structure2, qPC1))+
+  geom_violin()+
+  geom_jitter(height = 0, width = 0.1) +
+  geom_boxplot(width=.15)
+
+ggplot(pca_data_qualities, aes(group.structure2, qPC2))+
+  geom_violin()+
+  geom_jitter(height = 0, width = 0.1) +
+  geom_boxplot(width=.15)
+
+ggplot(pca_data_qualities, aes(subsistence, qPC1))+
+  geom_violin()+
+  geom_jitter(height = 0, width = 0.1) +
+  geom_boxplot(width=.15)
+
+ggplot(pca_data_qualities, aes(subsistence, qPC2))+
+  geom_violin()+
+  geom_jitter(height = 0, width = 0.1) +
+  geom_boxplot(width=.15)
+
+ggplot(pca_data_functions, aes(group.structure2, fPC1))+
+  geom_violin()+
+  geom_jitter(height = 0, width = 0.1) +
+  geom_boxplot(width=.15)
+
+ggplot(pca_data_functions, aes(subsistence, fPC1))+
+  geom_violin()+
+  geom_jitter(height = 0, width = 0.1) +
+  geom_boxplot(width=.15)
+
+ggplot(pca_data_functions, aes(subsistence, fPC2))+
+  geom_violin()+
+  geom_jitter(height = 0, width = 0.1) +
+  geom_boxplot(width=.15)
+
+ggplot(pca_data_functions, aes(group.structure2, fPC2))+
+  geom_violin()+
+  geom_jitter(height = 0, width = 0.1) +
+  geom_boxplot(width=.15)
+
 
