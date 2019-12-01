@@ -22,7 +22,6 @@ library(visreg)
 library(effects)
 library(lme4)
 library(patchwork)
-library(pvclust)
 library(magrittr)
 library(modelr)
 library(ggridges)
@@ -280,7 +279,7 @@ var_names <- c(
   "functions_protection"          = "Protection",
   "functions_provide.subsistence" = "Provide subsistence",
   "functions_ritual"              = "Ritual functions",
-  "functions_social.functions" = "Social functions",
+  "functions_social.functions" = "Misc. social functions",
   "qualities_artistic.performance"     = "Artistic performance",
   "qualities_generous"                 = "Generosity",
   "qualities.age"                      = "Age",
@@ -503,6 +502,22 @@ m_pvclust_qual <- pvclust(
   method.hclust = 'ward', 
   method.dist = 'correlation', 
   nboot = 10000,
+  parallel = T
+)
+
+# m_pvclust_qual_texts <- pvclust(
+#   t(pca_data_qualities2), 
+#   method.hclust = 'ward', 
+#   method.dist = 'correlation', 
+#   nboot = 1000,
+#   parallel = T
+# )
+
+m_pvclust_qual_texts_euc <- pvclust(
+  t(pca_data_qualities2),
+  method.hclust = 'ward',
+  method.dist = 'euclidean',
+  nboot = 1000,
   parallel = T
 )
 
