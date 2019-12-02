@@ -1017,7 +1017,7 @@ statuspolytxts <- sum(leader_text2$qualities.polygynous & leader_text2$qualities
 # leader_text has 1000 rows
 # need raw texts for all 1212 rows
 
-textstats <- leader_text %>% 
+textstats <- text_records %>% 
   dplyr::select(cs_textrec_ID, raw_text) %>% 
   unnest_tokens(word, raw_text) %>% 
   # dplyr::filter(is.na(as.numeric(word))) %>% # filters out numbers, some of which are page numbers
