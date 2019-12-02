@@ -513,13 +513,13 @@ m_pvclust_qual <- pvclust(
 #   parallel = T
 # )
 
-m_pvclust_qual_texts_euc <- pvclust(
-  t(pca_data_qualities2),
-  method.hclust = 'ward',
-  method.dist = 'euclidean',
-  nboot = 1000,
-  parallel = T
-)
+# m_pvclust_qual_texts_euc <- pvclust(
+#   t(pca_data_qualities2),
+#   method.hclust = 'ward',
+#   method.dist = 'euclidean',
+#   nboot = 1000,
+#   parallel = T
+# )
 
 m_pvclust_qual_jaccard <- pvclust(
   pca_data_qualities2, 

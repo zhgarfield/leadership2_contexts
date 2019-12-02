@@ -264,17 +264,17 @@ plot(logpca_model_functions, type = "scores") +
 
 # PCA Qualities & Functions -----------------------------------------------
 
-# logpca_model_qfk2 = logisticPCA(pca_data_FQ[c(function_vars, quality_vars)], k = 2, m = which.min(logpca_cv_qfk2), main_effects = T)
-# plot(logpca_model_qfk2, type = 'scores')
-# logisticPCA_loadings_plot(logpca_model_qfk2, data = pca_data_FQ[,c(function_vars, quality_vars)])
+logpca_model_qfk2 = logisticPCA(pca_data_FQ[c(function_vars, quality_vars)], k = 2, m = which.min(logpca_cv_qfk2), main_effects = T)
+plot(logpca_model_qfk2, type = 'scores')
+logisticPCA_loadings_plot(logpca_model_qfk2, data = pca_data_FQ[,c(function_vars, quality_vars)])
 # 
 # pca_data_FQ$fqPC1k2 <- logpca_model_qfk2$PCs[,1]
 # pca_data_FQ$fqPC2k2 <- logpca_model_qfk2$PCs[,2]
 # leader_text2 <- left_join(leader_text2, pca_data_FQ[c('cs_textrec_ID', 'fqPC1k2', 'fqPC2k2')])
 # 
-# logpca_model_qf = logisticPCA(pca_data_FQ[c(function_vars, quality_vars)], k = kqf, m = which.min(logpca_cv_qf), main_effects = T)
+logpca_model_qf = logisticPCA(pca_data_FQ[c(function_vars, quality_vars)], k = kqf, m = mqf, main_effects = T)
 # plot(logpca_model_qf, type = "scores")
-# logisticPCA_loadings_plot(logpca_model_qf, data = pca_data_FQ[c(function_vars, quality_vars)])
+logisticPCA_loadings_plot(logpca_model_qf, data = pca_data_FQ[c(function_vars, quality_vars)])
 # 
 # pca_data_FQ$fqPC1 <- logpca_model_qf$PCs[,1]
 # pca_data_FQ$fqPC2 <- logpca_model_qf$PCs[,2]
@@ -375,7 +375,31 @@ plot(logpca_model_functions, type = "scores") +
 # 
 # 
 # # Exploratory models ------------------------------------------------------
-# 
+
+mqPC1 <- lmer(
+  qPC1 ~ 
+    subsistence + 
+    c_cultural_complexity +
+    com_size +
+    (1|d_culture/doc_ID), 
+  leader_text2
+  )
+summary(mqPC1)
+Anova(mqPC1)
+nobs(mqPC1)
+
+mqPC1k2 <- lmer(
+  qPC1k2 ~ 
+    subsistence + 
+    c_cultural_complexity +
+    com_size +
+    (1|d_culture/doc_ID), 
+  leader_text2
+)
+summary(mqPC1k2)
+Anova(mqPC1k2)
+nobs(mqPC1k2)
+
 # # qc_m<-glm(qualities_component1 ~ c_cultural_complexity + com_size + subsistence, 
 # #          data=leader_text2, family="gaussian")
 # # summary(qc_m)
@@ -738,12 +762,19 @@ aheatmap(
 
 aheatmap(
   t(as.matrix(pca_data_qualities2)),
-  Rowv = c('correlation', 'ward'),
-  Colv = c('euclidean', 'ward'),
+  Rowv = c(distfun='correlation', hclustfun='ward'),
+  Colv = c(distfun='binary', hclustfun='ward'),
   scale = "none",
-  filename = "Figures/heatmap_qualities_euc_cor.pdf"
+  filename = "Figures/heatmap_qualities_bin_cor.pdf"
 )
 
+aheatmap(
+  t(as.matrix(pca_data_functions2)),
+  Rowv = c(distfun='correlation', hclustfun='ward'),
+  Colv = c(distfun='euclidean', hclustfun='ward'),
+  scale = "none",
+  filename = "Figures/heatmap_functions_bin_cor.pdf"
+)
 # # Heatmap of qualities with cor & binary distance
 
 heatmap(
@@ -843,9 +874,15 @@ heatmap(
 
 
 # NMF ---------------------------------------------------------------------
-# library(NMF)
-# m_nmf <- nmf(t(pca_data_qualities2), rank = 2:10)
 
+# library(NMF)
+# m_nmf <- nmf(t(pca_data_qualities2), rank = 2:15)
+# m_nmf5 <- nmf(t(pca_data_qualities2), rank = 5)
+# m_nmfrandom <- nmf(randomize(t(pca_data_qualities2)), rank=2:15)
+
+# pdf(file = 'consensusmap.pdf', width = 20)
+# consensusmap(m_nmf)
+# dev.off()
 
 # Group structure by subsistence --------------------------------------------------
 
