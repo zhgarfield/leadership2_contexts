@@ -232,7 +232,7 @@ Figure \@ref(fig:cluster)A displays a dendrogram from the cluster analysis of th
 ```{r cluster, fig.cap="Cluster analysis of leader quality variables (left) and leader function variables (right). Distances are $1 - cor$. Ward agglomeration method. AU p-values (red) computed with 10,000 bootstrap samples using the pvclust package [@pvclust2015]."}
 # plot(m_pvclust_qual)
 # pvrect(m_pvclust_qual, alpha = 0.9)
-knitr::include_graphics("Figures/m_pvclust.both.png")
+knitr::include_graphics("Figures/m_pvclust.both.svg")
 ```
 
 The leader quality cluster analysis (Figure \@ref(fig:cluster)A) identified two top-level clusters, one that comprised mostly variables related to material, social, and reproductive success, and one that comprised mostly variables indicating the relationship between leaders and their groups, which we term *social orientation*. Within the latter top-level cluster we identify two interpretable though weakly supported sub-clusters which are annotated with text. Within the first top-level cluster, we identify a subcluster mainly comprising variables related to the ability to provide social benefits, and a subcluster mainly comprising variables related to the ability to impose social costs.
