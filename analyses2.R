@@ -192,90 +192,90 @@ dev.off()
 # PCA Qualities ---------------------------------------------------------
 
 # For two PCs only; use optimal m
-m_lpca_qualk2 <- logisticPCA(pca_data_qualities2, k = 2, m = which.min(qual_cvlpcak2), main_effects = T)
-plot(m_lpca_qualk2, type = 'scores')
-logisticPCA_loadings_plot(m_lpca_qualk2, data = pca_data_qualities2)
-
-# Add PC scores to df
-pca_data_qualities$qPC1k2 <- m_lpca_qualk2$PCs[,1]
-pca_data_qualities$qPC2k2 <- m_lpca_qualk2$PCs[,2]
-leader_text2 <- left_join(leader_text2, pca_data_qualities[c('cs_textrec_ID', 'qPC1k2', 'qPC2k2')])
-
-# For optimal k, m determined by cv in initialcompute.R
-kq <- 8
-mq <- 12
-
-logpca_model_qualities = logisticPCA(pca_data_qualities2, k = kq, m = mq, main_effects = T)
-plot(logpca_model_qualities, type = "scores")
-logisticPCA_loadings_plot(logpca_model_qualities, data = pca_data_qualities2)
-
-pca_data_qualities$qPC1 <- logpca_model_qualities$PCs[,1]
-pca_data_qualities$qPC2 <- logpca_model_qualities$PCs[,2]
-leader_text2 <- left_join(leader_text2, pca_data_qualities[c('cs_textrec_ID', 'qPC1', 'qPC2')])
-
-# Indicate group structure of log PCA model
-plot(logpca_model_qualities, type = "scores") + 
-  geom_point(aes(colour=pca_data_qualities$group.structure2)) + 
-  stat_ellipse(aes(colour=pca_data_qualities$group.structure2)) + 
-  ggtitle("Logistic PCA") +
-  scale_colour_brewer(palette = "Set1")
-
-# Indicate subsistence stype of log PCA model
-plot(logpca_model_qualities, type = "scores") + 
-  geom_point(aes(colour=pca_data_qualities$subsistence)) + 
-  ggtitle("Logistic PCA") +
-  scale_colour_brewer(palette = "Set1")
-
-# PCA Functions -----------------------------------------------------------
-
-# Logistic PCA on leader functions
-
-m_lpca_funk2 <- logisticPCA(pca_data_functions2, k = 2, m = which.min(m_lpca_funk2cv), main_effects = T)
-plot(m_lpca_funk2, type = 'score')
-logisticPCA_loadings_plot(m_lpca_funk2, data = pca_data_functions2)
-
-pca_data_functions$fPC1k2 <- m_lpca_funk2$PCs[,1]
-pca_data_functions$fPC2k2 <- m_lpca_funk2$PCs[,2]
-leader_text2 <- left_join(leader_text2, pca_data_functions[c('cs_textrec_ID', 'fPC1k2', 'fPC2k2')])
-
-# For optimal k, m
-kf <- 10 # elbow
-mf <- which.min(fun_cvlpca[kf,])
-
-logpca_model_functions = logisticPCA(pca_data_functions2, k = kf, m = mf, main_effects = T)
-plot(logpca_model_functions, type = 'score')
-logisticPCA_loadings_plot(logpca_model_functions, data = pca_data_functions2)
-
-pca_data_functions$fPC1 <- logpca_model_functions$PCs[,1]
-pca_data_functions$fPC2 <- logpca_model_functions$PCs[,2]
-leader_text2 <- left_join(leader_text2, pca_data_functions[c('cs_textrec_ID', 'fPC1', 'fPC2')])
-
-# Indicate group structure of log PCA model
-plot(logpca_model_functions, type = "scores") + 
-  geom_point(aes(colour=pca_data_functions$group.structure2)) + 
-  ggtitle("Logistic PCA") +
-  scale_colour_brewer(palette = "Set1")
-
-# Indicate subsistence stype of log PCA model
-plot(logpca_model_functions, type = "scores") + 
-  geom_point(aes(colour=pca_data_functions$subsistence)) + 
-  ggtitle("Logistic PCA") +
-  scale_colour_brewer(palette = "Set1")
-
-# PCA Qualities & Functions -----------------------------------------------
-
-logpca_model_qfk2 = logisticPCA(pca_data_FQ[c(function_vars, quality_vars)], k = 2, m = which.min(logpca_cv_qfk2), main_effects = T)
-plot(logpca_model_qfk2, type = 'scores')
-logisticPCA_loadings_plot(logpca_model_qfk2, data = pca_data_FQ[,c(function_vars, quality_vars)])
+# m_lpca_qualk2 <- logisticPCA(pca_data_qualities2, k = 2, m = which.min(qual_cvlpcak2), main_effects = T)
+# plot(m_lpca_qualk2, type = 'scores')
+# logisticPCA_loadings_plot(m_lpca_qualk2, data = pca_data_qualities2)
 # 
-# pca_data_FQ$fqPC1k2 <- logpca_model_qfk2$PCs[,1]
-# pca_data_FQ$fqPC2k2 <- logpca_model_qfk2$PCs[,2]
-# leader_text2 <- left_join(leader_text2, pca_data_FQ[c('cs_textrec_ID', 'fqPC1k2', 'fqPC2k2')])
+# # Add PC scores to df
+# pca_data_qualities$qPC1k2 <- m_lpca_qualk2$PCs[,1]
+# pca_data_qualities$qPC2k2 <- m_lpca_qualk2$PCs[,2]
+# leader_text2 <- left_join(leader_text2, pca_data_qualities[c('cs_textrec_ID', 'qPC1k2', 'qPC2k2')])
 # 
-logpca_model_qf = logisticPCA(pca_data_FQ[c(function_vars, quality_vars)], k = kqf, m = mqf, main_effects = T)
-# plot(logpca_model_qf, type = "scores")
-logisticPCA_loadings_plot(logpca_model_qf, data = pca_data_FQ[c(function_vars, quality_vars)])
+# # For optimal k, m determined by cv in initialcompute.R
+# kq <- 8
+# mq <- 12
 # 
+# logpca_model_qualities = logisticPCA(pca_data_qualities2, k = kq, m = mq, main_effects = T)
+# plot(logpca_model_qualities, type = "scores")
+# logisticPCA_loadings_plot(logpca_model_qualities, data = pca_data_qualities2)
+# 
+# pca_data_qualities$qPC1 <- logpca_model_qualities$PCs[,1]
+# pca_data_qualities$qPC2 <- logpca_model_qualities$PCs[,2]
+# leader_text2 <- left_join(leader_text2, pca_data_qualities[c('cs_textrec_ID', 'qPC1', 'qPC2')])
+# 
+# # Indicate group structure of log PCA model
+# plot(logpca_model_qualities, type = "scores") + 
+#   geom_point(aes(colour=pca_data_qualities$group.structure2)) + 
+#   stat_ellipse(aes(colour=pca_data_qualities$group.structure2)) + 
+#   ggtitle("Logistic PCA") +
+#   scale_colour_brewer(palette = "Set1")
+# 
+# # Indicate subsistence stype of log PCA model
+# plot(logpca_model_qualities, type = "scores") + 
+#   geom_point(aes(colour=pca_data_qualities$subsistence)) + 
+#   ggtitle("Logistic PCA") +
+#   scale_colour_brewer(palette = "Set1")
+# 
+# # PCA Functions -----------------------------------------------------------
+# 
+# # Logistic PCA on leader functions
+# 
+# m_lpca_funk2 <- logisticPCA(pca_data_functions2, k = 2, m = which.min(m_lpca_funk2cv), main_effects = T)
+# plot(m_lpca_funk2, type = 'score')
+# logisticPCA_loadings_plot(m_lpca_funk2, data = pca_data_functions2)
+# 
+# pca_data_functions$fPC1k2 <- m_lpca_funk2$PCs[,1]
+# pca_data_functions$fPC2k2 <- m_lpca_funk2$PCs[,2]
+# leader_text2 <- left_join(leader_text2, pca_data_functions[c('cs_textrec_ID', 'fPC1k2', 'fPC2k2')])
+# 
+# # For optimal k, m
+# kf <- 10 # elbow
+# mf <- which.min(fun_cvlpca[kf,])
+# 
+# logpca_model_functions = logisticPCA(pca_data_functions2, k = kf, m = mf, main_effects = T)
+# plot(logpca_model_functions, type = 'score')
+# logisticPCA_loadings_plot(logpca_model_functions, data = pca_data_functions2)
+# 
+# pca_data_functions$fPC1 <- logpca_model_functions$PCs[,1]
+# pca_data_functions$fPC2 <- logpca_model_functions$PCs[,2]
+# leader_text2 <- left_join(leader_text2, pca_data_functions[c('cs_textrec_ID', 'fPC1', 'fPC2')])
+# 
+# # Indicate group structure of log PCA model
+# plot(logpca_model_functions, type = "scores") + 
+#   geom_point(aes(colour=pca_data_functions$group.structure2)) + 
+#   ggtitle("Logistic PCA") +
+#   scale_colour_brewer(palette = "Set1")
+# 
+# # Indicate subsistence stype of log PCA model
+# plot(logpca_model_functions, type = "scores") + 
+#   geom_point(aes(colour=pca_data_functions$subsistence)) + 
+#   ggtitle("Logistic PCA") +
+#   scale_colour_brewer(palette = "Set1")
+# 
+# # PCA Qualities & Functions -----------------------------------------------
+# 
+# logpca_model_qfk2 = logisticPCA(pca_data_FQ[c(function_vars, quality_vars)], k = 2, m = which.min(logpca_cv_qfk2), main_effects = T)
+# plot(logpca_model_qfk2, type = 'scores')
+# logisticPCA_loadings_plot(logpca_model_qfk2, data = pca_data_FQ[,c(function_vars, quality_vars)])
+# # 
+# # pca_data_FQ$fqPC1k2 <- logpca_model_qfk2$PCs[,1]
+# # pca_data_FQ$fqPC2k2 <- logpca_model_qfk2$PCs[,2]
+# # leader_text2 <- left_join(leader_text2, pca_data_FQ[c('cs_textrec_ID', 'fqPC1k2', 'fqPC2k2')])
+# # 
+# logpca_model_qf = logisticPCA(pca_data_FQ[c(function_vars, quality_vars)], k = kqf, m = mqf, main_effects = T)
+# # plot(logpca_model_qf, type = "scores")
+# logisticPCA_loadings_plot(logpca_model_qf, data = pca_data_FQ[c(function_vars, quality_vars)])
+# # 
 # pca_data_FQ$fqPC1 <- logpca_model_qf$PCs[,1]
 # pca_data_FQ$fqPC2 <- logpca_model_qf$PCs[,2]
 # leader_text2 <- left_join(leader_text2, pca_data_FQ[c('cs_textrec_ID', 'fqPC1', 'fqPC2')])
@@ -376,29 +376,29 @@ logisticPCA_loadings_plot(logpca_model_qf, data = pca_data_FQ[c(function_vars, q
 # 
 # # Exploratory models ------------------------------------------------------
 
-mqPC1 <- lmer(
-  qPC1 ~ 
-    subsistence + 
-    c_cultural_complexity +
-    com_size +
-    (1|d_culture/doc_ID), 
-  leader_text2
-  )
-summary(mqPC1)
-Anova(mqPC1)
-nobs(mqPC1)
-
-mqPC1k2 <- lmer(
-  qPC1k2 ~ 
-    subsistence + 
-    c_cultural_complexity +
-    com_size +
-    (1|d_culture/doc_ID), 
-  leader_text2
-)
-summary(mqPC1k2)
-Anova(mqPC1k2)
-nobs(mqPC1k2)
+# mqPC1 <- lmer(
+#   qPC1 ~ 
+#     subsistence + 
+#     c_cultural_complexity +
+#     com_size +
+#     (1|d_culture/doc_ID), 
+#   leader_text2
+#   )
+# summary(mqPC1)
+# Anova(mqPC1)
+# nobs(mqPC1)
+# 
+# mqPC1k2 <- lmer(
+#   qPC1k2 ~ 
+#     subsistence + 
+#     c_cultural_complexity +
+#     com_size +
+#     (1|d_culture/doc_ID), 
+#   leader_text2
+# )
+# summary(mqPC1k2)
+# Anova(mqPC1k2)
+# nobs(mqPC1k2)
 
 # # qc_m<-glm(qualities_component1 ~ c_cultural_complexity + com_size + subsistence, 
 # #          data=leader_text2, family="gaussian")
@@ -490,128 +490,128 @@ nobs(mqPC1k2)
 # 
 # # Leader functions
 
-m_fPC1 <- lmer(
-  fPC1 ~
-    #qualities_component1 +
-    subsistence +
-    #c_cultural_complexity +
-    #pop_density +
-    #com_size +
-    group.structure2 +
-    # warfare_freq +
-    (1|d_culture/doc_ID),
-  data=leader_text2
-)
-summary(m_fPC1)
-Anova(m_fPC1)
-AIC(m_fPC1)
-
-
-m_fPC1_sub_plot <- visreg(m_fPC1, "subsistence", type = "contrast", gg = T) +
-  labs(y = "Functions PC 1: \nSocial functions\n",
-       x = "\nSubsistence type")
-m_fPC1_group_plot <- visreg(m_fPC1, "group.structure2", type = "contrast", gg = T) + 
-  labs(y = "Functions PC 1: \nSocial functions\n",
-       x = "\nGroup type")
-
-m_fPC1_sub_plot + m_fPC1_group_plot
-
-
-m_fPC2 <- lmer(
-  fPC2 ~
-    #qualities_component1 +
-    subsistence +
-    #c_cultural_complexity +
-    #pop_density +
-    #com_size +
-    group.structure2 +
-    # warfare_freq +
-    (1|d_culture/doc_ID),
-  data=leader_text2
-)
-summary(m_fPC2)
-Anova(m_fPC2)
-AIC(m_fPC2)
-
-m_fPC2_sub_plot <- visreg(m_fPC2, "subsistence", type = "conditional", gg = T) +
-  labs(y = "Functions PC 2: \nOrganization vs. Mediation\n",
-       x = "\nSubsistence type")
-m_fPC2_group_plot <- visreg(m_fPC2, "group.structure2", type = "conditional", gg = T) +
-  labs(y = "Functions PC 2: \nOrganization vs. Mediation\n",
-       x = "\nGroup type")
-
-m_fPC2_sub_plot + m_fPC2_group_plot
-
-# Leader qualities
-
-m_qPC1 <- lmer(
-  qPC1 ~
-    #qualities_component1 +
-    subsistence +
-    #c_cultural_complexity +
-    #pop_density +
-    #com_size +
-    group.structure2 +
-    # warfare_freq +
-    (1|d_culture/doc_ID),
-  data=leader_text2
-)
-summary(m_qPC1)
-Anova(m_qPC1)
-
-m_qPC1_sub_plot <- visreg(m_qPC1, "subsistence", type = "contrast", gg = T) +
-  labs(y = "Qualities PC 1: \nPrestige vs. Dominance\n",
-       x = "\nSubsistence type")
-m_qPC1_group_plot <- visreg(m_qPC1, "group.structure2", type = "contrast", gg = T) +
-  labs(y = "Qualities PC 1: \nPrestige vs. Dominance\n",
-       x = "\nGroup type")
-
-m_qPC1_sub_plot + m_qPC1_group_plot
-
-m_qPC2 <- lmer(
-  qPC2 ~
-    #qualities_component1 +
-    subsistence +
-    #c_cultural_complexity +
-    #pop_density +
-    #com_size +
-    group.structure2 +
-    # warfare_freq +
-    (1|d_culture/doc_ID),
-  data=leader_text2
-)
-summary(m_qPC2)
-Anova(m_qPC2)
-
-m_qPC2_sub_plot <- visreg(m_qPC2, "subsistence", type = "contrast", gg = T) + 
-  labs(y = "Qualities PC 2: \nIn-group favoritism vs. Social Status\n",
-       x = "\nSubsistence type")
-m_qPC2_group_plot <- visreg(m_qPC2, "group.structure2", type = "contrast", gg = T) +
-  labs(y = "Qualities PC 2: \nIn-group favoritism vs. Social Status\n",
-       x = "\nGroup type")
-
-m_qPC2_sub_plot + m_qPC2_group_plot
-
-
-
-# TMP models
-
-tmp <- glmer(
-  function_resolve.conflcit ~
-    #qualities_component1 +
-    subsistence +
-    #c_cultural_complexity +
-    #pop_density +
-    #com_size +
-    group.structure2 +
-    # warfare_freq +
-    (1|d_culture/doc_ID),
-  family = binomial(link = "logit"),
-  data=leader_text2
-)
-summary(tmp)
-Anova(tmp)
-visreg(tmp)
+# m_fPC1 <- lmer(
+#   fPC1 ~
+#     #qualities_component1 +
+#     subsistence +
+#     #c_cultural_complexity +
+#     #pop_density +
+#     #com_size +
+#     group.structure2 +
+#     # warfare_freq +
+#     (1|d_culture/doc_ID),
+#   data=leader_text2
+# )
+# summary(m_fPC1)
+# Anova(m_fPC1)
+# AIC(m_fPC1)
+# 
+# 
+# m_fPC1_sub_plot <- visreg(m_fPC1, "subsistence", type = "contrast", gg = T) +
+#   labs(y = "Functions PC 1: \nSocial functions\n",
+#        x = "\nSubsistence type")
+# m_fPC1_group_plot <- visreg(m_fPC1, "group.structure2", type = "contrast", gg = T) + 
+#   labs(y = "Functions PC 1: \nSocial functions\n",
+#        x = "\nGroup type")
+# 
+# m_fPC1_sub_plot + m_fPC1_group_plot
+# 
+# 
+# m_fPC2 <- lmer(
+#   fPC2 ~
+#     #qualities_component1 +
+#     subsistence +
+#     #c_cultural_complexity +
+#     #pop_density +
+#     #com_size +
+#     group.structure2 +
+#     # warfare_freq +
+#     (1|d_culture/doc_ID),
+#   data=leader_text2
+# )
+# summary(m_fPC2)
+# Anova(m_fPC2)
+# AIC(m_fPC2)
+# 
+# m_fPC2_sub_plot <- visreg(m_fPC2, "subsistence", type = "conditional", gg = T) +
+#   labs(y = "Functions PC 2: \nOrganization vs. Mediation\n",
+#        x = "\nSubsistence type")
+# m_fPC2_group_plot <- visreg(m_fPC2, "group.structure2", type = "conditional", gg = T) +
+#   labs(y = "Functions PC 2: \nOrganization vs. Mediation\n",
+#        x = "\nGroup type")
+# 
+# m_fPC2_sub_plot + m_fPC2_group_plot
+# 
+# # Leader qualities
+# 
+# m_qPC1 <- lmer(
+#   qPC1 ~
+#     #qualities_component1 +
+#     subsistence +
+#     #c_cultural_complexity +
+#     #pop_density +
+#     #com_size +
+#     group.structure2 +
+#     # warfare_freq +
+#     (1|d_culture/doc_ID),
+#   data=leader_text2
+# )
+# summary(m_qPC1)
+# Anova(m_qPC1)
+# 
+# m_qPC1_sub_plot <- visreg(m_qPC1, "subsistence", type = "contrast", gg = T) +
+#   labs(y = "Qualities PC 1: \nPrestige vs. Dominance\n",
+#        x = "\nSubsistence type")
+# m_qPC1_group_plot <- visreg(m_qPC1, "group.structure2", type = "contrast", gg = T) +
+#   labs(y = "Qualities PC 1: \nPrestige vs. Dominance\n",
+#        x = "\nGroup type")
+# 
+# m_qPC1_sub_plot + m_qPC1_group_plot
+# 
+# m_qPC2 <- lmer(
+#   qPC2 ~
+#     #qualities_component1 +
+#     subsistence +
+#     #c_cultural_complexity +
+#     #pop_density +
+#     #com_size +
+#     group.structure2 +
+#     # warfare_freq +
+#     (1|d_culture/doc_ID),
+#   data=leader_text2
+# )
+# summary(m_qPC2)
+# Anova(m_qPC2)
+# 
+# m_qPC2_sub_plot <- visreg(m_qPC2, "subsistence", type = "contrast", gg = T) + 
+#   labs(y = "Qualities PC 2: \nIn-group favoritism vs. Social Status\n",
+#        x = "\nSubsistence type")
+# m_qPC2_group_plot <- visreg(m_qPC2, "group.structure2", type = "contrast", gg = T) +
+#   labs(y = "Qualities PC 2: \nIn-group favoritism vs. Social Status\n",
+#        x = "\nGroup type")
+# 
+# m_qPC2_sub_plot + m_qPC2_group_plot
+# 
+# 
+# 
+# # TMP models
+# 
+# tmp <- glmer(
+#   function_resolve.conflcit ~
+#     #qualities_component1 +
+#     subsistence +
+#     #c_cultural_complexity +
+#     #pop_density +
+#     #com_size +
+#     group.structure2 +
+#     # warfare_freq +
+#     (1|d_culture/doc_ID),
+#   family = binomial(link = "logit"),
+#   data=leader_text2
+# )
+# summary(tmp)
+# Anova(tmp)
+# visreg(tmp)
 
 # #visreg(m_fPC1, xvar = 'warfare_freq', by = 'group.structure2')
 # 
@@ -764,45 +764,45 @@ visreg(tmp)
 
 # Heatmap of qualities with Euclidean distance
 
-heatmap(
-  t(as.matrix(pca_data_qualities2)),
-  hclustfun = function(x) hclust(x, method = 'ward.D'),
-  scale = 'none'
-  )
-
-# aheatmap version
-
-aheatmap(
-  t(as.matrix(pca_data_qualities2)),
-  distfun = "euclidean", 
-  hclustfun = "ward",
-  scale = "none",
-  filename = "Figures/heatmap_qualities_euc.pdf"
-)
-
-aheatmap(
-  t(as.matrix(pca_data_qualities2)),
-  Rowv = c(distfun='correlation', hclustfun='ward'),
-  Colv = c(distfun='binary', hclustfun='ward'),
-  scale = "none",
-  filename = "Figures/heatmap_qualities_bin_cor.pdf"
-)
-
-aheatmap(
-  t(as.matrix(pca_data_functions2)),
-  Rowv = c(distfun='correlation', hclustfun='ward'),
-  Colv = c(distfun='euclidean', hclustfun='ward'),
-  scale = "none",
-  filename = "Figures/heatmap_functions_bin_cor.pdf"
-)
-# # Heatmap of qualities with cor & binary distance
-
-heatmap(
-  t(as.matrix(pca_data_qualities2)),
-  hclustfun = function(x) hclust(x, method = 'ward.D'),
-  distfun = function(x) proxy::dist(x, method = 'binary'),
-  scale = 'none'
-  )
+# heatmap(
+#   t(as.matrix(pca_data_qualities2)),
+#   hclustfun = function(x) hclust(x, method = 'ward.D'),
+#   scale = 'none'
+#   )
+# 
+# # aheatmap version
+# 
+# aheatmap(
+#   t(as.matrix(pca_data_qualities2)),
+#   distfun = "euclidean", 
+#   hclustfun = "ward",
+#   scale = "none",
+#   filename = "Figures/heatmap_qualities_euc.pdf"
+# )
+# 
+# aheatmap(
+#   t(as.matrix(pca_data_qualities2)),
+#   Rowv = c(distfun='correlation', hclustfun='ward'),
+#   Colv = c(distfun='binary', hclustfun='ward'),
+#   scale = "none",
+#   filename = "Figures/heatmap_qualities_bin_cor.pdf"
+# )
+# 
+# aheatmap(
+#   t(as.matrix(pca_data_functions2)),
+#   Rowv = c(distfun='correlation', hclustfun='ward'),
+#   Colv = c(distfun='euclidean', hclustfun='ward'),
+#   scale = "none",
+#   filename = "Figures/heatmap_functions_bin_cor.pdf"
+# )
+# # # Heatmap of qualities with cor & binary distance
+# 
+# heatmap(
+#   t(as.matrix(pca_data_qualities2)),
+#   hclustfun = function(x) hclust(x, method = 'ward.D'),
+#   distfun = function(x) proxy::dist(x, method = 'binary'),
+#   scale = 'none'
+#   )
 
 # Heatmap of functions with Euclidean distance
 
@@ -1026,45 +1026,45 @@ textstats <- leader_text %>%
   summarise(min = min(count), max = max(count), mean = mean(count), median = median(count), sd = sd(count)) %>% 
   round(1)
 
-# Violin plots of PCs by group vars ---------------------------------------
-
-
-ggplot(pca_data_qualities, aes(group.structure2, qPC1))+
-  geom_violin()+
-  geom_jitter(height = 0, width = 0.1) +
-  geom_boxplot(width=.15)
-
-ggplot(pca_data_qualities, aes(group.structure2, qPC2))+
-  geom_violin()+
-  geom_jitter(height = 0, width = 0.1) +
-  geom_boxplot(width=.15)
-
-ggplot(pca_data_qualities, aes(subsistence, qPC1))+
-  geom_violin()+
-  geom_jitter(height = 0, width = 0.1) +
-  geom_boxplot(width=.15)
-
-ggplot(pca_data_qualities, aes(subsistence, qPC2))+
-  geom_violin()+
-  geom_jitter(height = 0, width = 0.1) +
-  geom_boxplot(width=.15)
-
-ggplot(pca_data_functions, aes(group.structure2, fPC1))+
-  geom_violin()+
-  geom_jitter(height = 0, width = 0.1) +
-  geom_boxplot(width=.15)
-
-ggplot(pca_data_functions, aes(subsistence, fPC1))+
-  geom_violin()+
-  geom_jitter(height = 0, width = 0.1) +
-  geom_boxplot(width=.15)
-
-ggplot(pca_data_functions, aes(subsistence, fPC2))+
-  geom_violin()+
-  geom_jitter(height = 0, width = 0.1) +
-  geom_boxplot(width=.15)
-
-ggplot(pca_data_functions, aes(group.structure2, fPC2))+
-  geom_violin()+
-  geom_jitter(height = 0, width = 0.1) +
-  geom_boxplot(width=.15)
+# # Violin plots of PCs by group vars ---------------------------------------
+# 
+# 
+# ggplot(pca_data_qualities, aes(group.structure2, qPC1))+
+#   geom_violin()+
+#   geom_jitter(height = 0, width = 0.1) +
+#   geom_boxplot(width=.15)
+# 
+# ggplot(pca_data_qualities, aes(group.structure2, qPC2))+
+#   geom_violin()+
+#   geom_jitter(height = 0, width = 0.1) +
+#   geom_boxplot(width=.15)
+# 
+# ggplot(pca_data_qualities, aes(subsistence, qPC1))+
+#   geom_violin()+
+#   geom_jitter(height = 0, width = 0.1) +
+#   geom_boxplot(width=.15)
+# 
+# ggplot(pca_data_qualities, aes(subsistence, qPC2))+
+#   geom_violin()+
+#   geom_jitter(height = 0, width = 0.1) +
+#   geom_boxplot(width=.15)
+# 
+# ggplot(pca_data_functions, aes(group.structure2, fPC1))+
+#   geom_violin()+
+#   geom_jitter(height = 0, width = 0.1) +
+#   geom_boxplot(width=.15)
+# 
+# ggplot(pca_data_functions, aes(subsistence, fPC1))+
+#   geom_violin()+
+#   geom_jitter(height = 0, width = 0.1) +
+#   geom_boxplot(width=.15)
+# 
+# ggplot(pca_data_functions, aes(subsistence, fPC2))+
+#   geom_violin()+
+#   geom_jitter(height = 0, width = 0.1) +
+#   geom_boxplot(width=.15)
+# 
+# ggplot(pca_data_functions, aes(group.structure2, fPC2))+
+#   geom_violin()+
+#   geom_jitter(height = 0, width = 0.1) +
+#   geom_boxplot(width=.15)
