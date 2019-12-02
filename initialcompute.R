@@ -22,7 +22,6 @@ library(visreg)
 library(effects)
 library(lme4)
 library(patchwork)
-library(pvclust)
 library(magrittr)
 library(modelr)
 library(ggridges)
@@ -224,8 +223,8 @@ for (m in models){
     intercept = cfs$coefficients[[1]]
     se = cfs$coefficients[[2]]
     value = c(value, logit.inv(intercept))
-    y_se = c(y_se, logit.inv(intercept + se))
-    y_negse = c(y_negse, logit.inv(intercept - se))           
+    y_se = c(y_se, logit.inv(intercept + 2*se))
+    y_negse = c(y_negse, logit.inv(intercept - 2*se))           
     
   }
 }
@@ -280,7 +279,7 @@ var_names <- c(
   "functions_protection"          = "Protection",
   "functions_provide.subsistence" = "Provide subsistence",
   "functions_ritual"              = "Ritual functions",
-  "functions_social.functions" = "Social functions",
+  "functions_social.functions" = "Misc. social functions",
   "qualities_artistic.performance"     = "Artistic performance",
   "qualities_generous"                 = "Generosity",
   "qualities.age"                      = "Age",
@@ -306,7 +305,7 @@ var_names <- c(
   "qualities.innovative"            = "Innovative",
   "qualities.knowlageable.intellect" = "Knowledgeable/intelligent",
   "qualities.oratory.skill"         = "Oratory skill",
-  "qualities.polygynous"            = "Polygnous",
+  "qualities.polygynous"            = "Polygynous",
   "qualities.social.contacts"       = "Social contacts",
   "qualities.supernatural"    = "Supernatural",
   "qualities_exp.accomplished"       = "Experienced/accomplished",
@@ -370,8 +369,8 @@ for (m in models){
     intercept = cfs$coefficients[[1]]
     se = cfs$coefficients[[2]]
     value = c(value, logit.inv(intercept))
-    y_se = c(y_se, logit.inv(intercept + se))
-    y_negse = c(y_negse, logit.inv(intercept - se))           
+    y_se = c(y_se, logit.inv(intercept + 2*se))
+    y_negse = c(y_negse, logit.inv(intercept - 2*se))           
     
   }
 }
@@ -506,10 +505,34 @@ m_pvclust_qual <- pvclust(
   parallel = T
 )
 
+# m_pvclust_qual_texts <- pvclust(
+#   t(pca_data_qualities2), 
+#   method.hclust = 'ward', 
+#   method.dist = 'correlation', 
+#   nboot = 1000,
+#   parallel = T
+# )
+
+# m_pvclust_qual_texts_euc <- pvclust(
+#   t(pca_data_qualities2),
+#   method.hclust = 'ward',
+#   method.dist = 'euclidean',
+#   nboot = 1000,
+#   parallel = T
+# )
+
 m_pvclust_qual_jaccard <- pvclust(
   pca_data_qualities2, 
   method.hclust = 'ward', 
   method.dist = 'binary', 
+  nboot = 10000,
+  parallel = T
+)
+
+m_pvclust_qual_euc <- pvclust(
+  pca_data_qualities2, 
+  method.hclust = 'ward', 
+  method.dist = 'euclidean', 
   nboot = 10000,
   parallel = T
 )
@@ -523,12 +546,20 @@ m_pvclust_fun <-
     parallel = T
   )
 
-library(pvclust)
 m_pvclust_fun_jaccard <- 
   pvclust(
     pca_data_functions2, 
     method.hclust = 'ward', 
     method.dist = 'binary', 
+    nboot = 10000,
+    parallel = T
+  )
+
+m_pvclust_fun_euc <- 
+  pvclust(
+    pca_data_functions2, 
+    method.hclust = 'ward', 
+    method.dist = 'euclidean', 
     nboot = 10000,
     parallel = T
   )

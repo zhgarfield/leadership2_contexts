@@ -30,7 +30,7 @@ library(modelr)
 library(ggridges)
 library(RColorBrewer)
 library(ggmosaic)
-
+library(proxy)
 # Load precomputed objects ------------------------------------------------
 
 # First run initialcompute.R, which takes ~90 minutes on my machine,
@@ -264,17 +264,17 @@ plot(logpca_model_functions, type = "scores") +
 
 # PCA Qualities & Functions -----------------------------------------------
 
-# logpca_model_qfk2 = logisticPCA(pca_data_FQ[c(function_vars, quality_vars)], k = 2, m = which.min(logpca_cv_qfk2), main_effects = T)
-# plot(logpca_model_qfk2, type = 'scores')
-# logisticPCA_loadings_plot(logpca_model_qfk2, data = pca_data_FQ[,c(function_vars, quality_vars)])
+logpca_model_qfk2 = logisticPCA(pca_data_FQ[c(function_vars, quality_vars)], k = 2, m = which.min(logpca_cv_qfk2), main_effects = T)
+plot(logpca_model_qfk2, type = 'scores')
+logisticPCA_loadings_plot(logpca_model_qfk2, data = pca_data_FQ[,c(function_vars, quality_vars)])
 # 
 # pca_data_FQ$fqPC1k2 <- logpca_model_qfk2$PCs[,1]
 # pca_data_FQ$fqPC2k2 <- logpca_model_qfk2$PCs[,2]
 # leader_text2 <- left_join(leader_text2, pca_data_FQ[c('cs_textrec_ID', 'fqPC1k2', 'fqPC2k2')])
 # 
-# logpca_model_qf = logisticPCA(pca_data_FQ[c(function_vars, quality_vars)], k = kqf, m = which.min(logpca_cv_qf), main_effects = T)
+logpca_model_qf = logisticPCA(pca_data_FQ[c(function_vars, quality_vars)], k = kqf, m = mqf, main_effects = T)
 # plot(logpca_model_qf, type = "scores")
-# logisticPCA_loadings_plot(logpca_model_qf, data = pca_data_FQ[c(function_vars, quality_vars)])
+logisticPCA_loadings_plot(logpca_model_qf, data = pca_data_FQ[c(function_vars, quality_vars)])
 # 
 # pca_data_FQ$fqPC1 <- logpca_model_qf$PCs[,1]
 # pca_data_FQ$fqPC2 <- logpca_model_qf$PCs[,2]
@@ -375,7 +375,31 @@ plot(logpca_model_functions, type = "scores") +
 # 
 # 
 # # Exploratory models ------------------------------------------------------
-# 
+
+mqPC1 <- lmer(
+  qPC1 ~ 
+    subsistence + 
+    c_cultural_complexity +
+    com_size +
+    (1|d_culture/doc_ID), 
+  leader_text2
+  )
+summary(mqPC1)
+Anova(mqPC1)
+nobs(mqPC1)
+
+mqPC1k2 <- lmer(
+  qPC1k2 ~ 
+    subsistence + 
+    c_cultural_complexity +
+    com_size +
+    (1|d_culture/doc_ID), 
+  leader_text2
+)
+summary(mqPC1k2)
+Anova(mqPC1k2)
+nobs(mqPC1k2)
+
 # # qc_m<-glm(qualities_component1 ~ c_cultural_complexity + com_size + subsistence, 
 # #          data=leader_text2, family="gaussian")
 # # summary(qc_m)
@@ -736,8 +760,68 @@ visreg(tmp)
 # 
 # 
 # 
-# # Heatmaps -----------------------------------------------------------------
-# # Heatmaps -----------------------------------------------------------------
+# Heatmaps -----------------------------------------------------------------
+
+# Heatmap of qualities with Euclidean distance
+
+heatmap(
+  t(as.matrix(pca_data_qualities2)),
+  hclustfun = function(x) hclust(x, method = 'ward.D'),
+  scale = 'none'
+  )
+
+# aheatmap version
+
+aheatmap(
+  t(as.matrix(pca_data_qualities2)),
+  distfun = "euclidean", 
+  hclustfun = "ward",
+  scale = "none",
+  filename = "Figures/heatmap_qualities_euc.pdf"
+)
+
+aheatmap(
+  t(as.matrix(pca_data_qualities2)),
+  Rowv = c(distfun='correlation', hclustfun='ward'),
+  Colv = c(distfun='binary', hclustfun='ward'),
+  scale = "none",
+  filename = "Figures/heatmap_qualities_bin_cor.pdf"
+)
+
+aheatmap(
+  t(as.matrix(pca_data_functions2)),
+  Rowv = c(distfun='correlation', hclustfun='ward'),
+  Colv = c(distfun='euclidean', hclustfun='ward'),
+  scale = "none",
+  filename = "Figures/heatmap_functions_bin_cor.pdf"
+)
+# # Heatmap of qualities with cor & binary distance
+
+heatmap(
+  t(as.matrix(pca_data_qualities2)),
+  hclustfun = function(x) hclust(x, method = 'ward.D'),
+  distfun = function(x) proxy::dist(x, method = 'binary'),
+  scale = 'none'
+  )
+
+# Heatmap of functions with Euclidean distance
+
+# heatmap(
+#   t(as.matrix(pca_data_functions2)),
+#   hclustfun = function(x) hclust(x, method = 'ward.D'),
+#   scale = 'none',
+#   main = "Functions with Euclidean distance"
+# )
+# 
+# # Heatmap of functions with cor distance
+# heatmap(
+#   t(as.matrix(pca_data_functions2)),
+#   hclustfun = function(x) hclust(x, method = 'ward.D'),
+#   distfun = function(x) proxy::dist(x, method = 'correlation'),
+#   scale = 'none',
+#   main = "Functions with Correlation distance"
+# )
+
 # heatmap_data<-leader_text2[,c(quality_vars, "group.structure2")]
 # 
 # #Temporary, -1 and 1 coudl 0 out
@@ -810,10 +894,113 @@ visreg(tmp)
 
 
 # NMF ---------------------------------------------------------------------
+
 # library(NMF)
-# m_nmf <- nmf(t(pca_data_qualities2), rank = 2:10)
+# m_nmf <- nmf(t(pca_data_qualities2), rank = 2:15)
+# m_nmf5 <- nmf(t(pca_data_qualities2), rank = 5)
+# m_nmfrandom <- nmf(randomize(t(pca_data_qualities2)), rank=2:15)
+
+# pdf(file = 'consensusmap.pdf', width = 20)
+# consensusmap(m_nmf)
+# dev.off()
+
+# Group structure by subsistence --------------------------------------------------
+
+df_groups <- 
+  leader_text2 %>% 
+  dplyr::select(
+    group.structure2,
+    demo_sex,
+    subsistence
+  ) %>% 
+  dplyr::filter(group.structure2 != 'other') %>% 
+  mutate(
+    demo_sex = factor(demo_sex, levels = c('male', 'female')),
+    group =   factor(
+      group.structure2,
+      levels = c(
+        'residential subgroup',
+        'kin group',
+        'economic group',
+        'religious group',
+        'military group',
+        'political group (community)',
+        'political group (supracommunity)'
+      )
+    ),
+    subsistence = factor(
+      subsistence,
+      levels = c("hunter gatherers",
+                 "pastoralists",
+                 "mixed",
+                 "horticulturalists",
+                 "agriculturalists"
+                 )
+      )
+)
+
+plot_group_subsis <-
+  ggplot(df_groups) +
+  geom_mosaic(aes(x = product(group, subsistence), fill = group)) +
+  labs(x="", y="", fill = "Group type") +
+  guides(fill = guide_legend(reverse = T)) +
+  theme_bw(15) 
+
+# Leave off for now. Might not need this.
+# + 
+#   theme(axis.text.x = element_text(size=16),
+#         axis.text.y = element_text(size=16)) +
+
+# This code screws up the plot somehow
+#   scale_y_productlist(labels = c("Residential subgroup",
+#                                  "Kin group",
+#                                  "Economic group",
+#                                  "Political group\n(community)",
+#                                  "Political group\n(supracommunity)",
+#                                  "Military group",
+#                                  "Religious group")) +
+#   scale_x_productlist(labels = c("Hunter-gatherers",
+#                                  "Pastoralists",
+#                                  "Mixed",
+#                                  "Horticulturalists",
+#                                  "Agriculturalists")) + 
+#   scale_fill_discrete(labels = c("Residential subgroup",
+#                                   "Kin group",
+#                                   "Economic group",
+#                                   "Political group (community)",
+#                                   "Political group (supracommunity)",
+#                                   "Military group",
+#                                   "Religious group"))
+
+plot_group_subsis 
+
+
+df_group_sex <- 
+  df_groups %>% 
+  dplyr::filter(
+    demo_sex != 'both', demo_sex != 'unknown'
+  )
+
+plot_group_sex <- 
+  ggplot(df_group_sex) + 
+  geom_mosaic(aes(x = product(group, demo_sex), fill = group)) +
+  # scale_fill_viridis_d(option = 'B') +
+  labs(x="", y="", fill = "Group type") +
+  guides(fill = guide_legend(reverse = T)) +
+  theme_bw(15) + theme(axis.text.y=element_blank())
+plot_group_sex
+
 
 # Compute values ----------------------------------------------------------
+
+group_sex_tbl <- xtabs(~demo_sex+group.structure2, leader_text2)
+female_residential_pct <- signif(group_sex_tbl['female', 'residential subgroup']/sum(leader_text$demo_sex == 'female'), 3)*100
+male_residential_pct <- signif(group_sex_tbl['male', 'residential subgroup']/sum(leader_text$demo_sex == 'male'), 3)*100
+
+group_sub_tbl <- xtabs(~subsistence+group.structure2, leader_text2)
+hg_residential_pct <- signif(group_sub_tbl['hunter gatherers', 'residential subgroup']/sum(leader_text$subsistence == 'hunter gatherers'), 3)*100
+hg_kin_pct <- signif(group_sub_tbl['hunter gatherers', 'kin group']/sum(leader_text$subsistence == 'hunter gatherers'), 3)*100
+hort_kin_pct <- signif(group_sub_tbl['horticulturalists', 'kin group']/sum(leader_text$subsistence == 'horticulturalists'), 3)*100
 
 final_record_count <- sum(rowSums(leader_text2[all_study_vars])>0)
 
@@ -838,99 +1025,6 @@ textstats <- leader_text %>%
   summarise(count = n()) %>% 
   summarise(min = min(count), max = max(count), mean = mean(count), median = median(count), sd = sd(count)) %>% 
   round(1)
-
-# Group structure by sex --------------------------------------------------
-
-df_groups <- 
-  leader_text2 %>% 
-  dplyr::select(
-    group.structure2,
-    demo_sex,
-    subsistence
-  ) %>% 
-  dplyr::filter(group.structure2 != 'other') %>% 
-  mutate(
-    demo_sex = factor(demo_sex, levels = c('male', 'female')),
-    group =   factor(
-      group.structure2,
-      levels = c(
-        'residential subgroup',
-        'kin group',
-        'economic group',
-        'political group (community)',
-        'political group (supracommunity)',
-        'military group',
-        'religious group'
-      )
-    ),
-    subsistence = factor(
-      subsistence,
-      levels = c("hunter gatherers",
-                 "pastoralists",
-                 "mixed",
-                 "horticulturalists",
-                 "agriculturalists"
-                 )
-      )
-)
-
-plot_group_subsis <-
-  ggplot(df_groups) +
-  geom_mosaic(aes(x = product(group, subsistence), fill = group)) +
-  labs(x="", y="", fill = "Group type") +
-  guides(fill = guide_legend(reverse = T)) +
-  theme_bw(15) + 
-  theme(axis.text.x = element_text(size=16),
-        axis.text.y = element_text(size=16)) +
-  scale_y_productlist(labels = c("Residential subgroup",
-                                 "Kin group",
-                                 "Economic group",
-                                 "Political group\n(community)",
-                                 "Political group\n(supracommunity)",
-                                 "Military group",
-                                 "Religious group")) +
-  scale_x_productlist(labels = c("Hunter-gatherers",
-                                 "Pastoralists",
-                                 "Mixed",
-                                 "Horticulturalists",
-                                 "Agriculturalists")) + 
-  scale_fill_discrete(labels = c("Residential subgroup",
-                                  "Kin group",
-                                  "Economic group",
-                                  "Political group (community)",
-                                  "Political group (supracommunity)",
-                                  "Military group",
-                                  "Religious group"))
-plot_group_subsis 
-
-
-df_group_sex <- 
-  df_groups %>% 
-  dplyr::filter(
-    demo_sex != 'both', demo_sex != 'unknown'
-  )
-
-plot_group_sex <- 
-  ggplot(df_group_sex) + 
-  geom_mosaic(aes(x = product(group, demo_sex), fill = group)) +
-  # scale_fill_viridis_d(option = 'B') +
-  labs(x="", y="", fill = "Group type") +
-  guides(fill = guide_legend(reverse = T)) +
-  theme_bw(15) + theme(axis.text.y=element_blank())
-plot_group_sex
-
-group_sex_tbl <- xtabs(~demo_sex+group.structure2, leader_text2)
-female_residential_pct <- signif(group_sex_tbl['female', 'residential subgroup']/sum(leader_text$demo_sex == 'female'), 3)*100
-male_residential_pct <- signif(group_sex_tbl['male', 'residential subgroup']/sum(leader_text$demo_sex == 'male'), 3)*100
-
-group_sub_tbl <- xtabs(~subsistence+group.structure2, leader_text2)
-
-hg_residential_pct <- signif(group_sub_tbl['hunter gatherers', 'residential subgroup']/sum(leader_text$subsistence == 'hunter gatherers'), 3)*100
-
-hg_kin_pct <- signif(group_sub_tbl['hunter gatherers', 'kin group']/sum(leader_text$subsistence == 'hunter gatherers'), 3)*100
-hort_kin_pct <- signif(group_sub_tbl['horticulturalists', 'kin group']/sum(leader_text$subsistence == 'horticulturalists'), 3)*100
-
-
 
 # Violin plots of PCs by group vars ---------------------------------------
 
@@ -974,5 +1068,3 @@ ggplot(pca_data_functions, aes(group.structure2, fPC2))+
   geom_violin()+
   geom_jitter(height = 0, width = 0.1) +
   geom_boxplot(width=.15)
-
-
