@@ -1026,6 +1026,12 @@ textstats <- leader_text %>%
   summarise(min = min(count), max = max(count), mean = mean(count), median = median(count), sd = sd(count)) %>% 
   round(1)
 
+movement_pct <- signif(d_melt$value[d_melt$Variable == "Movement/migration" & d_melt$Type == "Cultures"], 3)*100
+moral_pct <- signif(d_melt$value[d_melt$Variable == "Moral authority" & d_melt$Type == "Cultures"], 3)*100
+fairness_pct <- signif(d_melt$value[d_melt$Variable == "Fairness" & d_melt$Type == "Cultures"], 3)*100
+feared_pct <- signif(d_melt$value[d_melt$Variable == "Feared" & d_melt$Type == "Cultures"], 3)*100
+attractive_pct <- signif(d_melt$value[d_melt$Variable == "Attractive" & d_melt$Type == "Cultures"], 3)*100
+
 # # Violin plots of PCs by group vars ---------------------------------------
 # 
 # 

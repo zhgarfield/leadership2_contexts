@@ -201,15 +201,15 @@ p_map
 
 
 
-The type of group to which a leader text referred was coded into seven researcher-coded categories: residential groups, kin groups, economic groups, political groups at the community level, political group beyond the community level, military groups, and religious groups. Figure \@ref(fig:groupsex) indicates the proportion of text records that were categorized into each of these groups, broken out by mode of subsistence. We rely on a modified classification of subsistence from the HRAF, collapsing “hunter-gatherers” and “primarily hunter-gatherers” into a single category, “hunter-gatherers,” and by collapsing “agro-pastoralists” and “pastoralists” into a single “pastoralists” category. We renamed the HRAF’s “Other” subsistence category, which is applied to societies with various combinations of hunting, fishing, gathering, pastoralism, and horticulture or intensive agriculture, as “mixed.” This produced a subsistence classification with five groups: Hunter-gatherers, Pastoralists, Horticulturalists, Agriculturalists, and Mixed.
+The type of group to which a leader text referred was coded into seven researcher-coded categories: residential groups, kin groups, economic groups, political groups at the community level, political group beyond the community level, military groups, and religious groups. Figure \@ref(fig:grouptype) indicates the proportion of text records that were categorized into each of these groups, broken out by mode of subsistence. We rely on a modified classification of subsistence from the HRAF, collapsing “hunter-gatherers” and “primarily hunter-gatherers” into a single category, “hunter-gatherers,” and by collapsing “agro-pastoralists” and “pastoralists” into a single “pastoralists” category. We renamed the HRAF’s “Other” subsistence category, which is applied to societies with various combinations of hunting, fishing, gathering, pastoralism, and horticulture or intensive agriculture, as “mixed.” This produced a subsistence classification with five groups: Hunter-gatherers, Pastoralists, Horticulturalists, Agriculturalists, and Mixed.
 
-```{r groupsex, fig.width=20, fig.height=10, fig.cap="The distribution of text records by subsistence and group type. Areas of the bars are proportional to the number of text records in that category."}
+```{r grouptype, fig.width=20, fig.height=10, fig.cap="The distribution of text records by subsistence and group type. Areas of the bars are proportional to the number of text records in that category."}
 plot_group_subsis #+ plot_group_sex
 ```
 
 The vast majority of text records pertained to male leadership (`r male_leader_pct`%) and very few pertained to female leadership (`r female_leader_pct`%), with some records not sex-specific. There were female leaders in almost all types of groups, however, except military and religious. Female leaders did tend to lead at the kin group and other residential subgroups, though: `r female_residential_pct`% of female leaders led at the residential subgroup level, for instance, compared to `r male_residential_pct`% of male leaders.
 
-As Figure \@ref(fig:groupsex) reveals, the distribution of text records by group type varies across subsistence type. Across all subsistence types, the most frequent group type is political groups at the community level, with the exception of agriculturalitsts in which supracommunity political groups are the most frequent group type. Leadership beyond the community level is relatively rare outside of agricultural populations and is especially rare among hunter-gatherers. Leadership within residential groups is most frequently associated with hunter-gatherers (`r hg_residential_pct`% of the total sample of hunter-gatherer text records) and leadership within kin groups is most frequently associated with hunter-gatherers (`r hg_kin_pct`% of the total hunter-gatherers sample) and horticulturalists (`r hort_kin_pct`% of the total horticulturalists sample). 
+As Figure \@ref(fig:grouptype) reveals, the distribution of text records by group type varies across subsistence type. Across all subsistence types, the most frequent group type is political groups at the community level, with the exception of agriculturalitsts in which supracommunity political groups are the most frequent group type. Leadership beyond the community level is relatively rare outside of agricultural populations and is especially rare among hunter-gatherers. Leadership within residential groups is most frequently associated with hunter-gatherers (`r hg_residential_pct`% of the total sample of hunter-gatherer text records) and leadership within kin groups is most frequently associated with hunter-gatherers (`r hg_kin_pct`% of the total hunter-gatherers sample) and horticulturalists (`r hort_kin_pct`% of the total horticulturalists sample). 
 
 <!-- SHOULD WE PUT THE ENTIRE TABLE IN SI? -->
 
@@ -247,7 +247,7 @@ The frequency of leader and follower costs and benefits were estimated similarly
 
 Followers on the other hand also benefit from leadership systems through receiving material resources (documented in about 50% of cultures) but otherwise most frequently benefit through social *services* provided (documented in about 35% of cultures). Mating and fitness benefits are relatively rare for followers. Followers most frequently incur costs in the form of material resources lost (documented in about 40% of cultures) and in providing social services (documented in about 25% of cultures). 
 
-For both leaders and followers, individuals stand to lose what they are able to gain. The clear differences lie in leaders' opportunities for increased social status and matting opportunities. See Figure \@ref(fig:varsupportcb).
+For both leaders and followers, individuals stand to lose what they are able to gain. The clear differences lie in leaders' opportunities for increased social status and mating opportunities. See Figure \@ref(fig:varsupportcb).
 
 ```{r varsupportcb, echo=FALSE, warning=FALSE, message=F, fig.width=15, fig.height=11, fig.cap="Support for each coded variable for the costs and benefits of leadership and followership. Blue circles: percent of text records with evidence of support (95% CI computed with a binomial mixed effects models with random intercept for author nested within culture). Red triangles: percent of cultures with evidence of support (95% CI computed with a cluster bootstrap)."}
 plot.variable.support_costs_benefits
@@ -255,7 +255,7 @@ plot.variable.support_costs_benefits
 
 <!-- ## Exploring population-level variation -->
 
-<!-- To explore potential population variation in the *Prestige vs. Dominance* and *In-group favoritism vs. Social Status* leader qualities components and the *Social functions* and *Mediation vs. Organization* leader functions components, we fit four hierarchical linear models at the text-record level, using nested random effects of document within culture with each of these components as outcome measures. For predictor variables we relied on our researcher-coded measure of group structure and our modified version of the HRAF subsistence classification (see Figure \@ref(fig:groupsex)).  -->
+<!-- To explore potential population variation in the *Prestige vs. Dominance* and *In-group favoritism vs. Social Status* leader qualities components and the *Social functions* and *Mediation vs. Organization* leader functions components, we fit four hierarchical linear models at the text-record level, using nested random effects of document within culture with each of these components as outcome measures. For predictor variables we relied on our researcher-coded measure of group structure and our modified version of the HRAF subsistence classification (see Figure \@ref(fig:grouptype)).  -->
 
 
 
@@ -287,29 +287,39 @@ plot.variable.support_costs_benefits
 <!-- m_qPC2_sub_plot + m_qPC2_group_plot -->
 <!-- ``` -->
 
-
-
 # Discussion
 
 Results of the current study represent the broadest and most comprehensive view of the qualities of leaders, (e.g., the types of people that occupy leadership roles), the functions of leaders, (e.g., what do leaders do), and the costs and benefits of leadership for both leaders and followers, across a diverse and culturally representative sample of the ethnographic record. These results reveal universal dimensions of human leadership while also suggesting important variation by group type, subsistence strategy, and sex of the leader.   
 
-## The universality of human leadership
+## The group context of human leadership
 
-Across a broad range of cultures and social contexts leaders are nearly universally high status males described as knowledgeable or intelligent who are experienced and have a demonstrated history of previous accomplishments or special skills. They most frequently resolve conflicts within their respective groups while also providing important social functions, organizing cooperation among followers, and providing counsel or input in followers' affairs. See Figure \@ref(fig:varsupport).  
+The distribution of text records by group type and subsistence suggests leaders emerge within similar social domains among populations within varied subsistence strategies, but at variable frequencies. See Figure \@ref(fig:grouptype). 
 
-At all subsistence levels leaders emerge across a broad range of group types, including at lower-order social units such as within residential groups and kin groups; within specialized groups such as religious, economic, or military groups; and in political contexts at the community level and beyond. Political leadership at the community level is widespread across all subsistence categories. Economic, military, and religious group leadership, although relatively less frequent, are fairly consistently represented across subsistence levels. See Figure \@ref(fig:groupsex).
+### Universal dimensions
 
-## The cultural and context dependency of human leadership
+In groups of all subsistence types (e.g., hunter-gatherers, pastoralists) leaders emerge across a similar range of group types, including at lower-level social units such as within residential groups and kin groups; within specialized groups such as religious, economic, or military groups; and in political contexts at the community and supracommunity levels. A large percentage of text records in all subsistence groups document political leadership at the community level. Leadership at the supracommunity level is also common across all subsistence groups save hunter-gatherers, which are largely autonomous. Economic, military, and religious group leadership, although relatively less frequent, are fairly consistently represented across subsistence levels. 
 
-The distribution of text records by group type and subsistence suggests leaders emerge within similar social domains among populations within varied subsistence strategies, but at variable frequencies. Hunter-gatherers and pastoralists, populations more likely to experience high residential mobility, exhibited greater relative frequencies of leadership within residential groups and kin groups. Pastoralists, however, rely in part on a highly defensible resource base (i.e., livestock) and exhibit leadership beyond the community more so than hunter-gatherers and on par with horticulturalists. Pastoral and horticultural populations often experience elevated rates of inter-group conflict relative to mobile hunter-gatherers and these results are consistent with a relationship between increased inter-group conflict and more elaborated political leadership systems.
+### Variable dimensions
 
-Figure \@ref(fig:groupsex) is consistent with a negative relationships between political leadership at the community leadership or above and leadership in kin groups or residential groups. One possible interpretation is that as political structures become more institutionalized and economic systems transcend the household, leadership within households and residential groups erodes. It is interesting, however, that even among the agricultural populations that are characterized by leadership systems beyond the community level, leadership within residential and family group persists.
+Leadership in residential subgroups (e.g., hunting party, work group) was relatively common among hunter-gatherers but relatively rare among agriculturists. Leadership at the surpacommunity level, in contrast, was relatively rare among hunter-gatherers but quite common among agriculturists.
 
-<!-- MAY WANT TO RETHINK INTERPRETATIONS, LOTS OF STORIES HERE -->
+Hunter-gatherers and pastoralists, populations more likely to experience high residential mobility, exhibited greater relative frequencies of leadership within residential groups and kin groups. Pastoralists, however, rely in part on a highly defensible resource base (i.e., livestock) and exhibit leadership beyond the community more so than hunter-gatherers and on par with horticulturalists. Pastoral and horticultural populations often experience elevated rates of inter-group conflict relative to mobile hunter-gatherers and these results are consistent with a relationship between increased inter-group conflict and more elaborated political leadership systems.
 
+Figure \@ref(fig:grouptype) is consistent with a negative relationships between political leadership at the community leadership or above and leadership in kin groups or residential groups. One possible interpretation is that as political structures become more institutionalized and economic systems transcend the household, leadership within households and residential groups erodes. It is interesting, however, that even among the agricultural populations that are characterized by leadership systems beyond the community level, leadership within residential and family group persists.
 
+## Leader functions and qualities
 
-## The features of human leadership
+Our analysis identified several leader functions and qualities that were near cultural universals, and others that were relatively rare. See Figure \@ref(fig:varsupport).
+
+### Universal dimensions
+
+Across a broad range of cultures and social contexts leaders are nearly universally high status males who are described as knowledgeable or intelligent and who are experienced and have a demonstrated history of previous accomplishments or special skills. They most frequently resolve conflicts within their respective groups while also providing important social functions, organizing cooperation among followers, providing counsel or input in followers' affairs, and distributing resources. See Figure \@ref(fig:varsupport).  
+
+### Variable dimensions
+
+Several functions and qualities that are theoretically important were relatively rare in the ethnographic record. In the literature on leadership among non-human animals, for example, leaders commonly initiate group movement [@couzin_effective_2005], and "movement" was one of four leadership dimensions that @smith_leadership_2016 identified as comparable among humans and non-human animals, yet movement or migration was identified as a leader function in only `r movement_pct`% of cultures. Several theories of leadership also emphasize the moral authority of leaders [e.g., @xx; @yy], yet leaders were seen as sources of moral authority or "fair" in only a minority of cultures (`r moral_pct`% and `r fairness_pct`% of cultures, respectively). The "Dominance" theory of leadership [@xx; @yy] emphasizes leaders' ability to instill fear, but in only `r feared_pct`% of cultures were leaders characterized as feared. Finally, a large literature on leadership in industrialized societies highlights the attractiveness of leaders, but leaders were characterized as attractive in only `r attractive_pct`% of cultures.
+
+## Clusters of leader functions and qualities
 
 Leadership and high social status are expected to be associated with particular suites of characteristics, which potentially vary by cultural or social context, personality, or via other inter-individual variation [@cheng_two_2013; @von_rueden_roots_2014; @hogan_personality_2020; @lukaszewski_extraversion_2015; @henrich_evolution_2001]. Exploratory analyses reported here suggest multiple leadership phenotypes and associated features. 
 
@@ -325,7 +335,7 @@ The most common benefits associated with leadership are material resources, incr
 
 Results suggest X features of the functions of leaders. Leaders may serve various prosocial functions, such as providing subsistence and distributing resources, they may be tasked with providing hospitality services to guests or followers, they function to protect the group via a variety of behaviors, and very commonly are leading in various social functions tied to cultural values and social practices (Figure \@ref(fig:cluster)B, *Prosocial* cluster $AU = 95$).
 
-
+## Synthesis
 
 
 ## Limitations 
