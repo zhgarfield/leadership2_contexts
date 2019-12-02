@@ -59,7 +59,7 @@ More recently, many managerial scholars have adopted a comparative approach to b
 
 The GLOBE CEO Study defines six "global leadership behaviors" developed from 21 "primary leadership behaviors." Among the global leadership behaviors, the GLOBE CEO Study found that charismatic leadership behavior is consistently the most important behavioral trait regarding firm performance and dedication of top management team (TMT) members, followed by team-oriented behavior and human-oriented behavior. Participative leadership was moderately related to TMT dedication, however was not related to firm performance. The most successful CEOs are those who are rated as more visionary, performance oriented, and decisive. Furthermore, results strongly suggest the fit between a CEOs behavioral profile and the expectations of leadership within a society strongly predict TMT dedication and firm performance.
 
-NEED CONCLUSION PARAGRAPH/STATEMENT. 
+<!-- NEED CONCLUSION PARAGRAPH/STATEMENT.  -->
 
 
 ## The qualities of leaders across cultures and contexts
@@ -80,7 +80,7 @@ Within managerial studies scholars often suggest the cognitive demands of leader
 
 <!-- COULD GET INTO LEADER VS MANAGER DISTINCTION -->
 
-NEED CONCLUSION PARAGRAPH/STATEMENT.
+<!-- NEED CONCLUSION PARAGRAPH/STATEMENT. -->
 
 
 
@@ -107,7 +107,7 @@ Mediating conflicts between individuals can be physically and socially costly [@
 <!-- COSTS: INCREASED SOCIAL OR PHYSICAL RISK FROM MEDIATION - LSS -->
 Conceptualizing leadership as a possible solution to problems associated with collective goods [e.g., @olson_logic_1965; @glowacki_leadership_2015; @hooper_theory_2010; @pietraszewski_evolution_2019], where group members pool resources and share costs of public goods to receive a net benefit from a cooperative endeavor, leaders incur costs associated with managing contributions, coordinating behaviors, and broadcasting information to maintain coordination and cooperation. In this framework, leaders and followers voluntary participate in a cooperative enterprise with the expectation that benefits will outweigh the associated costs. @rich_dynamics_1980 adopts this framework of collective costs and benefits to understand leadership and group dynamics in urban neighborhoods and neighborhood organizations in WEIRD settings, which can be viewed as self-interested groups that face group-wide problems and necessarily share public benefits. The costs associated with leadership in neighborhood organizations follow those associated with other collective enterprises (e.g., investments of time and energy in management and maintenance of group coordination). @rich_dynamics_1980 conceptualizes four categories of the benefits associated with neighborhood organization. Leaders of neighborhood organizations (1) may receive benefits of the public goods produces from collective actions (as other non-leaders would as well); (2), may receive selective benefits from surpluses produced through collective actions; (3) may receive incidental benefits from their leadership role; and (4) leaders of neighborhood organizations may enjoy their service in the position. @rich_dynamics_1980 interviewed 54 officers from 11 metropolitan neighborhood organizations in the Midwest US. Results from extensive interviews suggest personal fulfillment and enjoyment are the main motivational drivers of participation in leadership roles of neighborhood organizations, suggesting the process of leadership for individuals is distinct from theoretical models rooted in economics. Therefore, a primary benefit of leadership, in some contexts, is likely to be intrinsic personal fulfillment and the opportunity to execute personal values of community service. 
 
-NEED CONCLUSTION STATEMENT/PARAGRAPH. 
+<!-- NEED CONCLUSTION STATEMENT/PARAGRAPH.  -->
 
 
 
@@ -116,7 +116,7 @@ NEED CONCLUSTION STATEMENT/PARAGRAPH.
 Evolutionary theoretical models and empirical studies often seek to integrate findings within a broad framework of human cultural diversity. The universality of human leadership systems and the incredible diversity among the qualities of leaders across cultures and contexts and the functions leaders serve is difficult to capture. Scholars are then left to haphazardly self-select ethnographic cases or rely on the self-selected reviews of others for generalizations [e.g., @garfield_review_2019; @von_rueden_leadership_2015]. Here, we seek to provide the first empirical and near comprehensive view of the qualities and functions of leaders across human societies from a representative cross-cultural sample. We also provide the first comparative view describing the costs and benefits of leadership for both leaders and followers in an evolutionary biological framework. We also aim to explore how the qualities and functions of leaders vary across social contexts and levels of cultural complexity
  
 
-In sum, we seek to empirically and systematically accomplish the following four goals: 1) identify the most cross-culturally frequent *qualities of leaders* and the *functions they serve*. 2) Identify *features* of the qualities and functions of leaders (e.g., do particular variables tended to covary or cluster together?) in reference to theoretical models or novel interpretations. Such features might lend support to existing theories; for instance they might correspond to "prestige" and "dominance" [@henrich_evolution_2001]. 3) Identify the most cross-culturally frequent *costs and benefits* of leadership for both leaders and followers. Such exploratory results stand to facilitate more fine-grained approaches within leadership studies and greater theoretical and empirical work beyond community leadership, while also revealing the importance of a broad, cross-cultural perspective in understanding the psychology and cultural patterning of perhaps the most foundational component of human social behavior and organization. 
+In sum, we seek to empirically and systematically accomplish the following four goals: 1) identify the most cross-culturally frequent *qualities of leaders* and the *functions they serve*. 2) Identify *features* of the qualities and functions of leaders (e.g., do particular variables tended to covary or cluster together?) in reference to theoretical models or novel interpretations. Such features might lend support to existing theories; for instance they might correspond to qualities associated with "prestige" or "dominance" [@henrich_evolution_2001] or functions associated with conflict or cooperation [@gavrilets_collective_2015; @glowacki_evolutionary_2017; @hooper_theory_2010]. 3) Identify the most cross-culturally frequent *costs and benefits* of leadership for both leaders and followers. Such exploratory results stand to facilitate more fine-grained approaches within leadership studies and greater theoretical and empirical work beyond community leadership, while also revealing the importance of a broad, cross-cultural perspective in understanding the psychology and cultural patterning of perhaps the most foundational component of human social behavior and organization. 
 
 
 # Methods
