@@ -239,20 +239,20 @@ knitr::include_graphics("Figures/m_pvclust.both.png")
 
 The leader quality cluster analysis (Figure \@ref(fig:cluster)A) identified two top-level clusters. Within each top-level cluster we identify two interpretable and generally strongly supported sub-clusters which are annotated with text. Within the first top-level cluster, we identify a dominant/shaman cluster, which suggests a strong link between dominance-based leadership (i.e., *Authority*, *Aggressiveness*, *Feared*) and shamanism (i.e., *Supernatural*, *Artistic performance*). The second sub-cluster includes qualities of leaders related to material, social, and reproductive success (i.e., *Wealthy*, *Social contacts*, and *Polygnous*). Within the second top-level, we identify a sub-cluster of positive personal characteristics (i.e., *Knowledgeable/intelligent*, *Proper behavior*, *Charisma*, *Fairness*) and a sub-cluster of measures related to social strategies and health (i.e., *Strategic planner*, *Generosity*, *Physically formidable*). The leader functions cluster analysis (Figure \@ref(fig:cluster)B) also identified two top-level clusters; the larger of which we identify as an organizational functions cluster (i.e., *Organize cooperation*, *Military command*, *Resolve conflict*) and the smaller a prosociality cluster (i.e., *Social functions*, *Distribute resources*, *Hospitality*). 
 
-## Principle components analyses
+<!-- ## Principle components analyses -->
 
-A logistic PCA on the `r length(quality_vars)` coded leader quality variables, with rank $k = `r dim(logpca_model_qualities$U)[2]`$ and  $m = `r logpca_model_qualities$m`$ optimized by cross-validation, explained `r signif(logpca_model_qualities$prop_deviance_expl, 3)*100`% of the deviance. We draw on the first two leader quality components for interpretation and additional analyses (see Figure \@ref(fig:qualitiesPCplot)). We identify the first component (PC1) as a *Prestige vs. Dominance* measure. Low values on Leader Qualities PC 1 are strongly associated with the variables *Experienced/accomplished* and *Knowledgeable/intelligence* and moderately associated with *Confidence* and *Bravery*. High values are strongly associated with *Polygnous* and *Authority* and moderately associated with *High quality spouse*. Therefore, the "dominance" side of the *Prestige vs. Dominance* component is also closely liked to reproduction, as demonstrated in the cluster analysis (Figure \@ref(fig:cluster)). Measures of physical formidability are also moderately associated with the "dominance" side of this component. The second leader qualities component we identify as an *In-group favoritism vs. Social Status* measure. Low values on Leader Qualities PC 2 are strongly associated with *Aggressiveness*, *Bravery*, *Xenophobia*, and *Loyalty*. High Values are strongly associated with *High status* and moderately associated with *Fairness*, *Age*, and *Decisiveness/decision-making*. Therefore, Leader Qualities PC 2 also reflects elements of a prestige-dominance distinction in contrasting aggressiveness with high social status.
+<!-- A logistic PCA on the `r length(quality_vars)` coded leader quality variables, with rank $k = `r dim(logpca_model_qualities$U)[2]`$ and  $m = `r logpca_model_qualities$m`$ optimized by cross-validation, explained `r signif(logpca_model_qualities$prop_deviance_expl, 3)*100`% of the deviance. We draw on the first two leader quality components for interpretation and additional analyses (see Figure \@ref(fig:qualitiesPCplot)). We identify the first component (PC1) as a *Prestige vs. Dominance* measure. Low values on Leader Qualities PC 1 are strongly associated with the variables *Experienced/accomplished* and *Knowledgeable/intelligence* and moderately associated with *Confidence* and *Bravery*. High values are strongly associated with *Polygnous* and *Authority* and moderately associated with *High quality spouse*. Therefore, the "dominance" side of the *Prestige vs. Dominance* component is also closely liked to reproduction, as demonstrated in the cluster analysis (Figure \@ref(fig:cluster)). Measures of physical formidability are also moderately associated with the "dominance" side of this component. The second leader qualities component we identify as an *In-group favoritism vs. Social Status* measure. Low values on Leader Qualities PC 2 are strongly associated with *Aggressiveness*, *Bravery*, *Xenophobia*, and *Loyalty*. High Values are strongly associated with *High status* and moderately associated with *Fairness*, *Age*, and *Decisiveness/decision-making*. Therefore, Leader Qualities PC 2 also reflects elements of a prestige-dominance distinction in contrasting aggressiveness with high social status. -->
 
-```{r qualitiesPCplot, fig.width=15, fig.height=10, fig.cap="Logistic PCA loadings of coded leader qualitiy variables on the first two components. PC 1 is identified as a *Prestige vs. Dominance* component and PC 2 is identified as an *In-group favoritism vs. Social Status* component."}
-logisticPCA_loadings_plot(logpca_model_qualities, data = pca_data_qualities2)
-```
+<!-- ```{r qualitiesPCplot, fig.width=15, fig.height=10, fig.cap="Logistic PCA loadings of coded leader qualitiy variables on the first two components. PC 1 is identified as a *Prestige vs. Dominance* component and PC 2 is identified as an *In-group favoritism vs. Social Status* component."} -->
+<!-- logisticPCA_loadings_plot(logpca_model_qualities, data = pca_data_qualities2) -->
+<!-- ``` -->
 
-Similarly, A logistic PCA on the `r length(function_vars)` coded leader function variables, with rank $k=`r dim(logpca_model_functions$U)[2]`$ and $m = `r logpca_model_functions$m`$ optimized by cross-validation, explained `r signif(logpca_model_functions$prop_deviance_expl, 3)*100`% of the deviance. The first leader functions component distinguishes between social functions (a very broad and generalized measure) from other more specific leader functions, which we identify as a *Social functions* component. Low values on Leader function PC 1 are strongly associated with *Social functions*. The Leader functions PC 2 distinguished between organizational and mediation-based functions, which we identify as an *Organization vs. Mediation* component. Low values on Leader functions PC 2 are strongly associated with the variables *Organize cooperation* and *Political appointments*, whereas high values are strongly associated with *Resolve conflict* and moderately associated with *Provide counsel/direction*. See Figure \@ref(fig:functionsPCplot).
+<!-- Similarly, A logistic PCA on the `r length(function_vars)` coded leader function variables, with rank $k=`r dim(logpca_model_functions$U)[2]`$ and $m = `r logpca_model_functions$m`$ optimized by cross-validation, explained `r signif(logpca_model_functions$prop_deviance_expl, 3)*100`% of the deviance. The first leader functions component distinguishes between social functions (a very broad and generalized measure) from other more specific leader functions, which we identify as a *Social functions* component. Low values on Leader function PC 1 are strongly associated with *Social functions*. The Leader functions PC 2 distinguished between organizational and mediation-based functions, which we identify as an *Organization vs. Mediation* component. Low values on Leader functions PC 2 are strongly associated with the variables *Organize cooperation* and *Political appointments*, whereas high values are strongly associated with *Resolve conflict* and moderately associated with *Provide counsel/direction*. See Figure \@ref(fig:functionsPCplot). -->
 
 
-```{r functionsPCplot, fig.width=15, fig.height=10, fig.cap="Logistic PCA loadings of coded leader function variables on the first two components. PC 1 is identified as a *Social functions* component and PC 2 is identified as an *Organization vs. Mediation* component."}
-logisticPCA_loadings_plot(logpca_model_functions, data = pca_data_functions2)
-```
+<!-- ```{r functionsPCplot, fig.width=15, fig.height=10, fig.cap="Logistic PCA loadings of coded leader function variables on the first two components. PC 1 is identified as a *Social functions* component and PC 2 is identified as an *Organization vs. Mediation* component."} -->
+<!-- logisticPCA_loadings_plot(logpca_model_functions, data = pca_data_functions2) -->
+<!-- ``` -->
 
 ## Benefits and costs of leadership and followership
 
@@ -266,9 +266,9 @@ For both leaders and followers, individuals stand to lose what they are able to 
 plot.variable.support_costs_benefits
 ```
 
-## Exploring population-level variation
+<!-- ## Exploring population-level variation -->
 
-To explore potential population variation in the *Prestige vs. Dominance* and *In-group favoritism vs. Social Status* leader qualities components and the *Social functions* and *Mediation vs. Organization* leader functions components, we fit four hierarchical linear models at the text-record level, using nested random effects of document within culture with each of these components as outcome measures. For predictor variables we relied on our researcher-coded measure of group structure and our modified version of the HRAF subsistence classification (see Figure \@ref(fig:groupsex)). 
+<!-- To explore potential population variation in the *Prestige vs. Dominance* and *In-group favoritism vs. Social Status* leader qualities components and the *Social functions* and *Mediation vs. Organization* leader functions components, we fit four hierarchical linear models at the text-record level, using nested random effects of document within culture with each of these components as outcome measures. For predictor variables we relied on our researcher-coded measure of group structure and our modified version of the HRAF subsistence classification (see Figure \@ref(fig:groupsex)).  -->
 
 
 
@@ -276,29 +276,29 @@ To explore potential population variation in the *Prestige vs. Dominance* and *I
 
 <!-- We drew on the Standard Cross-Cultural Sample (SCCS) database [@murdock_standard_1969] for additional population-level measures, which scores 186 cultures on many qualitative or quantitative variables, such as kinship system, dependence on agriculture, and social stratification. Fifty of these cultures are the same as, or very similar to, cultures in the PSF. Specifically, we use the SCCS measures of community size, population density, and cultural complexity. Using these measures as covariates allows us to determine the degree to which, an aggregate measure of cultural complexity, mode of subsistence, or measures of community size and population dispersal most strongly impact the qualities and functions of leaders. We also include our researcher coded measure of group structure (See Table X) as a predictor.   -->
 
-Functions PC 1 model
+<!-- Functions PC 1 model -->
 
-```{r funcPCmodel1, fig.height=8, fig.width=20}
-m_fPC1_sub_plot + m_fPC1_group_plot
-```
+<!-- ```{r funcPCmodel1, fig.height=8, fig.width=20} -->
+<!-- m_fPC1_sub_plot + m_fPC1_group_plot -->
+<!-- ``` -->
 
-Functions PC 2 model
+<!-- Functions PC 2 model -->
 
-```{r funcPCmodel2, fig.height=10, fig.width=20}
-m_fPC2_sub_plot + m_fPC2_group_plot
-```
+<!-- ```{r funcPCmodel2, fig.height=10, fig.width=20} -->
+<!-- m_fPC2_sub_plot + m_fPC2_group_plot -->
+<!-- ``` -->
 
-Qualities PC 1 model
+<!-- Qualities PC 1 model -->
 
-```{r qualPCmodel1, fig.height=10, fig.width=20}
-m_qPC1_sub_plot + m_qPC1_group_plot
-```
+<!-- ```{r qualPCmodel1, fig.height=10, fig.width=20} -->
+<!-- m_qPC1_sub_plot + m_qPC1_group_plot -->
+<!-- ``` -->
 
-Qualities PC 2 model 
+<!-- Qualities PC 2 model  -->
 
-```{r qualPCmodel2, fig.height=10, fig.width=20}
-m_qPC2_sub_plot + m_qPC2_group_plot
-```
+<!-- ```{r qualPCmodel2, fig.height=10, fig.width=20} -->
+<!-- m_qPC2_sub_plot + m_qPC2_group_plot -->
+<!-- ``` -->
 
 
 
