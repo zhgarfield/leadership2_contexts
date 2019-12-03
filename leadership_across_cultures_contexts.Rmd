@@ -195,8 +195,8 @@ p_map <- ggplot(world_map, aes(x = long, y = lat)) +
   labs(x='', y='', shape = 'Subsistence', colour = 'Subsistence', size = 'Documents') +
   guides(shape = guide_legend(override.aes = list(size = 4))) +
   theme_bw(15)
+ggsave(filename = 'Figures/map.pdf', p_map)
 p_map
-# ggsave(filename = 'Figures/map.pdf', p_map)
 ```
 
 
@@ -209,6 +209,7 @@ p_map
 The type of group to which a leader text referred was coded into seven researcher-coded categories: residential groups, kin groups, economic groups, political groups at the community level, political group beyond the community level, military groups, and religious groups. Figure \@ref(fig:grouptype) indicates the proportion of text records that were categorized into each of these groups, broken out by mode of subsistence. We rely on a modified classification of subsistence from the HRAF, collapsing “hunter-gatherers” and “primarily hunter-gatherers” into a single category, “hunter-gatherers,” and by collapsing “agro-pastoralists” and “pastoralists” into a single “pastoralists” category. We renamed the HRAF’s “Other” subsistence category, which is applied to societies with various combinations of hunting, fishing, gathering, pastoralism, and horticulture or intensive agriculture, as “mixed.” This produced a subsistence classification with five groups: Hunter-gatherers, Pastoralists, Horticulturalists, Agriculturalists, and Mixed.
 
 ```{r grouptype, fig.width=20, fig.height=10, fig.cap="The distribution of text records by subsistence and group type. Areas of the bars are proportional to the number of text records in that category."}
+ggsave(file="Figures/group_subsis.pdf", plot_group_subsis, width=16, height=6)
 plot_group_subsis #+ plot_group_sex
 ```
 
@@ -223,6 +224,7 @@ As Figure \@ref(fig:grouptype) reveals, the distribution of text records by grou
 For each of the `r length(c(quality_vars, function_vars, leader_cost_vars, leader_benefit_vars, follower_benefit_vars, follower_cost_vars))` coded variables (see Tables \@ref(tab:qualfuncvars) and \@ref(tab:costbenefitvars)), we computed the percentage of text records that provided support, and we computed the percentage of cultures with at least one text record providing support for that variable. See Figure \@ref(fig:varsupport).
 
 ```{r varsupport, fig.width=15, fig.height=15, fig.cap="Support for each coded variable of leader functions (top) and qualities (bottom). Blue circles: percent of text records with evidence of support (95% CI computed with a binomial mixed effects models with random intercept for author nested within culture). Red triangles: percent of cultures with evidence of support (95% CI computed with a cluster bootstrap)."}
+ggsave(file="Figures/variablesupport.pdf", plot.variable.support)
 plot.variable.support
 ```
 
@@ -253,6 +255,7 @@ The frequency of leader and follower costs and benefits were estimated similarly
 Followers on the other hand also benefit from leadership systems through receiving material resources (documented in about 50% of cultures) but otherwise most frequently benefit through social *services* provided (documented in about 35% of cultures). Mating and fitness benefits are relatively rare for followers. Followers most frequently incur costs in the form of material resources lost (documented in about 40% of cultures) and in providing social services (documented in about 25% of cultures). See Figure \@ref(fig:varsupportcb).
 
 ```{r varsupportcb, echo=FALSE, warning=FALSE, message=F, fig.width=15, fig.height=11, fig.cap="Support for each coded variable for the costs and benefits of leadership and followership. Blue circles: percent of text records with evidence of support (95% CI computed with a binomial mixed effects models with random intercept for author nested within culture). Red triangles: percent of cultures with evidence of support (95% CI computed with a cluster bootstrap)."}
+ggsave(file="Figures/variablecostsbenefits.pdf", plot.variable.support_costs_benefits)
 plot.variable.support_costs_benefits
 ```
 
