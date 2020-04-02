@@ -292,6 +292,17 @@ plot.variable.support_costs_benefits
 <!-- m_qPC2_sub_plot + m_qPC2_group_plot -->
 <!-- ``` -->
 
+## Effects of document meta-data on leadership patterns
+
+```{r tabauthorgender}
+unique_authors <- unique(authorship[c('author_ID', 'author_gender')])
+tab_author_gender <- table(unique_authors$author_gender)
+mm_coauthorSUM <- summary(mm_coauthor)
+mm_coauthorP <- mm_coauthorSUM$coefficients['female_coauthorTRUE', 'Pr(>|z|)']
+```
+
+We explored whether document features, such as date of publication and gender of authors, influenced reporting of leader functions and qualities. There were `r tab_author_gender['male']` male authors, `r tab_author_gender['female']` females authors, and `r tab_author_gender['unkown']` authors whose gender we could not determine; some of these authors were co-authors. We then tested if text records with a female author or co-author were more likely to discuss female leaders. Of the `r sum(tab_coauthor['FALSE',])` text records with no female co-author, `r tab_coauthor['FALSE','yes']` (`r 100*signif(tab_coauthor['FALSE','yes']/sum(tab_coauthor['FALSE',]),2)`%) reported female leadership. Of the `r sum(tab_coauthor['TRUE',])` text records with female co-author, on the other hand, `r tab_coauthor['TRUE','yes']` (`r 100*signif(tab_coauthor['TRUE','yes']/sum(tab_coauthor['TRUE',]),2)`%) reported female leadership, suggesting that female ethnographers were more likely to report female leaders. However, after accounting for the non-independence of text records (i.e., multiple records from the same document) using a logistic mixed effects regression model, we found that although there was a positive effect of co-author gender on reporting female leadership (OR = `r signif(mm_coauthorOR, 2)`), it was not statistically significant (p = `r signif(mm_coauthorP, 2)`). 
+
 # Discussion
 
 This exploratory study extracted the qualities, functions, benefits, and costs of leadership from the ethnographic record. These variables were *not* determined prior to the study but were instead identified and coded during several passes through `r nrow(text_records)` texts on leadership obtained from the eHRAF (see Methods section). Our results therefore represent the broadest and most comprehensive view of the qualities of leaders (i.e., the types of people that occupy leadership roles), the functions of leaders (i.e., what leaders do), and the costs and benefits of leadership for both leaders and followers across a diverse and culturally representative sample of the ethnographic record. These results reveal universal dimensions of human leadership while also suggesting important variation by group type, subsistence type, and sex of the leader.

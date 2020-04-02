@@ -1111,3 +1111,64 @@ attractive_pct <- signif(d_melt$value[d_melt$Variable == "Attractive" & d_melt$T
 #   geom_violin()+
 #   geom_jitter(height = 0, width = 0.1) +
 #   geom_boxplot(width=.15)
+
+
+# Female leaders by ethnographer gender -----------------------------------
+
+# leader_text2$demo_sex
+# authorship
+# text_records
+
+female_coauthor <- function(cs_textrec_ID){
+  document_ID <- text_records$document_d_ID[text_records$cs_textrec_ID == cs_textrec_ID]
+  author_genders <- authorship$author_gender[authorship$document_ID == document_ID]
+  'female' %in% author_genders
+}
+
+leader_text2$female_coauthor <- sapply(leader_text2$cs_textrec_ID, female_coauthor)
+
+leader_text3 <- 
+  leader_text2 %>% 
+  dplyr::select(
+    cs_textrec_ID,
+    demo_sex,
+    female_coauthor
+  ) %>% 
+  mutate(
+    female_leader_present = case_when(
+      demo_sex == 'unknown' ~ 'unknown',
+      demo_sex == 'male' ~ 'no',
+      TRUE ~ 'yes'
+    ),
+    female_leader_present2 = female_leader_present == 'yes'
+  ) %>% 
+  dplyr::filter(
+    demo_sex != 'unknown'
+  ) %>% 
+  left_join(
+    text_records[c("document_d_ID", "cs_textrec_ID")]
+  ) 
+
+# Assuming each record is independent
+tab_coauthor <- xtabs(~female_coauthor + female_leader_present, leader_text3)
+summary(tab_coauthor)
+# plot(tab_coauthor)
+
+m_coauthor <- glm(
+  female_leader_present2 ~
+    female_coauthor,
+  family = binomial,
+  data = leader_text3
+)
+
+# Hierarchical model
+
+mm_coauthor <- glmer(
+  female_leader_present2 ~
+    female_coauthor +
+    (1|document_d_ID),
+  family = binomial,
+  data = leader_text3
+)
+mm_coauthorOR <- exp(fixef(mm_coauthor))[[2]]
+
