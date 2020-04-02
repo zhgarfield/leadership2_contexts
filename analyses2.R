@@ -991,7 +991,44 @@ plot_group_sex <-
 plot_group_sex
 
 
-# Compute values ----------------------------------------------------------
+# Costs and benefits by group structure type ------------------------------
+se <- function(x) sd(x)/sqrt(length(x))
+
+# try to tidy data to: Group structure, Benefit type, Cost type, Status type (leader, follower), Mean, SE
+
+# Group by group structure and calculate mean and SE
+cb_grp <- leader_text2 %>% 
+  group_by(group.structure2) %>% 
+  select(contains(c("benefits", "costs"))) %>%
+  summarise_each(funs(mean, se)) %>% 
+  pivot_longer(cols=contains(c("benefits", "costs"))) # couldn't figure out how to pivot_longer on three vars
+
+# label means and SE to split the data frame
+cb_grp$value_type <- gsub("^.*\\_","",cb_grp$name)
+
+#Create dataframe of means and fix names
+cb_grp_means <- data.frame(split(cb_grp, cb_grp$value_type)[1])
+cb_grp_means$name <- str_sub(cb_grp_means$mean.name, end=-6)
+cb_grp_means$group.structure2 <- cb_grp_means$mean.group.structure2
+cb_grp_means <- cb_grp_means[,c("mean.value","name","group.structure2")]
+
+#Create dataframe of SEs and fix names
+cb_grp_se <- data.frame(split(cb_grp, cb_grp$value_type)[2])
+cb_grp_se$name <- str_sub(cb_grp_se$se.name, end=-4)
+cb_grp_se$group.structure2 <- cb_grp_se$se.group.structure2
+cb_grp_se <- cb_grp_se[,c("se.value","name","group.structure2")]
+
+#Merge mean and SE data back together               
+cb_grp_all <- full_join(cb_grp_means, cb_grp_se, by = c("name", "group.structure2"))
+
+# Create status and type variables
+cb_grp_all$status <- str_extract(cb_grp_all$name, ".+?(?=\\.)")
+cb_grp_all$type <- str_match(cb_grp_all$name, "\\.(.*?)_")
+
+
+
+
+# Compute values -----------------------------------------------------------
 
 group_sex_tbl <- xtabs(~demo_sex+group.structure2, leader_text2)
 female_residential_pct <- signif(group_sex_tbl['female', 'residential subgroup']/sum(leader_text$demo_sex == 'female'), 3)*100

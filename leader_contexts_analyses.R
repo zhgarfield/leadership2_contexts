@@ -24,6 +24,7 @@ library(effects)
 library(lme4)
 library(patchwork)
 library(pvclust)
+library(readxl)
 # library(tidybayes)
 # library(cowplot)
 # library(brms)
@@ -1231,6 +1232,38 @@ aheatmap(t(as.matrix(heatmap_data[,c(quality_vars)])),
          treeheight = 50,
          filename = 'heatmap_qualities.pdf')
 
+
+# GLOBE data analysis -----------------------------------------------------
+
+globe_leader <- read_excel("GLOBE-Phase-2-Aggregated-Leadership-Data.xls")
+
+# Remove dimebnsion aggregates
+globe_leader2 <- globe_leader %>% 
+  select(., -contains("Dimension"))
+
+# Cluster analysis
+globe_leader_clust <- pvclust(
+  globe_leader2[,c(3:23)], 
+  method.hclust = 'ward', 
+  method.dist = 'euclidean', 
+  nboot = 10000,
+  parallel = T
+)
+plot(globe_leader_clust)
+pvrect(globe_leader_clust)
+
+globe_societal <- read_excel("GLOBE-Phase-2-Aggregated-Societal-Culture-Data.xls")
+
+# Cluster analysis
+globe_societal_clust <- pvclust(
+  globe_societal[,c(3:20)], 
+  method.hclust = 'ward', 
+  method.dist = 'correlation', 
+  nboot = 10000,
+  parallel = T
+)
+plot(globe_societal_clust)
+pvrect(globe_societal_clust)
 
 
 # Save RData envrionment --------------------------------------------------

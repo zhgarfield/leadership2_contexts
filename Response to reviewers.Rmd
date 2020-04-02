@@ -39,21 +39,42 @@ knitr::opts_chunk$set(echo = TRUE)
 
 **Finally, the reviewers made a number of valuable suggestions, not enumerated above,  that should help you sharpen you presentation and discussion. Please attend to those.**
 
-## Reviewer 1 comments: "Leadership across 59 traditional cultures: an exploratory analysis" Evolution & Human Behavior
+## Reviewer 1 comments
 
 **This manuscript presents a descriptive analysis of the HRAF to provide information about leadership in traditional societies. Overall, I enjoyed reading the paper and thought it was a useful resource. It provides a comprehensive analysis of leadership across a wide swath of traditional cultures. It reports on the types of functions leaders serve, the qualities possessed by leaders, and the costs and benefits of leadership experienced by both leaders and followers. The paper will likely be of interest to anyone working in the area of leadership, social hierarchy, or group behavior. I provide some comments below aimed at helping the authors increase the potential accessibility and impact of the work.** 
 
+We greatly appreciate the reviewers detailed comments and very useful suggestions. 
+
 **The paper was framed partially as providing an analysis of differences between traditional societies and WEIRD societies but, unless I missed it, there was not much analysis along these lines. Neither the background section nor the Discussion section focuses much on contrasting WEIRD and traditional societies. The paper appears to miss out on a useful opportunity to provide some commentary on this issue. Also, I realize the paper is decidedly exploratory/descriptive, but did the authors have any hypotheses about differences between WEIRD and traditional societies?** 
+We agree our initial submisson did not sufficently accomplish this goal. We have now added summarizing, concluding statements on the qualities and functions of leaders in WEIRD and non-WEIRD settings in the introduction. 
+
+NEED TO ADD TO DISCUSSION & ANALYSES?
 
 **The paper suggests that one of the most important qualities and benefits of being a leader involves being of "high status." That's a little dissatisfying. What's the difference between being high status and being a leader? I realize the authors provided brief operational definitions of the two constructions, but might they simply be two ways of describing the same thing (having a high degree of influence)? Perhaps the authors could do just a bit more to differentiate them.** 
 
+<!-- IDEA: Perform some textual analysis on teh 10% of text records in which there was not evidence leaders were high status. How does these records compare RE gender, group structure, or other qualities (maybe), or the most frequent functions, i.e., try to charachterize non-high status leaders.  -->
+
 **Some of the benefits of leadership also appear as costs. Greater reflection and explanation on this aspect of the data seems warranted. I understand that leaders can enjoy certain benefits (access to resources) but then if they lose their status as leader they might lose those benefits (if someone falls from grace, they no longer get a larger piece of the pie). Do the findings reflect anything more complex than that? Their discussion of benefits of costs was brief and a little disappointing. The paper might benefit from enhancing that discussion.** 
+
+<!-- IDEA: Represent the benefits and costs of leadership within group type. Would need to standardize the estimates, such our culture scores in first study, but it could be group structure benefit score, etc. Then we can roughly compare how costs and benefits comapre across group types. -->
 
 **Some readers might appreciate a bit more detail about how the HRAF database was created, including how the ethnographic records were identified and selected and whom and when they are from.** 
 
+We added a few additional details in the methods section on the eHRAF and ethngraphic sample and now more clearly direct readers to the original pubication from which the database was built, which includes additional details. 
+
+We also include additional details in the results and supplimentary information on the corpus of ethnographic documents which provide the sample of ethnographic paragraphs. NEED TO DO. 
+
 **I don't work with ethnographic data, so perhaps this question is naïve, but: What conclusions can we draw about the actual frequency of leadership functions and traits from the frequency with which they are mentioned in the ethnographic record? There is an implicit assumption that the two are closely aligned. Has such an alignment been confirmed? Is that even testable?**
 
+The reviewer brings up an important point. For one, this is partly our motivation for representing the percentage of cultures which provide at least one text record supporting each of the operationalized variables. Despite this low threshold for acceptign supporting evidence, the ethnogrtaphic record (sampled here) does not provide support for every variable from every culture. At this culture-level, we feel more confident our data provide a estiamte of cross-cultural frequency, albeit an inherently noisy estimation. Also, the entire field of ethnology (the branch of anthropology focused on comparing charachteristics of populations across the globe), is based on developing comparable and often quantitaive measures from primary ethnogrpahic information. For example, the Ethnographic Atlas, which provides hundreds of coded quantitaive and qualitive variables on thousands of cultures and the Standard Cross-Cultural Sample, which provides thousands of coded quantitative and qualitative variables on 186 cultures, were developed in essentially the same way we have developed our operatiopnalized variables here. Developing and contrasting coded measures from primary ethnographic documents is not without limitations, but does represent (perhaps) the only method to systematically and empirically compare measures across a large sample of cultures/populations. 
+
+At the text-record level drawing strong conclusions about the actual frequency of traits is slightly more problematic. However, fundamentally these results provide a systematic view of the ethnographic record. From these results field researchers and theoreticians can draw inference from a more comprehensive view of human culturla diversity rather than haphazardly self-selecting a few ethngoraphic cases studies. 
+
+We now discuss these limitations and points more clearly in the limitations setion. NEED TO DO. 
+
 **What does it mean for someone to be a leader at the "supracommunity" level? I'm not familiar with the term, so had difficulty contextualizing the relevant findings. And how exactly do the authors define "community" versus "supracommunity"?**
+
+In the methods section we now include a description of all levels of our *group structure" coding to clearly explain this coding scheme. We define supracommunity leaders when the "group" involves leadership beyond the community level and across multiple residential communities, such as regional political leaders, chiefs in complex chiefdoms, kings, and state-level leaders. 
 
 ## Reviewer 2 comments
 
