@@ -1,6 +1,5 @@
-### Suplimentary analyses
+### Supplementary analyses
 
-load("Leader2.Rdata")
 source("analyses2.R")
 
 library(ggalt)
