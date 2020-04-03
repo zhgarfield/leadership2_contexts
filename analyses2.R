@@ -1172,3 +1172,80 @@ mm_coauthor <- glmer(
 )
 mm_coauthorOR <- exp(fixef(mm_coauthor))[[2]]
 
+library(rstanarm)
+library(bayesplot)
+options(mc.cores = parallel::detectCores())
+
+# stan_mm_coauthor <- stan_glmer(
+#   female_leader_present2 ~
+#     female_coauthor +
+#     (1|document_d_ID),
+#   family = binomial(link = "logit"),
+#   data = leader_text3,
+#   prior_intercept = normal(0,1),
+#   prior = normal(0,1), 
+#   chains = 4, 
+#   iter = 40000)
+# 
+# summary(stan_mm_coauthor, pars = "female_coauthorTRUE")
+# posterior_stan_mm_coauthor <- as.matrix(stan_mm_coauthor)
+# mcmc_areas(posterior_stan_mm_coauthor,
+#            pars = c("female_coauthorTRUE"),
+#            prob = 0.95)
+
+# Female leaders by publication year --------------------------------------
+
+leader_text4 <- left_join(leader_text3, documents, by = c("document_d_ID" = "d_ID"))
+
+# mm_pubyear <- glmer(
+#   female_leader_present2 ~
+#     `d_publication date` +
+#     (1|document_d_ID),
+#   family = binomial,
+#   data = leader_text4
+# )
+# mm_pubyearOR <- exp(fixef(mm_pubyear))[[2]]
+# 
+# stan_mm_pubyear <- stan_glmer(
+#   female_leader_present2 ~
+#     `d_publication date`  +
+#     (1|document_d_ID),
+#   family = binomial(link = "logit"),
+#   data = leader_text4,
+#   prior_intercept = normal(0,1),
+#   prior = normal(0,1), 
+#   chains = 4, 
+#   iter = 40000)
+# 
+# summary(stan_mm_pubyear, pars = "`d_publication date`")
+# posterior_stan_mm_coauthor <- as.matrix(stan_mm_pubyear)
+# mcmc_areas(posterior_stan_mm_coauthor,
+#            pars = c("`d_publication date`"),
+#            prob = 0.95)
+
+## Both gender and publication year in one model
+
+# ***********************
+#    USE THIS MODEL????
+# ***********************
+
+# stan_mm_pubyear_gender <- stan_glmer(
+#   female_leader_present2 ~
+#     female_coauthor +
+#     (1|`d_publication date`)  +
+#     (1|document_d_ID),
+#   family = binomial(link = "logit"),
+#   data = leader_text4,
+#   prior_intercept = normal(0,1),
+#   prior = normal(0,1), 
+#   chains = 4, 
+#   iter = 40000)
+# 
+# summary(stan_mm_pubyear_gender, pars = c("female_coauthorTRUE"))
+# posterior_stan_mm_coauthor_pubyear <- as.matrix(stan_mm_pubyear_gender)
+# mcmc_areas(posterior_stan_mm_coauthor_pubyear,
+#            pars = c("female_coauthorTRUE"),
+#            prob = 0.95)
+
+#launch_shinystan(stan_mm_pubyear_gender)
+
