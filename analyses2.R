@@ -1226,7 +1226,7 @@ leader_text4 <- left_join(leader_text3, documents, by = c("document_d_ID" = "d_I
 ## Both gender and publication year in one model
 
 # ***********************
-#    USE THIS MODEL????
+#  USE THIS MODEL????
 # ***********************
 
 # stan_mm_pubyear_gender <- stan_glmer(
