@@ -52,7 +52,10 @@ NEED TO ADD TO DISCUSSION & ANALYSES?
 
 **The paper suggests that one of the most important qualities and benefits of being a leader involves being of "high status." That's a little dissatisfying. What's the difference between being high status and being a leader? I realize the authors provided brief operational definitions of the two constructions, but might they simply be two ways of describing the same thing (having a high degree of influence)? Perhaps the authors could do just a bit more to differentiate them.** 
 
-<!-- IDEA: Perform some textual analysis on teh 10% of text records in which there was not evidence leaders were high status. How does these records compare RE gender, group structure, or other qualities (maybe), or the most frequent functions, i.e., try to charachterize non-high status leaders.  -->
+<!-- IDEA: Perform some textual analysis on teh 10% of text records in which there was not evidence leaders were high status. How does these records compare RE gender, group structure, or other qualities (maybe), or the most frequent functions, i.e., try to charachterize non-high status leaders.  
+
+OR, better idea (?), use LASSO technique from paper one, to identify words predictive of high status present or not
+-->
 
 **Some of the benefits of leadership also appear as costs. Greater reflection and explanation on this aspect of the data seems warranted. I understand that leaders can enjoy certain benefits (access to resources) but then if they lose their status as leader they might lose those benefits (if someone falls from grace, they no longer get a larger piece of the pie). Do the findings reflect anything more complex than that? Their discussion of benefits of costs was brief and a little disappointing. The paper might benefit from enhancing that discussion.** 
 

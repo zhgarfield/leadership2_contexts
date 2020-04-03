@@ -1232,16 +1232,16 @@ leader_text4 <- left_join(leader_text3, documents, by = c("document_d_ID" = "d_I
 # stan_mm_pubyear_gender <- stan_glmer(
 #   female_leader_present2 ~
 #     female_coauthor +
-#     (1|`d_publication date`)  +
+#     #(1|`d_publication date`)  +
 #     (1|document_d_ID),
 #   family = binomial(link = "logit"),
 #   data = leader_text4,
-#   prior_intercept = normal(0,1),
-#   prior = normal(0,1), 
-#   chains = 4, 
-#   iter = 40000)
+#   prior_intercept = student_t(1,0,1),
+#   prior = normal(0,1),
+#   chains = 4,
+#   iter = 20000)
 # 
-# summary(stan_mm_pubyear_gender, pars = c("female_coauthorTRUE"))
+# summary(stan_mm_pubyear_gender, pars = c("female_coauthorTRUE", "(Intercept)"))
 # posterior_stan_mm_coauthor_pubyear <- as.matrix(stan_mm_pubyear_gender)
 # mcmc_areas(posterior_stan_mm_coauthor_pubyear,
 #            pars = c("female_coauthorTRUE"),
