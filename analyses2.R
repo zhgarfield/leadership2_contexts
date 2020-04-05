@@ -1176,25 +1176,98 @@ library(rstanarm)
 library(bayesplot)
 options(mc.cores = parallel::detectCores())
 
+# stan_m_coauthor <- stan_glm(
+#   female_leader_present2 ~
+#     female_coauthor,
+#   family = binomial(link = "logit"),
+#   data = leader_text3,
+#   prior_intercept = student_t(df=7,location=0,10),
+#   prior = normal(0,1),
+#   chains = 4,
+#   iter = 40000)
+#  
+# summary(stan_m_coauthor, pars = "(Intercept)", "female_coauthorTRUE")
+# posterior_stan_m_coauthor <- as.matrix(stan_m_coauthor)
+# mcmc_areas(posterior_stan_m_coauthor,
+#            pars = c("female_coauthorTRUE"),
+#            prob = 0.95)
+# 
 # stan_mm_coauthor <- stan_glmer(
+#   female_leader_present2 ~
+#     female_coauthor +
+#   (1|document_d_ID),
+#   family = binomial(link = "logit"),
+#   data = leader_text3,
+#   prior_intercept = student_t(df=7,location=0),
+#   prior = normal(0,1),
+#   prior_covariance = decov(reg. = 1, conc. = 1, shape = 1, scale = 1),
+#   chains = 4,
+#   iter = 40000)
+# 
+# summary(stan_mm_coauthor, pars = "(Intercept)", "female_coauthorTRUE")
+# posterior_stan_mm_coauthor <- as.matrix(stan_mm_coauthor)
+# mcmc_areas(posterior_stan_mm_coauthor,
+#            pars = c("female_coauthorTRUE"),
+#            prob = 0.95)
+# 
+# prior_summary(stan_mm_coauthor)
+# 
+# 
+# ## Adjusting covariance prior
+# ### goal here was to replicate lme4 results with stan_glmer. Adusting prior on covariance matrix, via shape does it
+# stan_mm_coauthor2 <- stan_glmer(
 #   female_leader_present2 ~
 #     female_coauthor +
 #     (1|document_d_ID),
 #   family = binomial(link = "logit"),
 #   data = leader_text3,
-#   prior_intercept = normal(0,1),
-#   prior = normal(0,1), 
-#   chains = 4, 
+#   prior_intercept = student_t(df=7,location=0),
+#   prior = normal(0,1),
+#   prior_covariance = decov(regularization = 1, 
+#                            concentration = 1,
+#                            shape = 19, 
+#                            scale = 1),
+#   chains = 4,
 #   iter = 40000)
 # 
-# summary(stan_mm_coauthor, pars = "female_coauthorTRUE")
-# posterior_stan_mm_coauthor <- as.matrix(stan_mm_coauthor)
-# mcmc_areas(posterior_stan_mm_coauthor,
+# summary(stan_mm_coauthor2, pars = "(Intercept)", "female_coauthorTRUE")
+# prior_summary(stan_mm_coauthor2)
+# 
+# posterior_stan_mm_coauthor2 <- as.matrix(stan_mm_coauthor2)
+# mcmc_areas(posterior_stan_mm_coauthor2,
 #            pars = c("female_coauthorTRUE"),
-#            prob = 0.95)
+#            prob = 0.90)
+# 
+library(brms)
+# 
+# prior1 <- c(set_prior("normal(0,1)", class = "b", coef = "female_coauthorTRUE"),
+#             set_prior("student_t(7, 0, 10)", class = "Intercept"),
+#             set_prior("lkj(regularization = 1, scale = 10, df = 1, autoscale = TRUE)", 
+#                       class = "sd", group = "document_d_ID")
+#             )
+# 
+#  
+# bmr1 <- brm(as.numeric(female_leader_present2) ~
+#               female_coauthor +
+#               (1|document_d_ID),
+#             bernoulli(link = "logit"),
+#             prior = prior1,
+#             warmup = 2000, iter = 4000,
+#             data = leader_text3)
+
+# summary(bmr1)
+# prior_summary(bmr1)
+
+
+
+
+
+
+
+
+
 
 # Female leaders by publication year --------------------------------------
-
 leader_text4 <- left_join(leader_text3, documents, by = c("document_d_ID" = "d_ID"))
 
 # mm_pubyear <- glmer(
