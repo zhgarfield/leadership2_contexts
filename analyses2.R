@@ -136,8 +136,8 @@ format_label <- function(lbl){
     leader.costs_resources_other.cost = 'Loss of material resources',
     leader.costs_social.status = 'Reduced social status',
     leader.costs_territory.cost = 'Loss of territory',
-    leader.costs.mating.cost = 'Mating cost',
-    leader.costs.social.services = 'Loss of social services',
+    leader.costs_mating.cost = 'Mating cost',
+    leader.costs_social.services = 'Loss of social services',
     follower.costs_fitness = 'Inclusive fitness cost',
     follower.costs_increased.risk.harm.conflict = 'Increased risk of harm',
     follower.costs_mating = 'Mating cost',
@@ -991,6 +991,48 @@ plot_group_sex <-
   theme_bw(15) + theme(axis.text.y=element_blank())
 plot_group_sex
 
+## Groups by subsistence for high status texts only
+df_groups_status <- 
+  leader_text2[leader_text2$qualities_high.status==0,] %>% 
+  dplyr::select(
+    group.structure2,
+    demo_sex,
+    subsistence
+  ) %>% 
+  dplyr::filter(group.structure2 != 'other') %>% 
+  mutate(
+    demo_sex = factor(demo_sex, levels = c('male', 'female')),
+    group =   factor(
+      group.structure2,
+      levels = c(
+        'residential subgroup',
+        'kin group',
+        'economic group',
+        'religious group',
+        'military group',
+        'political group (community)',
+        'political group (supracommunity)'
+      )
+    ),
+    subsistence = factor(
+      subsistence,
+      levels = c("hunter gatherers",
+                 "pastoralists",
+                 "mixed",
+                 "horticulturalists",
+                 "agriculturalists"
+      )
+    )
+  )
+
+plot_group_subsis_status <-
+  ggplot(df_groups_status) +
+  geom_mosaic(aes(x = product(group, subsistence), fill = group)) +
+  labs(x="", y="", fill = "Group type") +
+  guides(fill = guide_legend(reverse = T)) +
+  theme_bw(15) 
+plot_group_subsis_status
+
 
 # Costs and benefits by group structure type ------------------------------
 se <- function(x) sd(x)/sqrt(length(x))
@@ -1045,11 +1087,11 @@ final_record_count <- sum(rowSums(leader_text2[all_study_vars])>0)
 male_leader_pct <- signif(100*sum(leader_text2$demo_sex=='male', na.rm=T)/nrow(leader_text2), 3)
 female_leader_pct <- signif(100*sum(leader_text2$demo_sex=='female', na.rm=T)/nrow(leader_text2), 2)
 
-intelltxts <- sum(leader_text2$qualities.knowlageable.intellect)
-polytxts <- sum(leader_text2$qualities.polygynous)
+intelltxts <- sum(leader_text2$qualities_knowlageable.intellect)
+polytxts <- sum(leader_text2$qualities_polygynous)
 statustxts <- sum(leader_text2$qualities_high.status)
-intellpolytxts <- sum(leader_text2$qualities.polygynous & leader_text2$qualities.knowlageable.intellect)
-statuspolytxts <- sum(leader_text2$qualities.polygynous & leader_text2$qualities_high.status)
+intellpolytxts <- sum(leader_text2$qualities_polygynous & leader_text2$qualities_knowlageable.intellect)
+statuspolytxts <- sum(leader_text2$qualities_polygynous & leader_text2$qualities_high.status)
 
 # text analysis
 # leader_text has 1000 rows
@@ -1358,7 +1400,7 @@ stop_words <- rbind(stop_words, list(word='page', lexicon='garfield'))
 
 words2 <-
   words %>%
-  filter(!str_detect(word, '\\d')) %>% 
+  dplyr::filter(!str_detect(word, '\\d')) %>% 
   anti_join(stop_words)
 
 x <- sort(table(words2$word), decreasing = T)
@@ -1402,7 +1444,7 @@ dtm <-
 model_words <- function(pred_df, model_score_var, lam = 'lambda.min', title){
   
   document_d_ID <- pred_df[[1]] # Not sure if this is getting doc ID right?
-  x <- as.matrix(pred_df[-1])
+  x <- base::as.matrix(pred_df[-1])
   y <- leader_text_ta2[[model_score_var]][leader_text_ta2$cs_textrec_ID %in% document_d_ID]
   
   m_cv <- cv.glmnet(x, y, family = 'poisson', alpha = 1, standardize = F)
