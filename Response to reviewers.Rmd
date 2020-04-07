@@ -75,7 +75,7 @@ We now discuss these limitations and points more clearly in the limitations sect
 
 **What does it mean for someone to be a leader at the "supracommunity" level? I'm not familiar with the term, so had difficulty contextualizing the relevant findings. And how exactly do the authors define "community" versus "supracommunity"?**
 
-In the methods section we now include a description of all levels of our *group structure" coding to clearly explain this coding scheme. We define supracommunity leaders when the "group" involves leadership beyond the community level and across multiple residential communities, such as regional political leaders, chiefs in complex chiefdoms, kings, and state-level leaders. 
+In the methods section we now include a description of all levels of our *group structure* coding to clearly explain this coding scheme. We coded supracommunity leaders in cases when the "group" involves leadership beyond the community level and across multiple residential communities, such as regional political leaders, chiefs in complex chiefdoms, kings, and state-level leaders. This termonology was vaugely inspiried by Murdock and Provost's (1971) Political Integration Scale which codes the political integration at the society-level as either automonous local communities, or having one, two, or three levels of juridictional hiuerarchy "above the community"; i.e., if political authority is exclusive to a local village headman, the group would be coded as "autonomous" but if the village and headman are under authority of a chief from a seperate community, the group would be coded as "one level above community", and so forth. 
 
 ## Reviewer 2 comments
 
