@@ -13,7 +13,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### Editor comments
 
-**Statistical reporting and further analysis: The GLMM should be reported in full somewhere. This could go in the supplemental materials. However, can we learn more from it? Do the random effects matter for the ethnographers? What about the national origin effects for the ethnographers? We recommend taking seriously the reflexive analytical techniques of putting the ethnographer in the analysis (see work by Robert Aunger working in the Congo Basin). Does the ethnographer matter? If so, how much? Further, and we realize there may not be sufficient power for this, but does the gender of the ethnographer predict ‘seeing’ female leaders in a population? This can (potentially) speak quantitatively to some of the qualitative discussion about limitations and biases in the approach.**
+**Statistical reporting and further analysis: The GLMM should be reported in full somewhere. This could go in the supplemental materials. However, can we learn more from it? Do the random effects matter for the ethnographers? What about the national origin effects for the ethnographers? We recommend taking seriously the reflexive analytical techniques of putting the ethnographer in the analysis (see work by Robert Aunger working in the Congo Basin). Does the ethnographer matter? If so, how much?**
+
+**Further, and we realize there may not be sufficient power for this, but does the gender of the ethnographer predict ‘seeing’ female leaders in a population? This can (potentially) speak quantitatively to some of the qualitative discussion about limitations and biases in the approach.**
+
+We determined the gender of almost all authors of all documents included in our study. We found that of the 884 text records with no female author or co-author, 21 (2.4%) reported female leadership. Of the 225 text records with a female author or co-author, 20 (8.9%) reported female leadership, suggesting that female ethnographers were more likely to report female leaders. After accounting for the non-independence of text records (i.e., multiple records from the same document) using a logistic mixed effects regression model, however, we found that although there was a positive effect of co-author gender on reporting female leadership (OR = 3.5), it was not statistically significant (p = 0.25). We now report this in our results section.
 
 **Could further analyses be done to obtain more information on the nature of the variation within the data?**
 
@@ -46,6 +50,7 @@ knitr::opts_chunk$set(echo = TRUE)
 We greatly appreciate the reviewers detailed comments and very useful suggestions. 
 
 **The paper was framed partially as providing an analysis of differences between traditional societies and WEIRD societies but, unless I missed it, there was not much analysis along these lines. Neither the background section nor the Discussion section focuses much on contrasting WEIRD and traditional societies. The paper appears to miss out on a useful opportunity to provide some commentary on this issue. Also, I realize the paper is decidedly exploratory/descriptive, but did the authors have any hypotheses about differences between WEIRD and traditional societies?** 
+
 We agree our initial submisson did not sufficently accomplish this goal. We have now added summarizing, concluding statements on the qualities and functions of leaders in WEIRD and non-WEIRD settings in the introduction. 
 
 NEED TO ADD TO DISCUSSION & ANALYSES?
