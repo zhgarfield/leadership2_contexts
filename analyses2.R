@@ -1397,6 +1397,9 @@ sd_wordcount <- sd(x)
 library(dplyr)
 data("stop_words")
 stop_words <- rbind(stop_words, list(word='page', lexicon='garfield'))
+stop_words <- rbind(stop_words, list(word='ijaaj', lexicon='garfield'))
+stop_words <- rbind(stop_words, list(word='tadoelako', lexicon='garfield'))
+stop_words <- rbind(stop_words, list(word='zande', lexicon='garfield'))
 
 words2 <-
   words %>%
@@ -1490,8 +1493,8 @@ model_words <- function(pred_df, model_score_var, lam = 'lambda.min', title){
   return(plot)
 }
 
-highstatus_plot <- model_words(dtm, 'qualities_high.status', lam = "min", title = 'Qualities: High status')
+highstatus_plot <- model_words(dtm, 'qualities_high.status', lam = "min", title = 'Leader quality: High status')
 highstatus_plot
 
-ben_highstatus_plot <- model_words(dtm, 'leader.benefits_social.status.reputation', lam = "min", title = 'Benefits: Status, reputation')
-ben_highstatus_plot
+# ben_highstatus_plot <- model_words(dtm, 'leader.benefits_social.status.reputation', lam = "min", title = 'Benefits: Status, reputation')
+# ben_highstatus_plot
