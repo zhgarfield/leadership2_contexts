@@ -1455,6 +1455,8 @@ model_words <- function(pred_df, model_score_var, lam = 'lambda.min', title){
   
   if (lam == 'mid'){
     lmda <- m_cv$lambda.min + (m_cv$lambda.1se - m_cv$lambda.min)/2
+  } else if (lam == 'min'){
+    lmda <- m_cv$lambda.min
   } else {
     lmda = lam
   }
@@ -1488,8 +1490,8 @@ model_words <- function(pred_df, model_score_var, lam = 'lambda.min', title){
   return(plot)
 }
 
-highstatus_plot <- model_words(dtm, 'qualities_high.status', lam = 0.012, title = 'Qualities: High status')
+highstatus_plot <- model_words(dtm, 'qualities_high.status', lam = "min", title = 'Qualities: High status')
 highstatus_plot
 
-ben_highstatus_plot <- model_words(dtm, 'leader.benefits_social.status.reputation', lam = 0.01, title = 'Benefits: Status, reputation')
+ben_highstatus_plot <- model_words(dtm, 'leader.benefits_social.status.reputation', lam = "min", title = 'Benefits: Status, reputation')
 ben_highstatus_plot
