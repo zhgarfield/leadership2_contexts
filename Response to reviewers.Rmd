@@ -80,12 +80,8 @@ This is a good suggestion for future research, but goes beyond remit of the curr
 We greatly appreciate the detailed comments and very useful suggestions. 
 
 **The paper was framed partially as providing an analysis of differences between traditional societies and WEIRD societies but, unless I missed it, there was not much analysis along these lines. Neither the background section nor the Discussion section focuses much on contrasting WEIRD and traditional societies. The paper appears to miss out on a useful opportunity to provide some commentary on this issue. Also, I realize the paper is decidedly exploratory/descriptive, but did the authors have any hypotheses about differences between WEIRD and traditional societies?** 
-<<<<<<< HEAD
 
 We agree our initial submisson did not sufficently accomplish this goal. We have now added summarizing, concluding statements on the qualities and functions of leaders in WEIRD and non-WEIRD settings in the introduction. 
-=======
-We agree our initial submisson did not sufficiently accomplish this goal. We have now added summarizing, concluding statements on the qualities and functions of leaders in WEIRD and non-WEIRD settings in the introduction. 
->>>>>>> befd3dc200c893ed112a9f99a9a4ebb37aff18fc
 
 NEED TO ADD TO DISCUSSION & ANALYSES?
 

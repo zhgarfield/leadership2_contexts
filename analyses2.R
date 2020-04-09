@@ -32,7 +32,6 @@ library(ggridges)
 library(RColorBrewer)
 library(ggmosaic)
 library(proxy)
-<<<<<<< HEAD
 library(readxl)
 library(broom)
 library(broom.mixed)
@@ -41,10 +40,8 @@ library(viridis)
 library(ggcorrplot)
 library(margins)
 # library(mgcv)
-
-=======
 library(stringr)
->>>>>>> befd3dc200c893ed112a9f99a9a4ebb37aff18fc
+
 # Load precomputed objects ------------------------------------------------
 
 # First run initialcompute.R, which takes ~90 minutes on my machine,
@@ -143,9 +140,9 @@ cost_benefit_dict <- c(
 )
 
 format_label <- function(lbl){
-<<<<<<< HEAD
+
   return(cost_benefit_dict[lbl])
-=======
+
   relabel <- c(
     leader.benefits_fitness = 'Inclusive fitness benefit',
     leader.benefits_mating = 'Mating benefit',
@@ -186,7 +183,7 @@ format_label <- function(lbl){
     follower.costs_territory = 'Loss of territory'
   )
   return(relabel[lbl])
->>>>>>> befd3dc200c893ed112a9f99a9a4ebb37aff18fc
+
 }
 
 plot.variable.support_costs_benefits = ggplot(d_melt_cb, aes(value, Variable, xmin=y_negse, xmax=y_se, colour=Type, shape=Type)) + 
@@ -1255,7 +1252,7 @@ mm_coauthor <- glmer(
 )
 mm_coauthorOR <- exp(fixef(mm_coauthor))[[2]]
 
-<<<<<<< HEAD
+
 # Research effort ---------------------------------------------------------
 
 # number of text records for each culture
@@ -1933,4 +1930,4 @@ highstatus_plot
 
 # ben_highstatus_plot <- model_words(dtm, 'leader.benefits_social.status.reputation', lam = "min", title = 'Benefits: Status, reputation')
 # ben_highstatus_plot
->>>>>>> befd3dc200c893ed112a9f99a9a4ebb37aff18fc
+
