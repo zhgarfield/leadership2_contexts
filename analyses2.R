@@ -1397,9 +1397,9 @@ sd_wordcount <- sd(x)
 library(dplyr)
 data("stop_words")
 stop_words <- rbind(stop_words, list(word='page', lexicon='garfield'))
-stop_words <- rbind(stop_words, list(word='ijaaj', lexicon='garfield'))
-stop_words <- rbind(stop_words, list(word='tadoelako', lexicon='garfield'))
-stop_words <- rbind(stop_words, list(word='zande', lexicon='garfield'))
+#stop_words <- rbind(stop_words, list(word='ijaaj', lexicon='garfield'))
+#stop_words <- rbind(stop_words, list(word='tadoelako', lexicon='garfield'))
+#stop_words <- rbind(stop_words, list(word='zande', lexicon='garfield'))
 
 words2 <-
   words %>%
