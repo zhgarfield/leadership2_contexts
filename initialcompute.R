@@ -42,6 +42,17 @@ neg1to0 <- function(df){
     )
 }
 
+
+# Remove variables with little evidence -----------------------------------
+
+evidence <-
+  leader_text2[-c(1:3)] %>%
+  select_if(is.numeric) %>%
+  map_dbl(~sum(.x, na.rm = T))
+
+low_evidence <- names(evidence[evidence<4])
+leader_text2 <- dplyr::select(leader_text2, -any_of(low_evidence))
+
 # Create vectors of variable names by type --------------------------------
 
 lt2vars <- names(leader_text2)
@@ -284,46 +295,50 @@ var_names <- c(
   "functions_social.functions" = "Misc. social functions",
   "qualities_artistic.performance"     = "Artistic performance",
   "qualities_generous"                 = "Generosity",
-  "qualities.age"                      = "Age",
-  "qualities.attractive"              = "Attractive",
-  "qualities.coercive.authority"      = "Authority",
-  "qualities.culturally.progressive"  = "Culturally progressive",
-  "qualities.favorable.personality"   = "Favorable personality",
-  "qualities.honest"                  = "Honesty",
-  "qualities.ingroup.member"          = "Ingroup member",
-  "qualities.killer"                  = "Killer",
-  "qualities.many.children"           = "Many children",
-  "qualities.physically.strong"       = "Physically formidable",
-  "qualities.prosocial"               = "Prosocial",
-  "qualities.strategic.planner"       = "Strategic planner",
+  "qualities_age"                      = "Age",
+  "qualities_attractive"              = "Attractive",
+  "qualities_coercive.authority"      = "Coercive authority",
+  "qualities_culturally.progressive"  = "Culturally progressive",
+  "qualities_favorable.personality"   = "Favorable personality",
+  "qualities_honest"                  = "Honesty",
+  "qualities_ingroup.member"          = "Ingroup member",
+  "qualities_killer"                  = "Killer",
+  "qualities_many.children"           = "Many children",
+  "qualities_physically.strong"       = "Physically formidable",
+  "qualities_prosocial"               = "Prosocial",
+  "qualities_strategic.planner"       = "Strategic planner",
   "qualities_drug.consumption"     = "Drug consumption",
   "qualities_high.status"            = "High status",
-  "qualities.aggressive"             = "Aggressiveness",
-  "qualities.bravery"               = "Bravery",
-  "qualities.confident"             = "Confidence",
-  "qualities.decisive"              = "Decisiveness/decision-making",
-  "qualities.feared"                = "Feared",
-  "qualities.humble"                = "Humility",
-  "qualities.innovative"            = "Innovative",
-  "qualities.knowlageable.intellect" = "Knowledgeable/intelligent",
-  "qualities.oratory.skill"         = "Oratory skill",
-  "qualities.polygynous"            = "Polygynous",
-  "qualities.social.contacts"       = "Social contacts",
-  "qualities.supernatural"    = "Supernatural",
+  "qualities_aggressive"             = "Aggressiveness",
+  "qualities_bravery"               = "Bravery",
+  "qualities_confident"             = "Confidence",
+  "qualities_decisive"              = "Decisiveness/decision-making",
+  "qualities_feared"                = "Feared",
+  "qualities_humble"                = "Humility",
+  "qualities_innovative"            = "Innovative",
+  "qualities_knowlageable.intellect" = "Knowledgeable/intelligent",
+  "qualities_oratory.skill"         = "Oratory skill",
+  "qualities_polygynous"            = "Polygynous",
+  "qualities_social.contacts"       = "Social contacts",
+  "qualities_supernatural"    = "Supernatural",
   "qualities_exp.accomplished"       = "Experienced/accomplished",
   "qualities_wealthy"                = "Wealthy",
-  "qualities.ambition"               = "Ambitious",
-  "qualities.charisma"               = "Charisma",
-  "qualities.culturally.conservative" = "Culturally conservative",
-  "qualities.fairness"               = "Fairness",
-  "qualities.high.quality.spouse"    = "High-quality spouse",
-  "qualities.industriousness"        = "Industriousness",
-  "qualities.interpersonal.skills"   = "Interpersonal skills",
-  "qualities.loyalty"                = "Loyalty",
-  "qualities.physical.health"        = "Physical health",
-  "qualities.proper.behavior"        = "Proper behavior",
-  "qualities.strategic.nepotism"     = "Strategic nepotism",
-  "qualities.xenophobic"   = "Xenophobia"
+  "qualities_ambition"               = "Ambitious",
+  "qualities_charisma"               = "Charisma",
+  "qualities_culturally.conservative" = "Culturally conservative",
+  "qualities_fairness"               = "Fairness",
+  "qualities_high.quality.spouse"    = "High-quality spouse",
+  "qualities_industriousness"        = "Industriousness",
+  "qualities_interpersonal.skills"   = "Interpersonal skills",
+  "qualities_loyalty"                = "Loyalty",
+  "qualities_physical.health"        = "Physical health",
+  "qualities_proper.behavior"        = "Proper behavior",
+  "qualities_strategic.nepotism"     = "Strategic nepotism",
+  "qualities_xenophobic"   = "Xenophobia",
+  "qualities_antihonest" = "Dishonest",
+  "qualities_antifairness" = "Unfair",
+  "qualities_antidrug.consumption" = "No drug consumption",
+  "qualities_anticoercive.authority" = "No coercive authority"
 )
 
 d_melt$Variable <- var_names[d_melt$Variable]

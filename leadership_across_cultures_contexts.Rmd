@@ -114,7 +114,6 @@ Conceptualizing leadership as a possible solution to problems associated with co
 
 Evolutionary theoretical models and empirical studies often seek to integrate findings within a broad framework of human cultural diversity. The universality of human leadership systems and the incredible diversity among the qualities of leaders across cultures and contexts and the functions leaders serve is difficult to capture. Scholars are then left to haphazardly self-select ethnographic cases or rely on the self-selected reviews of others for generalizations [e.g., @garfield_review_2019; @von_rueden_leadership_2015]. Here, we seek to provide the first empirical and near comprehensive view of the qualities and functions of leaders across human societies from a representative cross-cultural sample. We also provide the first comparative view describing the costs and benefits of leadership for both leaders and followers in an evolutionary biological framework. We also aim to explore how the qualities and functions of leaders vary across social contexts and levels of cultural complexity
  
-
 In sum, we seek to empirically and systematically accomplish the following four goals: 1) identify the most cross-culturally frequent *qualities of leaders* and the *functions they serve*. 2) Identify *features* of the qualities and functions of leaders (e.g., do particular variables tended to covary or cluster together?) in reference to theoretical models or novel interpretations. Such features might lend support to existing theories; for instance they might correspond to qualities associated with "prestige" or "dominance" [@henrich_evolution_2001] or functions associated with conflict or cooperation [@gavrilets_collective_2015; @glowacki_evolutionary_2017; @hooper_theory_2010]. 3) Identify the most cross-culturally frequent *costs and benefits* of leadership for both leaders and followers. Such exploratory results stand to facilitate more fine-grained approaches within leadership studies and greater theoretical and empirical work beyond community leadership, while also revealing the importance of a broad, cross-cultural perspective in understanding the psychology and cultural patterning of perhaps the most foundational component of human social behavior and organization. 
 
 
@@ -174,7 +173,7 @@ All analyses were conducted with `r R.version.string`.
 
 # Results
 
-The geographic distribution of the cultures in our sample is displayed in Figure \@ref(fig:geographic), with cultures labeled by mode of subsistence and represented by a symbol proportional to the number of documents that provided ethnographic texts for that culture. The `r nrow(leader_text2)` text records from `r length(unique(leadershipdata::documents$d_ID))` unique documents describing `r length(unique(leader_text2$d_culture))` cultures were generally short, ranging from `r textstats$min` to `r textstats$max` words, with a median word count of `r textstats$median`, a mean of `r textstats$mean`, and standard deviation of `r textstats$sd`. Of the `r nrow(leader_text2)` text records, `r final_record_count` had evidence for at least one variable in the study.
+The geographic distribution of the cultures in our sample is displayed in Figure \@ref(fig:geographic), with cultures labeled by mode of subsistence and represented by a symbol proportional to the number of documents that provided ethnographic texts for that culture. Our search yielded `r nrow(leader_text2)` text records from `r length(unique(leadershipdata::documents$d_ID))` unique documents describing `r length(unique(leader_text2$d_culture))` cultures. The number of text records per culture ranged from `r min(dfwc$number_leader_records, na.rm=T)` to `r max(dfwc$number_leader_records, na.rm=T)`, with a median of `r median(dfwc$number_leader_records, na.rm=T)`, a mean of `r signif(mean(dfwc$number_leader_records, na.rm=T), 3)`, and a standard deviation of `r signif(sd(dfwc$number_leader_records, na.rm=T), 3)`. The text records were generally short, ranging from `r textstats$min` to `r textstats$max` words, with a median word count of `r textstats$median`, a mean of `r textstats$mean`, and standard deviation of `r textstats$sd`. Of the `r nrow(leader_text2)` text records, `r final_record_count` had evidence for at least one variable in the study.
 
 ```{r corpus}
 cor_pages_tr <- cor.test(~number_leader_records + `N Pages eHRAF`, dfwc)
@@ -225,6 +224,21 @@ As Figure \@ref(fig:grouptype) reveals, the distribution of text records by grou
 
 <!-- SHOULD WE PUT THE ENTIRE TABLE IN SI? -->
 
+## Possible sources of bias
+
+```{r tabauthorgender}
+unique_authors <- unique(authorship[c('author_ID', 'author_gender')])
+tab_author_gender <- table(unique_authors$author_gender)
+mm_coauthorSUM <- summary(mm_coauthor)
+mm_coauthorP <- mm_coauthorSUM$coefficients['female_coauthorTRUE', 'Pr(>|z|)']
+```
+
+We explored whether three features of our corpus of ethnographic texts -- date of publication, female gender of any author, and total pages of ethnography from each culture -- were associated with discovery of evidence for the `r length(all_study_vars)` variables in our study that coded for functions and qualities, benefits, and costs (see Tables \@ref(tab:qualfuncvars) and \@ref(tab:costbenefitvars)). Dates of publication ranged from `r min(documents$d_publication_date)` to `r max(documents$d_publication_date)`, with a median year of `r median(documents$d_publication_date)`. There were `r tab_author_gender['male']` male authors, `r tab_author_gender['female']` females authors, and `r tab_author_gender['unkown']` authors whose gender we could not determine (some authors were co-authors). Of the `r nrow(documents)` source documents, `r sum(documents$female_coauthor)` (`r signif(100*sum(documents$female_coauthor)/nrow(documents), 2)`%) had a female author or co-author. Total pages of ethnography on each culture in the PSF ranged from `r min(dfwc[['N Pages eHRAF']])` to `r as.integer(max(dfwc[['N Pages eHRAF']]))`, with a median of `r median(dfwc[['N Pages eHRAF']])`.
+
+We fit `r length(all_study_vars)` logistic mixed effects models with each binary study variable as the outcome; fixed effects for publication date, any female authors (True/False), and total pages of ethnography from each culture; and random intercepts for ethnographers nested within cultures. We then corrected for multiple comparisons by setting a false discovery rate of 5% [@benjamini1995]. After correction, none of the coefficients of female authorship or total pages of ethnography were significant, but the publication date coefficient was significant in nine models. More recent publications were more likely to report evidence for Oratory skill, Group representative, Group determination/cohesiveness, and Knowledgeable/intelligent, and less likely to report evidence for leaders imposing costs (Punishment, Killer) or receiving benefits (Social services, Food, and Reduced risk of harm). See Figure \@ref(fig:pubdate). See supplementary information for details.
+
+We then tested if text records with a female author or co-author were more likely to discuss female leaders. Of the `r sum(tab_coauthor['FALSE',])` text records with no female author or co-author, `r tab_coauthor['FALSE','yes']` (`r 100*signif(tab_coauthor['FALSE','yes']/sum(tab_coauthor['FALSE',]),2)`%) reported female leadership. Of the `r sum(tab_coauthor['TRUE',])` text records with a female author or co-author, `r tab_coauthor['TRUE','yes']` (`r 100*signif(tab_coauthor['TRUE','yes']/sum(tab_coauthor['TRUE',]),2)`%) reported female leadership, suggesting that female ethnographers were more likely to report female leaders. After accounting for the non-independence of text records (i.e., multiple records from the same document) using a logistic mixed effects regression model, however, we found that although there was a positive effect of co-author gender on reporting female leadership (OR = `r signif(mm_coauthorOR, 2)`), it was not statistically significant (p = `r signif(mm_coauthorP, 2)`).
+
 ## Variable distributions
 
 For each of the `r length(c(quality_vars, function_vars, leader_cost_vars, leader_benefit_vars, follower_benefit_vars, follower_cost_vars))` coded variables (see Tables \@ref(tab:qualfuncvars) and \@ref(tab:costbenefitvars)), we computed the percentage of text records that provided support, and we computed the percentage of cultures with at least one text record providing support for that variable. See Figure \@ref(fig:varsupport).
@@ -242,7 +256,7 @@ The most common *qualities* of leaders are being of high social status (document
 
 Figure \@ref(fig:cluster)A displays a dendrogram from the cluster analysis of the `r length(quality_vars)` leader quality variables and Figure \@ref(fig:cluster)B displays a dendrogram from the cluster analysis of the `r length(function_vars)` leader function variables. Each cluster analysis includes two estimates of significance for how strongly each cluster within the dendrogram is supported by the data. We rely on the AU (Approximately Unbiased) *p* values, which are computed by multiscale bootstrap resampling and represented as percentages (e.g., clusters with AU values $>95$ are strongly supported, and the top-level clusters are automatically highlighted by rectangles).
 
-```{r cluster, fig.cap="Cluster analysis of leader quality variables (left) and leader function variables (right). Distances are $1 - cor$. Ward agglomeration method. AU p-values (red) computed with 10,000 bootstrap samples using the pvclust package [@pvclust2015]."}
+```{r cluster, fig.cap="Cluster analysis of leader quality variables (A) and leader function variables (B). Distances were $1 - cor$. Ward agglomeration method. AU p-values (red) computed with 10,000 bootstrap samples using the pvclust package [@pvclust2015]."}
 # plot(m_pvclust_qual)
 # pvrect(m_pvclust_qual, alpha = 0.9)
 knitr::include_graphics("Figures/m_pvclust.both.png")
@@ -298,17 +312,6 @@ plot.variable.support_costs_benefits
 <!-- ```{r qualPCmodel2, fig.height=10, fig.width=20} -->
 <!-- m_qPC2_sub_plot + m_qPC2_group_plot -->
 <!-- ``` -->
-
-## Effects of document meta-data on leadership patterns
-
-```{r tabauthorgender}
-unique_authors <- unique(authorship[c('author_ID', 'author_gender')])
-tab_author_gender <- table(unique_authors$author_gender)
-mm_coauthorSUM <- summary(mm_coauthor)
-mm_coauthorP <- mm_coauthorSUM$coefficients['female_coauthorTRUE', 'Pr(>|z|)']
-```
-
-We explored whether document features, such as date of publication and gender of authors, influenced reporting of leader functions and qualities. There were `r tab_author_gender['male']` male authors, `r tab_author_gender['female']` females authors, and `r tab_author_gender['unkown']` authors whose gender we could not determine, some of which were co-authors. We then tested if text records with a female author or co-author were more likely to discuss female leaders. Of the `r sum(tab_coauthor['FALSE',])` text records with no female author or co-author, `r tab_coauthor['FALSE','yes']` (`r 100*signif(tab_coauthor['FALSE','yes']/sum(tab_coauthor['FALSE',]),2)`%) reported female leadership. Of the `r sum(tab_coauthor['TRUE',])` text records with a female author or co-author, `r tab_coauthor['TRUE','yes']` (`r 100*signif(tab_coauthor['TRUE','yes']/sum(tab_coauthor['TRUE',]),2)`%) reported female leadership, suggesting that female ethnographers were more likely to report female leaders. After accounting for the non-independence of text records (i.e., multiple records from the same document) using a logistic mixed effects regression model, however, we found that although there was a positive effect of co-author gender on reporting female leadership (OR = `r signif(mm_coauthorOR, 2)`), it was not statistically significant (p = `r signif(mm_coauthorP, 2)`).
 
 # Discussion
 
@@ -384,6 +387,8 @@ The larger organization subcluster included variables such as *Organize cooperat
 
 The evolution of leadership and followership is somewhat perplexing. Leadership often involves the provisioning of a public good at an individual cost, raising the question of how the individual benefits of leadership outweigh the costs. Followership, on the other hand, involves relinquishing individual decision-making to a leader who might or might not act in the follower's interest. The benefits of followership must also outweigh the costs. We therefore coded all benefits and costs of both leadership and followership to better understand which benefits and costs are most commonly associated with leading or following. Leaders were widely reported to receive material benefits and social status, but loss of material resources and social status were also widely reported. The results were similar for followers: followers benefited from increased material and social resources, but also often lost material and social resources. Our results cannot determine if the benefits to leaders and followers outweighed their costs, but they do shed light on the social and biological pressures associated with leadership and social hierarchy. For both leaders and followers, individuals stood to lose what they were able to gain. The major difference between leaders and followers lay in leaders' opportunities for increased social status and mating opportunities, relative to followers. See Figure \@ref(fig:varsupportcb).
 
+## Possible ethnographic or publication biases
+
 ## Limitations 
 
 This study is based on the ethnographic record. Our methods are designed to capture a broad range of ethnographic descriptions from a culturally representative, systematic sample. Nonetheless, these results are conditional upon the content ethnographers chose to discuss and the way they chose to discuss it. The ethnographic record is certainly an imperfect source of information on human cultural diversity and hence a limitation of the current results. We nevertheless view the existence of the ethnographic record and the availability and functionality of the eHRAF as an enormous benefit for comparative research, given many of the populations represented in these data no longer exist or live as they did during the time of much ethnographic description. Within these ethnographic descriptions there is a general male bias, which could reflect a male bias in community leadership or the more systemic male bias in the ethnographic record [see @rosaldo_woman_1974; @mukhopadhyay_anthropological_1988]. These data are also biased towards cultural models (rather than descriptions of observed behavior) and community leadership; descriptions of kin group and residential group leadership are less frequent. The high proportion of text records discussing political group leaders could be attributable to our broad search strategy or the content of the ethnographic record of "leadership" more generally. 
@@ -408,6 +413,20 @@ Contemporary theoretical models of the evolution of leadership often emphasize l
 
 ```{r eHRAFpages, fig.height=6, fig.cap="Scatterplot of the number of leadership text records versus the total number of pages of ethnography in the eHRAF. Each dot is one culture. Line fit by loess regression."}
 plot_pages_tr
+```
+
+We explored three possible sources of bias in discovery of evidence for each of our `r length(all_study_vars)` variables: publication date, female vs. male-only authorship, and variation in the total number of pages of ethnography for each culture. For each binary study variable, we fit a logistic mixed effects model with that variable as the outcome, the bias variables as fixed effects, and random intercepts for ethnographers nested within cultures. We fit two sets of models. The first univariate set fit separate models for each study variable and each bias variable (total number of models = 105x3 = 315). The second multivariate set included all bias variables in each model (total number of models = 105). All p-values were corrected for a FDR of 5%. After correction, the coefficients of female authorship and pages of ethnography were not significant in any model. Seven variables had significant associations with year of publication in both the univariate or multivariate sets (with nearly identical coefficients), but Group determination/cohesiveness was only significant in the univariate model, and Leader social service benefits was only significant in the multivariate model. See Figure \@ref(fig:pubdate).
+
+```{r pubdate, fig.cap="The effect of publication date on the probability of finding evidence for leader qualities, functions, benefits, and costs. Multivariate values are  controlling for female authorship and number of pages of ethonography for each culture. All models had random intercepts for ethnographers nested within cultures. Models were fit for each of the 105 variables as outcomes, and after adjusing p-values for a false discovery rate of 5%, the effect of publication date on these outcome variables remained significant. Publication date was centered and standardized by 1 SD. Each dot is one coefficient (converted from log odds to odds ratios). Bars are 95% CI."}
+plot_pubdate
+```
+
+## Feature models
+
+```{r features, fig.width=10, fig.cap="Marginal effects of Poission mixed effects regression models of Feature variables by mode of subsistence. Only models whose subsistence coefficient had a corrected p-value < 0.05. Base level: agriculturalists. See text for details."}
+
+x <- pmap(sub_models_sig, ~ plot(..6, main = ..1))
+
 ```
 
 

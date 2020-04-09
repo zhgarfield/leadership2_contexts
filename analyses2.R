@@ -37,6 +37,8 @@ library(broom)
 library(broom.mixed)
 library(ggrepel)
 library(viridis)
+library(ggcorrplot)
+library(margins)
 # library(mgcv)
 
 # Load precomputed objects ------------------------------------------------
@@ -123,8 +125,8 @@ cost_benefit_dict <- c(
   leader.costs_resources_other.cost = 'Loss of material resources',
   leader.costs_social.status = 'Reduced social status',
   leader.costs_territory.cost = 'Loss of territory',
-  leader.costs.mating.cost = 'Mating cost',
-  leader.costs.social.services = 'Loss of social services',
+  leader.costs_mating.cost = 'Mating cost',
+  leader.costs_social.services = 'Loss of social services',
   follower.costs_fitness = 'Inclusive fitness cost',
   follower.costs_increased.risk.harm.conflict = 'Increased risk of harm',
   follower.costs_mating = 'Mating cost',
@@ -1238,13 +1240,13 @@ df_fun <-
     Variable = fct_reorder(Variable, Intercept)
   )
 
-ggplot(df_fun, aes(Intercept, Variable)) + 
-  geom_point() +
-  geom_segment(aes(x = lower, xend = upper, y = Variable, yend = Variable), alpha=0.5) +
-  # geom_errorbarh(aes(xmin = lower, xmax = upper), alpha = 0.5) + 
-  scale_x_log10() +
-  labs(x = '\nRate of evidence for per 1 SD of ethnographic pages', y = "") +
-  theme_minimal(15)
+# ggplot(df_fun, aes(Intercept, Variable)) + 
+#   geom_point() +
+#   geom_segment(aes(x = lower, xend = upper, y = Variable, yend = Variable), alpha=0.5) +
+#   # geom_errorbarh(aes(xmin = lower, xmax = upper), alpha = 0.5) + 
+#   scale_x_log10() +
+#   labs(x = '\nRate of evidence for per 1 SD of ethnographic pages', y = "") +
+#   theme_minimal(15)
 
 # Nice labels for all vars
 x <- str_to_title(str_split_n(names(cost_benefit_dict), '\\.', n=1))
@@ -1395,40 +1397,70 @@ df_pages_uni <-
 
 # Use clusters from pvclust to create higher-order vars
 
-clust_qual_vars <- 
+## These are out-of-date after some data cleaning
+#
+# clust_qual_vars <- 
+#   tibble(
+#     cluster = cutree(m_pvclust_qual$hclust, h = 1.5),
+#     Feature = case_when(
+#       cluster == 1 ~ 'Benefit_ability',
+#       cluster == 2 ~ 'Successful',
+#       cluster == 3 ~ 'Cost_ability'
+#     ),
+#     Labels = names(cluster),
+#     Variables = reverse_vars_dict[Labels]
+#   )
+# 
+# clust_fun_vars <- 
+#   tibble(
+#     cluster = cutree(m_pvclust_fun$hclust, h = 1.3),
+#     Feature = case_when(
+#       cluster == 1 ~ 'Organize',
+#       cluster == 2 ~ 'Mediation',
+#       cluster == 3 ~ 'Prosociality'
+#     ),
+#     Labels = names(cluster),
+#     Variables = reverse_vars_dict[Labels]
+#   )
+
+branch2df <- function(branch, name){
+  lbls <- labels(branch)
   tibble(
-    cluster = cutree(m_pvclust_qual$hclust, h = 1.5),
-    Feature = case_when(
-      cluster == 1 ~ 'Benefit_ability',
-      cluster == 2 ~ 'Successful',
-      cluster == 3 ~ 'Cost_ability'
-    ),
-    Labels = names(cluster),
-    Variables = reverse_vars_dict[Labels]
+    Feature = rep(name, length(lbls)),
+    Label = lbls, 
+    Variable = reverse_vars_dict[lbls]
+    )
+}
+
+qual_dendro <- as.dendrogram(m_pvclust_qual)
+
+qual_branches <- list(
+  'Successful' = qual_dendro[[1]],
+  'Benefit_ability' = qual_dendro[[2]][[1]],
+  'Cost_ability' = qual_dendro[[2]][[2]]
   )
 
-clust_fun_vars <- 
-  tibble(
-    cluster = cutree(m_pvclust_fun$hclust, h = 1.3),
-    Feature = case_when(
-      cluster == 1 ~ 'Organize',
-      cluster == 2 ~ 'Mediation',
-      cluster == 3 ~ 'Prosociality'
-    ),
-    Labels = names(cluster),
-    Variables = reverse_vars_dict[Labels]
-  )
+clust_qual_vars <- map2_df(qual_branches, names(qual_branches), branch2df)
+
+fun_dendro <- as.dendrogram(m_pvclust_fun)
+
+fun_branches <- list(
+  'Prosociality' = fun_dendro[[1]],
+  'Mediate' = fun_dendro[[2]][[1]],
+  'Organize' = fun_dendro[[2]][[2]]
+)
+
+clust_fun_vars <- map2_df(fun_branches, names(fun_branches), branch2df)
 
 clust_vars <- bind_rows(clust_fun_vars, clust_qual_vars)
 features <- unique(clust_vars$Feature)
 names(features) <- features
 
 feature_var <- function(feature){
-  vars <- clust_vars$Variables[clust_vars$Feature == feature]
+  vars <- clust_vars$Variable[clust_vars$Feature == feature]
   rowSums(all_data2[vars])
 }
 
-# Prosociality has negative values
 all_data3 <-
   all_data2 %>% 
   dplyr::select(demo_sex:female_coauthor) %>% 
@@ -1436,37 +1468,46 @@ all_data3 <-
 
 df_culture_sum <-
   all_data3 %>%
-  dplyr::select(d_culture, Organize:Cost_ability) %>% 
+  dplyr::select(d_culture, Prosociality:Cost_ability) %>% 
   group_by(d_culture) %>% 
   summarise_all(list(mean=mean, N=length)) %>% # Is there a better way to get N?
-  dplyr::select(-Mediation_N:-Cost_ability_N) %>% 
-  rename(N = Organize_N) %>% 
+  dplyr::select(-Mediate_N:-Cost_ability_N) %>% # All N vectors are the same
+  rename(N = Prosociality_N) %>% 
   dplyr::filter(N > 3) # Eliminate cultures with few text records because means are misleading
 
 heatmap(
   t(as.matrix(df_culture_sum[2:7])), 
-  scale = 'none', 
+  scale = 'row', # Features comprise different numbers of vars, so scale
   hclustfun = function(x) hclust(x, method = 'ward.D'),
   col = viridis(256)
   )
 
+ggcorrplot(cor(df_culture_sum[-c(1, 8)]), hc.order = T, hc.method = 'ward.D', lab=T)
+
 # Number of cultures without missing values
 map_int(culture_vars, ~ sum(!is.na(.)))
 
-m <- glmmTMB(
-  Mediation ~ 
-    subsistence +
-    c_cultural_complexity +
-    pop_density +
-    com_size +   
-    (1|d_culture/doc_ID),
-  family = poisson,
-  data = all_data3
+# Univariate model of each feature by subsistence type
+feature_sub_models <-
+  tibble(
+    Feature = features,
+    Model = map(
+      features, ~ glmer(
+        all_data3[[.x]] ~
+          subsistence +
+          (1|d_culture/doc_ID),
+        family = poisson,
+        data = all_data3
+      )),
+    Anova = map(Model, Anova),
+    p_value = map_dbl(Anova, 'Pr(>Chisq)'),
+    adj_p_value = p.adjust(p_value, method = 'BH'),
+    margins = map(Model, margins)
   )
-summary(m)
-Anova(m)
-plot(allEffects(m))
 
+sub_models_sig <- 
+  feature_sub_models %>% 
+  filter(adj_p_value < 0.05)
 
 df_feature_models <- 
   map_dfr(
@@ -1497,7 +1538,7 @@ df_feature_models_aov <-
         glmmTMB(
           all_data3[[.x]] ~
             subsistence +
-            c_cultural_complexity +
+            # c_cultural_complexity +
             # pop_density +
             # com_size +   
             (1|d_culture/doc_ID),
