@@ -14,6 +14,7 @@ library(leadershipdata)
 library(tidyverse)
 library(tidytext)
 library(forcats)
+library(stringr)
 library(NMF)
 library(pvclust)
 library(dendextend)
@@ -23,15 +24,27 @@ library(car)
 library(visreg)
 library(effects)
 library(lme4)
+library(glmmTMB)
 library(patchwork)
-library(pvclust)
 library(magrittr)
 library(modelr)
 library(ggridges)
 library(RColorBrewer)
 library(ggmosaic)
 library(proxy)
+<<<<<<< HEAD
+library(readxl)
+library(broom)
+library(broom.mixed)
+library(ggrepel)
+library(viridis)
+library(ggcorrplot)
+library(margins)
+# library(mgcv)
+
+=======
 library(stringr)
+>>>>>>> befd3dc200c893ed112a9f99a9a4ebb37aff18fc
 # Load precomputed objects ------------------------------------------------
 
 # First run initialcompute.R, which takes ~90 minutes on my machine,
@@ -67,25 +80,6 @@ logisticPCA_loadings_plot <- function(m, data){
 
 # Recode variables --------------------------------------------------------
 
-leader_text2$com_size <-
-  ordered(
-    leader_text2$com_size,
-    levels = c("< 99", "100-199", "200-399", "400-999", "> 1,000")
-  )
-
-leader_text2$pop_density <-
-  ordered(
-    leader_text2$pop_density,
-    levels = c(
-      "1 or less person / 1-5 sq. mile",
-      "1-5 persons / sq. mile",
-      "1-25 persons / sq. mile",
-      "26-100 persons / sq. mile",
-      "101-500 persons / sq. mile",
-      "over 500 persons / sq. mile"
-    )
-  )
-
 all_study_vars <- c(function_vars, quality_vars, leader_benefit_vars, leader_cost_vars, follower_benefit_vars, follower_cost_vars)
 
 # Variable support plots --------------------------------------------------
@@ -108,7 +102,50 @@ plot.variable.support
 
 # Leader/follower benefits and costs
 
+cost_benefit_dict <- c(
+  leader.benefits_fitness = 'Inclusive fitness benefit',
+  leader.benefits_mating = 'Mating benefit',
+  leader.benefits_other = 'Misc. non-material benefit',
+  leader.benefits_reduced.risk.harm.conflict = 'Reduced risk of harm',
+  leader.benefits_resource_food = 'Food benefit',
+  leader.benefits_resource_other = 'Material resources',
+  leader.benefits_social.services = 'Social services',
+  leader.benefits_social.status.reputation = 'Increased social status',
+  leader.benefits_territory = 'Territory',
+  follower.benefits_fitness = 'Inclusive fitness benefit',
+  follower.benefits_mating = 'Mating benefit',
+  follower.benefits_other = 'Misc. non-material benefit',
+  follower.benefits_reduced.risk.harm.conflict = 'Reduced risk of harm',
+  follower.benefits_resource_food = 'Food benefit',
+  follower.benefits_resource_other = 'Material resources',
+  follower.benefits_social.services = 'Social services',
+  follower.benefits_social.status.reputation = 'Increased social status',
+  follower.benefits_territory = 'Territory',
+  
+  leader.costs_fitness.costs = 'Inclusive fitness cost',
+  leader.costs_increased.risk.harm.conflict = 'Increased risk of harm',
+  leader.costs_other = 'Misc. non-material cost',
+  leader.costs_resource_food.cost = 'Food cost',
+  leader.costs_resources_other.cost = 'Loss of material resources',
+  leader.costs_social.status = 'Reduced social status',
+  leader.costs_territory.cost = 'Loss of territory',
+  leader.costs_mating.cost = 'Mating cost',
+  leader.costs_social.services = 'Loss of social services',
+  follower.costs_fitness = 'Inclusive fitness cost',
+  follower.costs_increased.risk.harm.conflict = 'Increased risk of harm',
+  follower.costs_mating = 'Mating cost',
+  follower.costs_other = 'Misc. non-material cost',
+  follower.costs_resource_food = 'Food cost',
+  follower.costs_resource_other = 'Loss of material resources',
+  follower.costs_social.services = 'Loss of social services',
+  follower.costs_social.status = 'Reduced social status',
+  follower.costs_territory = 'Loss of territory'
+)
+
 format_label <- function(lbl){
+<<<<<<< HEAD
+  return(cost_benefit_dict[lbl])
+=======
   relabel <- c(
     leader.benefits_fitness = 'Inclusive fitness benefit',
     leader.benefits_mating = 'Mating benefit',
@@ -149,6 +186,7 @@ format_label <- function(lbl){
     follower.costs_territory = 'Loss of territory'
   )
   return(relabel[lbl])
+>>>>>>> befd3dc200c893ed112a9f99a9a4ebb37aff18fc
 }
 
 plot.variable.support_costs_benefits = ggplot(d_melt_cb, aes(value, Variable, xmin=y_negse, xmax=y_se, colour=Type, shape=Type)) + 
@@ -943,9 +981,11 @@ df_groups <-
 plot_group_subsis <-
   ggplot(df_groups) +
   geom_mosaic(aes(x = product(group, subsistence), fill = group)) +
+  scale_fill_viridis(discrete = T) +
   labs(x="", y="", fill = "Group type") +
   guides(fill = guide_legend(reverse = T)) +
-  theme_bw(15) 
+  theme_minimal(15) 
+plot_group_subsis
 
 # Leave off for now. Might not need this.
 # + 
@@ -1042,8 +1082,8 @@ se <- function(x) sd(x)/sqrt(length(x))
 # Group by group structure and calculate mean and SE
 cb_grp <- leader_text2 %>% 
   group_by(group.structure2) %>% 
-  select(contains(c("benefits", "costs"))) %>%
-  summarise_each(funs(mean, se)) %>% 
+  select(group.structure2, contains(c("benefits", "costs"))) %>%
+  summarise_each(list(mean=mean, se=se)) %>% 
   pivot_longer(cols=contains(c("benefits", "costs"))) # couldn't figure out how to pivot_longer on three vars
 
 # label means and SE to split the data frame
@@ -1215,6 +1255,401 @@ mm_coauthor <- glmer(
 )
 mm_coauthorOR <- exp(fixef(mm_coauthor))[[2]]
 
+<<<<<<< HEAD
+# Research effort ---------------------------------------------------------
+
+# number of text records for each culture
+tbl_ntr <- table(leader_text2$d_culture)
+
+dfntr <- tibble(
+  "OWC Code" = names(tbl_ntr),
+  number_leader_records = as.numeric(tbl_ntr)
+)
+
+# get number of pages for PSF cultures only
+dfwc <- 
+  read_excel("WC_SummaryPublishedCollections_20180625.xlsx") %>% 
+  dplyr::filter(`PSF eHRAF` == 'Yes') %>% 
+  left_join(dfntr)
+
+plot_pages_tr <-
+  ggplot(dfwc, aes(`N Pages eHRAF`, number_leader_records, label = `eHRAF Culture Name`)) + 
+  geom_point() + 
+  geom_text_repel(size = 3) +
+  geom_smooth(span=1) +
+  labs(x = '\nTotal number of pages of ethnography in the eHRAF', y = 'Number of text records on leadership\n') +
+  theme_bw(15)
+plot_pages_tr
+
+# Variable importance scratchpad ------------------------------------------
+
+all_data2 <- 
+  all_data %>% 
+  left_join(
+    dfwc[c('OWC Code', 'N Pages eHRAF')],
+    by = c('d_culture' = 'OWC Code')
+  )  %>% 
+  left_join(
+    documents[c('d_ID', 'd_publication_date', 'female_coauthor')], # One doc missing pub date
+    by = c('doc_ID' = 'd_ID')
+  ) %>% 
+  rename(
+    pages = `N Pages eHRAF`,
+    pub_date = d_publication_date
+    ) %>% 
+  mutate(
+    pages2 = (pages - mean(pages, na.rm=T))/sd(pages, na.rm=T),
+    pages3 = pages/sd(pages, na.rm=T),
+    pub_date = as.numeric(pub_date),
+    pub_date = (pub_date - mean(pub_date, na.rm=T))/sd(pub_date, na.rm = T)
+    )
+
+names(function_vars) <- var_names[function_vars]
+
+df_fun <- 
+  map_df(
+    function_vars, 
+    ~ tidy(
+      glmer(
+        all_data2[[.x]] ~ 
+          1 + 
+          # pub_date +
+          offset(log(pages3)) + 
+          (1|d_culture/author_ID),
+        family = poisson,
+        data = all_data2,
+        nAGQ = 0
+      )
+    )[1,],
+    .id = 'Variable'
+  ) %>% 
+  mutate(
+    Intercept = exp(estimate),
+    lower = exp(estimate - 2*std.error),
+    upper = exp(estimate + 2*std.error),
+    Variable = fct_reorder(Variable, Intercept)
+  )
+
+# ggplot(df_fun, aes(Intercept, Variable)) + 
+#   geom_point() +
+#   geom_segment(aes(x = lower, xend = upper, y = Variable, yend = Variable), alpha=0.5) +
+#   # geom_errorbarh(aes(xmin = lower, xmax = upper), alpha = 0.5) + 
+#   scale_x_log10() +
+#   labs(x = '\nRate of evidence for per 1 SD of ethnographic pages', y = "") +
+#   theme_minimal(15)
+
+# Nice labels for all vars
+x <- str_to_title(str_split_n(names(cost_benefit_dict), '\\.', n=1))
+cost_benefit_dict2 <- paste(x, cost_benefit_dict)
+names(cost_benefit_dict2) <- names(cost_benefit_dict)
+
+all_vars_dict <- c(cost_benefit_dict2, var_names)
+names(all_study_vars) <- all_vars_dict[all_study_vars]
+
+reverse_vars_dict <- names(all_vars_dict)
+names(reverse_vars_dict) <- all_vars_dict
+
+# Fit model of each var vs. pub meta-data
+df_allvars_multi <- 
+  map_df(
+    all_study_vars, 
+    ~ tidy(
+      glmer(
+        all_data2[[.x]] ~ 
+          pub_date +
+          female_coauthor +
+          pages2 + 
+          (1|d_culture/author_ID),
+        family = binomial,
+        data = all_data2,
+        nAGQ = 0
+      ),
+      conf.int = T,
+      exponentiate = T
+    ),
+    .id = 'Variable'
+  ) 
+
+df_pubdate_multi <-
+  df_allvars_multi %>%
+  dplyr::filter(term == 'pub_date') %>% 
+  mutate(
+    Variable = fct_reorder(Variable, estimate),
+    p_adj = p.adjust(p.value, method = 'BH'),
+    Model = 'Mulitvariate'
+  ) %>% 
+  dplyr::filter(p_adj < 0.05) %>% 
+  dplyr::select(
+    Model, Variable, estimate, p.value, conf.low, conf.high
+  )
+
+df_female_coauthor_multi <-
+  df_allvars_multi %>%
+  dplyr::filter(term == 'female_coauthorTRUE') %>% 
+  mutate(
+    Variable = fct_reorder(Variable, estimate),
+    p_adj = p.adjust(p.value, method = 'BH')
+  ) %>% 
+  dplyr::filter(p_adj < 0.05)
+
+df_pages_multi <-
+  df_allvars_multi %>%
+  dplyr::filter(term == 'pages2') %>% 
+  mutate(
+    Variable = fct_reorder(Variable, estimate),
+    p_adj = p.adjust(p.value, method = 'BH')
+  ) %>% 
+  dplyr::filter(p_adj < 0.05)
+
+## Version that only fits univariate models
+## Probably better when using BH
+
+df_cross <- cross_df(list(x=c('pub_date', 'female_coauthor', 'pages2'), y=all_study_vars))
+df_cross$Variable <- as.character(1:nrow(df_cross))
+
+df_allvars_uni <- 
+  pmap_dfr(
+    df_cross,
+    ~ tidy(
+      glmer(
+        all_data2[[.y]] ~ all_data2[[.x]] + (1|d_culture/author_ID),
+        family = binomial,
+        data = all_data2,
+        nAGQ = 0
+      ),
+      conf.int = T,
+      exponentiate = T
+    ),
+    .id = 'Variable'
+  ) %>% 
+  left_join(df_cross) 
+
+df_allvars_uni2 <-
+  df_allvars_uni %>% 
+  mutate(
+    term = case_when(
+      term == 'all_data2[[.x]]TRUE' ~ x,
+      term == 'all_data2[[.x]]' ~ x,
+      TRUE ~ term
+    ),
+    Variable = all_vars_dict[y]
+  )
+
+df_pubdate_uni <-
+  df_allvars_uni2 %>%
+  dplyr::filter(term == 'pub_date') %>% 
+  mutate(
+    Variable = fct_reorder(Variable, estimate),
+    p_adj = p.adjust(p.value, method = 'BH'),
+    Model = 'Univariate'
+  ) %>% 
+  dplyr::filter(p_adj < 0.05) %>% 
+  dplyr::select(
+    Model, Variable, estimate, p.value, conf.low, conf.high
+  )
+
+df_pubdate_both <- bind_rows(df_pubdate_multi, df_pubdate_uni)
+
+plot_pubdate <-
+  ggplot(df_pubdate_both, aes(estimate, Variable, colour = Model)) + 
+  geom_point(position=position_dodge(width = 0.3)) +
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high), position=position_dodge(width = 0.2), height = 0, alpha=0.5) +
+  geom_vline(xintercept = 1, linetype = 'dotted') +
+  scale_x_log10(breaks = c(0.3, 0.5, 0.7, 1, 1.5, 2, 3)) +
+  labs(x = "\nCoefficient of publication year Z-score (odds ratio)", y = "") +
+  theme_minimal(15)
+plot_pubdate
+
+df_female_coauthor_uni <-
+  df_allvars_uni2 %>%
+  dplyr::filter(term == 'female_coauthor') %>% 
+  mutate(
+    y = fct_reorder(y, estimate),
+    p_adj = p.adjust(p.value, method = 'BH')
+  ) %>% 
+  dplyr::filter(p_adj < 0.05)
+
+df_pages_uni <-
+  df_allvars_uni2 %>%
+  dplyr::filter(term == 'pages2') %>% 
+  mutate(
+    y = fct_reorder(y, estimate),
+    p_adj = p.adjust(p.value, method = 'BH')
+  ) %>% 
+  dplyr::filter(p_adj < 0.05)
+
+
+# Text analysis -----------------------------------------------------------
+
+
+
+# Cluster analysis --------------------------------------------------------
+
+# Use clusters from pvclust to create higher-order vars
+
+## These are out-of-date after some data cleaning
+#
+# clust_qual_vars <- 
+#   tibble(
+#     cluster = cutree(m_pvclust_qual$hclust, h = 1.5),
+#     Feature = case_when(
+#       cluster == 1 ~ 'Benefit_ability',
+#       cluster == 2 ~ 'Successful',
+#       cluster == 3 ~ 'Cost_ability'
+#     ),
+#     Labels = names(cluster),
+#     Variables = reverse_vars_dict[Labels]
+#   )
+# 
+# clust_fun_vars <- 
+#   tibble(
+#     cluster = cutree(m_pvclust_fun$hclust, h = 1.3),
+#     Feature = case_when(
+#       cluster == 1 ~ 'Organize',
+#       cluster == 2 ~ 'Mediation',
+#       cluster == 3 ~ 'Prosociality'
+#     ),
+#     Labels = names(cluster),
+#     Variables = reverse_vars_dict[Labels]
+#   )
+
+branch2df <- function(branch, name){
+  lbls <- labels(branch)
+  tibble(
+    Feature = rep(name, length(lbls)),
+    Label = lbls, 
+    Variable = reverse_vars_dict[lbls]
+    )
+}
+
+qual_dendro <- as.dendrogram(m_pvclust_qual)
+
+qual_branches <- list(
+  'Successful' = qual_dendro[[1]],
+  'Benefit_ability' = qual_dendro[[2]][[1]],
+  'Cost_ability' = qual_dendro[[2]][[2]]
+  )
+
+clust_qual_vars <- map2_df(qual_branches, names(qual_branches), branch2df)
+
+fun_dendro <- as.dendrogram(m_pvclust_fun)
+
+fun_branches <- list(
+  'Prosociality' = fun_dendro[[1]],
+  'Mediate' = fun_dendro[[2]][[1]],
+  'Organize' = fun_dendro[[2]][[2]]
+)
+
+clust_fun_vars <- map2_df(fun_branches, names(fun_branches), branch2df)
+
+clust_vars <- bind_rows(clust_fun_vars, clust_qual_vars)
+features <- unique(clust_vars$Feature)
+names(features) <- features
+
+feature_var <- function(feature){
+  vars <- clust_vars$Variable[clust_vars$Feature == feature]
+  rowSums(all_data2[vars])
+}
+
+all_data3 <-
+  all_data2 %>% 
+  dplyr::select(demo_sex:female_coauthor) %>% 
+  bind_cols(map_dfc(features, feature_var))
+
+df_culture_sum <-
+  all_data3 %>%
+  dplyr::select(d_culture, Prosociality:Cost_ability) %>% 
+  group_by(d_culture) %>% 
+  summarise_all(list(mean=mean, N=length)) %>% # Is there a better way to get N?
+  dplyr::select(-Mediate_N:-Cost_ability_N) %>% # All N vectors are the same
+  rename(N = Prosociality_N) %>% 
+  dplyr::filter(N > 3) # Eliminate cultures with few text records because means are misleading
+
+heatmap(
+  t(as.matrix(df_culture_sum[2:7])), 
+  scale = 'row', # Features comprise different numbers of vars, so scale
+  hclustfun = function(x) hclust(x, method = 'ward.D'),
+  col = viridis(256)
+  )
+
+ggcorrplot(cor(df_culture_sum[-c(1, 8)]), hc.order = T, hc.method = 'ward.D', lab=T)
+
+# Number of cultures without missing values
+map_int(culture_vars, ~ sum(!is.na(.)))
+
+# Univariate model of each feature by subsistence type
+feature_sub_models <-
+  tibble(
+    Feature = features,
+    Model = map(
+      features, ~ glmer(
+        all_data3[[.x]] ~
+          subsistence +
+          (1|d_culture/doc_ID),
+        family = poisson,
+        data = all_data3
+      )),
+    Anova = map(Model, Anova),
+    p_value = map_dbl(Anova, 'Pr(>Chisq)'),
+    adj_p_value = p.adjust(p_value, method = 'BH'),
+    margins = map(Model, margins)
+  )
+
+sub_models_sig <- 
+  feature_sub_models %>% 
+  filter(adj_p_value < 0.05)
+
+df_feature_models <- 
+  map_dfr(
+    features,
+    ~ broom.mixed::tidy(
+      glmmTMB(
+        all_data3[[.x]] ~
+          subsistence +
+          c_cultural_complexity +
+          # pop_density +
+          # com_size +   
+          (1|d_culture/doc_ID),
+        family = poisson,
+        data = all_data3
+      ),
+      # exponentiate = T,
+      component = 'cond',
+      conf.int = T
+    ),
+    .id = 'Variable'
+  )
+
+df_feature_models_aov <- 
+  map_dfr(
+    features,
+    ~ broom.mixed::tidy(
+      Anova(
+        glmmTMB(
+          all_data3[[.x]] ~
+            subsistence +
+            # c_cultural_complexity +
+            # pop_density +
+            # com_size +   
+            (1|d_culture/doc_ID),
+          family = poisson,
+          data = all_data3
+        )
+      ),
+      component = 'cond',
+      conf.int = T
+    ),
+    .id = 'Variable'
+  )
+
+feature_discoveries <-
+  df_feature_models_aov %>% 
+  dplyr::filter(p.adjust(p.value, method = 'BH')<0.05)
+
+# Looking for negative values ---------------------------------------------
+
+x <- map_int(all_data2[all_study_vars], ~ sum(.x < 0))
+=======
 library(rstanarm)
 library(bayesplot)
 options(mc.cores = parallel::detectCores())
@@ -1498,3 +1933,4 @@ highstatus_plot
 
 # ben_highstatus_plot <- model_words(dtm, 'leader.benefits_social.status.reputation', lam = "min", title = 'Benefits: Status, reputation')
 # ben_highstatus_plot
+>>>>>>> befd3dc200c893ed112a9f99a9a4ebb37aff18fc

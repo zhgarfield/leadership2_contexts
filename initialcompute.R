@@ -42,6 +42,17 @@ neg1to0 <- function(df){
     )
 }
 
+
+# Remove variables with little evidence -----------------------------------
+
+evidence <-
+  leader_text2[-c(1:3)] %>%
+  select_if(is.numeric) %>%
+  map_dbl(~sum(.x, na.rm = T))
+
+low_evidence <- names(evidence[evidence<4])
+leader_text2 <- dplyr::select(leader_text2, -any_of(low_evidence))
+
 # Create vectors of variable names by type --------------------------------
 
 lt2vars <- names(leader_text2)
@@ -88,11 +99,6 @@ leader_cult$d_culture<-leader_cult$c_culture_code
 #Subset culture vars of interest
 culture_vars<-leader_cult[c("d_culture","subsistence","c_cultural_complexity", "settlement_fixity", "pop_density","com_size")]
 
-leader_text2 <-
-  leader_text2 %>% 
-  left_join(text_doc_cultureID) %>% 
-  left_join(culture_vars)
-
 # Add more SCCS variables
 load("sccs.RData")
 sccs<-data.frame(sccs)
@@ -110,7 +116,14 @@ sccs_vars$warfare_freq <- as.numeric(sccs_vars$V1648)
 sccs_vars$warfare_freq <- ifelse(sccs_vars$warfare_freq %in% c(1,20), NA, sccs_vars$warfare_freq)
 sccs_vars$warfare_freq <- 19 - sccs_vars$warfare_freq
 
-leader_text2<-left_join(leader_text2, sccs_vars, by=c("d_culture"="c_culture_code"))
+culture_vars <-
+  culture_vars %>% 
+  left_join(sccs_vars[c('c_culture_code', 'warfare_freq')], by = c('d_culture' = 'c_culture_code'))
+
+leader_text2 <-
+  leader_text2 %>% 
+  left_join(text_doc_cultureID) %>% 
+  left_join(culture_vars)
 
 # Variable support plot data prep --------------------------------------------------
 
@@ -284,7 +297,11 @@ var_names <- c(
   "qualities_generous"                 = "Generosity",
   "qualities_age"                      = "Age",
   "qualities_attractive"              = "Attractive",
+<<<<<<< HEAD
+  "qualities_coercive.authority"      = "Coercive authority",
+=======
   "qualities_coercive.authority"      = "Authority",
+>>>>>>> befd3dc200c893ed112a9f99a9a4ebb37aff18fc
   "qualities_culturally.progressive"  = "Culturally progressive",
   "qualities_favorable.personality"   = "Favorable personality",
   "qualities_honest"                  = "Honesty",
@@ -321,7 +338,15 @@ var_names <- c(
   "qualities_physical.health"        = "Physical health",
   "qualities_proper.behavior"        = "Proper behavior",
   "qualities_strategic.nepotism"     = "Strategic nepotism",
+<<<<<<< HEAD
+  "qualities_xenophobic"   = "Xenophobia",
+  "qualities_antihonest" = "Dishonest",
+  "qualities_antifairness" = "Unfair",
+  "qualities_antidrug.consumption" = "No drug consumption",
+  "qualities_anticoercive.authority" = "No coercive authority"
+=======
   "qualities_xenophobic"   = "Xenophobia"
+>>>>>>> befd3dc200c893ed112a9f99a9a4ebb37aff18fc
 )
 
 d_melt$Variable <- var_names[d_melt$Variable]
@@ -521,21 +546,21 @@ m_pvclust_qual <- pvclust(
 #   parallel = T
 # )
 
-m_pvclust_qual_jaccard <- pvclust(
-  pca_data_qualities2, 
-  method.hclust = 'ward', 
-  method.dist = 'binary', 
-  nboot = 10000,
-  parallel = T
-)
+# m_pvclust_qual_jaccard <- pvclust(
+#   pca_data_qualities2, 
+#   method.hclust = 'ward', 
+#   method.dist = 'binary', 
+#   nboot = 10000,
+#   parallel = T
+# )
 
-m_pvclust_qual_euc <- pvclust(
-  pca_data_qualities2, 
-  method.hclust = 'ward', 
-  method.dist = 'euclidean', 
-  nboot = 10000,
-  parallel = T
-)
+# m_pvclust_qual_euc <- pvclust(
+#   pca_data_qualities2, 
+#   method.hclust = 'ward', 
+#   method.dist = 'euclidean', 
+#   nboot = 10000,
+#   parallel = T
+# )
 
 m_pvclust_fun <- 
   pvclust(
@@ -546,23 +571,23 @@ m_pvclust_fun <-
     parallel = T
   )
 
-m_pvclust_fun_jaccard <- 
-  pvclust(
-    pca_data_functions2, 
-    method.hclust = 'ward', 
-    method.dist = 'binary', 
-    nboot = 10000,
-    parallel = T
-  )
+# m_pvclust_fun_jaccard <- 
+#   pvclust(
+#     pca_data_functions2, 
+#     method.hclust = 'ward', 
+#     method.dist = 'binary', 
+#     nboot = 10000,
+#     parallel = T
+#   )
 
-m_pvclust_fun_euc <- 
-  pvclust(
-    pca_data_functions2, 
-    method.hclust = 'ward', 
-    method.dist = 'euclidean', 
-    nboot = 10000,
-    parallel = T
-  )
+# m_pvclust_fun_euc <- 
+#   pvclust(
+#     pca_data_functions2, 
+#     method.hclust = 'ward', 
+#     method.dist = 'euclidean', 
+#     nboot = 10000,
+#     parallel = T
+#   )
 
 qual_func_vars <- leader_text2 %>% 
   select(matches("functions|qualities")) %>% 
@@ -580,55 +605,57 @@ qual_func_vars <- leader_text2 %>%
 
 # This takes a long time, so putting all code in one section
 
-# Leader qualities
-qual_cvlpca <- cv.lpca(pca_data_qualities2, ks = 1:20, ms = 5:15)
-plot(qual_cvlpca)
-which.min(qual_cvlpca[9,]) # optimal? k=9, m=11
-
-# Plot all minima
-x <- apply(qual_cvlpca, MARGIN = 1, which.min)
-plot(1:20, qual_cvlpca[cbind(1:20, x)], type='l') # elbows at 8 & 13
-
-kq <- 8
-mq <- 12
-
-# Assuming k=2, cross validate for optimal m
-qual_cvlpcak2 <- cv.lpca(pca_data_qualities2, ks = 2, ms = 1:10)
-plot(qual_cvlpcak2)
-which.min(qual_cvlpcak2) # m = 7
-
-# Leader functions
-
-# Optimal k, m
-fun_cvlpca = cv.lpca(pca_data_functions2, ks = 1:20, ms = 5:15)
-plot(fun_cvlpca)
-
-x <- apply(fun_cvlpca, MARGIN = 1, which.min)
-plot(1:20, fun_cvlpca[cbind(1:20, x)], type='l') # elbows at 7, 10, 15
-
-# Optimal values?
-kf <- 10 # elbow
-mf <- which.min(fun_cvlpca[kf,])
-
-# For two PCs only (k=2), cv for optimal m
-m_lpca_funk2cv <-  cv.lpca(pca_data_functions2, ks = 2, ms = 1:10)
-plot(m_lpca_funk2cv)
-which.min(m_lpca_funk2cv)
-
-# Qualities and functions
-
-# logpca_cv_qf = cv.lpca(pca_data_FQ[c(function_vars, quality_vars)], ks = 1:20, ms = 5:15)
-# plot(logpca_cv_qf)
-# x <- apply(logpca_cv_qf, MARGIN = 1, which.min)
-# plot(1:20, logpca_cv_qf[cbind(1:20, x)], type='l') # elbows at 5, 16
-
-kqf <- 16
-mqf <- 10
-
-# For k=2 only
-logpca_cv_qfk2 = cv.lpca(pca_data_FQ[c(function_vars, quality_vars)], ks = 2, ms = 1:10)
-plot(logpca_cv_qfk2)
-which.min(logpca_cv_qfk2)
+if(F){
+  # Leader qualities
+  qual_cvlpca <- cv.lpca(pca_data_qualities2, ks = 1:20, ms = 5:15)
+  plot(qual_cvlpca)
+  which.min(qual_cvlpca[9,]) # optimal? k=9, m=11
+  
+  # Plot all minima
+  x <- apply(qual_cvlpca, MARGIN = 1, which.min)
+  plot(1:20, qual_cvlpca[cbind(1:20, x)], type='l') # elbows at 8 & 13
+  
+  kq <- 8
+  mq <- 12
+  
+  # Assuming k=2, cross validate for optimal m
+  qual_cvlpcak2 <- cv.lpca(pca_data_qualities2, ks = 2, ms = 1:10)
+  plot(qual_cvlpcak2)
+  which.min(qual_cvlpcak2) # m = 7
+  
+  # Leader functions
+  
+  # Optimal k, m
+  fun_cvlpca = cv.lpca(pca_data_functions2, ks = 1:20, ms = 5:15)
+  plot(fun_cvlpca)
+  
+  x <- apply(fun_cvlpca, MARGIN = 1, which.min)
+  plot(1:20, fun_cvlpca[cbind(1:20, x)], type='l') # elbows at 7, 10, 15
+  
+  # Optimal values?
+  kf <- 10 # elbow
+  mf <- which.min(fun_cvlpca[kf,])
+  
+  # For two PCs only (k=2), cv for optimal m
+  m_lpca_funk2cv <-  cv.lpca(pca_data_functions2, ks = 2, ms = 1:10)
+  plot(m_lpca_funk2cv)
+  which.min(m_lpca_funk2cv)
+  
+  # Qualities and functions
+  
+  # logpca_cv_qf = cv.lpca(pca_data_FQ[c(function_vars, quality_vars)], ks = 1:20, ms = 5:15)
+  # plot(logpca_cv_qf)
+  # x <- apply(logpca_cv_qf, MARGIN = 1, which.min)
+  # plot(1:20, logpca_cv_qf[cbind(1:20, x)], type='l') # elbows at 5, 16
+  
+  kqf <- 16
+  mqf <- 10
+  
+  # For k=2 only
+  logpca_cv_qfk2 = cv.lpca(pca_data_FQ[c(function_vars, quality_vars)], ks = 2, ms = 1:10)
+  plot(logpca_cv_qfk2)
+  which.min(logpca_cv_qfk2)
+}
 
 # Save all objects --------------------------------------------------
 
