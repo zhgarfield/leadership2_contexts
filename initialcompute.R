@@ -297,7 +297,11 @@ var_names <- c(
   "qualities_generous"                 = "Generosity",
   "qualities_age"                      = "Age",
   "qualities_attractive"              = "Attractive",
+<<<<<<< HEAD
   "qualities_coercive.authority"      = "Coercive authority",
+=======
+  "qualities_coercive.authority"      = "Authority",
+>>>>>>> befd3dc200c893ed112a9f99a9a4ebb37aff18fc
   "qualities_culturally.progressive"  = "Culturally progressive",
   "qualities_favorable.personality"   = "Favorable personality",
   "qualities_honest"                  = "Honesty",
@@ -334,11 +338,15 @@ var_names <- c(
   "qualities_physical.health"        = "Physical health",
   "qualities_proper.behavior"        = "Proper behavior",
   "qualities_strategic.nepotism"     = "Strategic nepotism",
+<<<<<<< HEAD
   "qualities_xenophobic"   = "Xenophobia",
   "qualities_antihonest" = "Dishonest",
   "qualities_antifairness" = "Unfair",
   "qualities_antidrug.consumption" = "No drug consumption",
   "qualities_anticoercive.authority" = "No coercive authority"
+=======
+  "qualities_xenophobic"   = "Xenophobia"
+>>>>>>> befd3dc200c893ed112a9f99a9a4ebb37aff18fc
 )
 
 d_melt$Variable <- var_names[d_melt$Variable]

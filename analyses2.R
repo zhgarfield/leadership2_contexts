@@ -32,6 +32,7 @@ library(ggridges)
 library(RColorBrewer)
 library(ggmosaic)
 library(proxy)
+<<<<<<< HEAD
 library(readxl)
 library(broom)
 library(broom.mixed)
@@ -41,6 +42,9 @@ library(ggcorrplot)
 library(margins)
 # library(mgcv)
 
+=======
+library(stringr)
+>>>>>>> befd3dc200c893ed112a9f99a9a4ebb37aff18fc
 # Load precomputed objects ------------------------------------------------
 
 # First run initialcompute.R, which takes ~90 minutes on my machine,
@@ -139,7 +143,50 @@ cost_benefit_dict <- c(
 )
 
 format_label <- function(lbl){
+<<<<<<< HEAD
   return(cost_benefit_dict[lbl])
+=======
+  relabel <- c(
+    leader.benefits_fitness = 'Inclusive fitness benefit',
+    leader.benefits_mating = 'Mating benefit',
+    leader.benefits_other = 'Misc. non-material benefit',
+    leader.benefits_reduced.risk.harm.conflict = 'Reduced risk of harm',
+    leader.benefits_resource_food = 'Food benefit',
+    leader.benefits_resource_other = 'Material resources',
+    leader.benefits_social.services = 'Social services',
+    leader.benefits_social.status.reputation = 'Increased social status',
+    leader.benefits_territory = 'Territory',
+    follower.benefits_fitness = 'Inclusive fitness benefit',
+    follower.benefits_mating = 'Mating benefit',
+    follower.benefits_other = 'Misc. non-material benefit',
+    follower.benefits_reduced.risk.harm.conflict = 'Reduced risk of harm',
+    follower.benefits_resource_food = 'Food benefit',
+    follower.benefits_resource_other = 'Material resources',
+    follower.benefits_social.services = 'Social services',
+    follower.benefits_social.status.reputation = 'Increased social status',
+    follower.benefits_territory = 'Territory',
+
+    leader.costs_fitness.costs = 'Inclusive fitness cost',
+    leader.costs_increased.risk.harm.conflict = 'Increased risk of harm',
+    leader.costs_other = 'Misc. non-material cost',
+    leader.costs_resource_food.cost = 'Food cost',
+    leader.costs_resources_other.cost = 'Loss of material resources',
+    leader.costs_social.status = 'Reduced social status',
+    leader.costs_territory.cost = 'Loss of territory',
+    leader.costs_mating.cost = 'Mating cost',
+    leader.costs_social.services = 'Loss of social services',
+    follower.costs_fitness = 'Inclusive fitness cost',
+    follower.costs_increased.risk.harm.conflict = 'Increased risk of harm',
+    follower.costs_mating = 'Mating cost',
+    follower.costs_other = 'Misc. non-material cost',
+    follower.costs_resource_food = 'Food cost',
+    follower.costs_resource_other = 'Loss of material resources',
+    follower.costs_social.services = 'Loss of social services',
+    follower.costs_social.status = 'Reduced social status',
+    follower.costs_territory = 'Loss of territory'
+  )
+  return(relabel[lbl])
+>>>>>>> befd3dc200c893ed112a9f99a9a4ebb37aff18fc
 }
 
 plot.variable.support_costs_benefits = ggplot(d_melt_cb, aes(value, Variable, xmin=y_negse, xmax=y_se, colour=Type, shape=Type)) + 
@@ -984,6 +1031,48 @@ plot_group_sex <-
   theme_bw(15) + theme(axis.text.y=element_blank())
 plot_group_sex
 
+## Groups by subsistence for high status texts only
+df_groups_status <- 
+  leader_text2[leader_text2$qualities_high.status==0,] %>% 
+  dplyr::select(
+    group.structure2,
+    demo_sex,
+    subsistence
+  ) %>% 
+  dplyr::filter(group.structure2 != 'other') %>% 
+  mutate(
+    demo_sex = factor(demo_sex, levels = c('male', 'female')),
+    group =   factor(
+      group.structure2,
+      levels = c(
+        'residential subgroup',
+        'kin group',
+        'economic group',
+        'religious group',
+        'military group',
+        'political group (community)',
+        'political group (supracommunity)'
+      )
+    ),
+    subsistence = factor(
+      subsistence,
+      levels = c("hunter gatherers",
+                 "pastoralists",
+                 "mixed",
+                 "horticulturalists",
+                 "agriculturalists"
+      )
+    )
+  )
+
+plot_group_subsis_status <-
+  ggplot(df_groups_status) +
+  geom_mosaic(aes(x = product(group, subsistence), fill = group)) +
+  labs(x="", y="", fill = "Group type") +
+  guides(fill = guide_legend(reverse = T)) +
+  theme_bw(15) 
+plot_group_subsis_status
+
 
 # Costs and benefits by group structure type ------------------------------
 se <- function(x) sd(x)/sqrt(length(x))
@@ -1038,11 +1127,11 @@ final_record_count <- sum(rowSums(leader_text2[all_study_vars])>0)
 male_leader_pct <- signif(100*sum(leader_text2$demo_sex=='male', na.rm=T)/nrow(leader_text2), 3)
 female_leader_pct <- signif(100*sum(leader_text2$demo_sex=='female', na.rm=T)/nrow(leader_text2), 2)
 
-intelltxts <- sum(leader_text2$qualities.knowlageable.intellect)
-polytxts <- sum(leader_text2$qualities.polygynous)
+intelltxts <- sum(leader_text2$qualities_knowlageable.intellect)
+polytxts <- sum(leader_text2$qualities_polygynous)
 statustxts <- sum(leader_text2$qualities_high.status)
-intellpolytxts <- sum(leader_text2$qualities.polygynous & leader_text2$qualities.knowlageable.intellect)
-statuspolytxts <- sum(leader_text2$qualities.polygynous & leader_text2$qualities_high.status)
+intellpolytxts <- sum(leader_text2$qualities_polygynous & leader_text2$qualities_knowlageable.intellect)
+statuspolytxts <- sum(leader_text2$qualities_polygynous & leader_text2$qualities_high.status)
 
 # text analysis
 # leader_text has 1000 rows
@@ -1166,6 +1255,7 @@ mm_coauthor <- glmer(
 )
 mm_coauthorOR <- exp(fixef(mm_coauthor))[[2]]
 
+<<<<<<< HEAD
 # Research effort ---------------------------------------------------------
 
 # number of text records for each culture
@@ -1559,3 +1649,288 @@ feature_discoveries <-
 # Looking for negative values ---------------------------------------------
 
 x <- map_int(all_data2[all_study_vars], ~ sum(.x < 0))
+=======
+library(rstanarm)
+library(bayesplot)
+options(mc.cores = parallel::detectCores())
+
+# stan_m_coauthor <- stan_glm(
+#   female_leader_present2 ~
+#     female_coauthor,
+#   family = binomial(link = "logit"),
+#   data = leader_text3,
+#   prior_intercept = student_t(df=7,location=0,10),
+#   prior = normal(0,1),
+#   chains = 4,
+#   iter = 40000)
+#  
+# summary(stan_m_coauthor, pars = "(Intercept)", "female_coauthorTRUE")
+# posterior_stan_m_coauthor <- as.matrix(stan_m_coauthor)
+# mcmc_areas(posterior_stan_m_coauthor,
+#            pars = c("female_coauthorTRUE"),
+#            prob = 0.95)
+# 
+# stan_mm_coauthor <- stan_glmer(
+#   female_leader_present2 ~
+#     female_coauthor +
+#   (1|document_d_ID),
+#   family = binomial(link = "logit"),
+#   data = leader_text3,
+#   prior_intercept = student_t(df=7,location=0),
+#   prior = normal(0,1),
+#   prior_covariance = decov(reg. = 1, conc. = 1, shape = 1, scale = 1),
+#   chains = 4,
+#   iter = 40000)
+# 
+# summary(stan_mm_coauthor, pars = "(Intercept)", "female_coauthorTRUE")
+# posterior_stan_mm_coauthor <- as.matrix(stan_mm_coauthor)
+# mcmc_areas(posterior_stan_mm_coauthor,
+#            pars = c("female_coauthorTRUE"),
+#            prob = 0.95)
+# 
+# prior_summary(stan_mm_coauthor)
+# 
+# 
+# ## Adjusting covariance prior
+# ### goal here was to replicate lme4 results with stan_glmer. Adusting prior on covariance matrix, via shape does it
+# stan_mm_coauthor2 <- stan_glmer(
+#   female_leader_present2 ~
+#     female_coauthor +
+#     (1|document_d_ID),
+#   family = binomial(link = "logit"),
+#   data = leader_text3,
+#   prior_intercept = student_t(df=7,location=0),
+#   prior = normal(0,1),
+#   prior_covariance = decov(regularization = 1, 
+#                            concentration = 1,
+#                            shape = 19, 
+#                            scale = 1),
+#   chains = 4,
+#   iter = 40000)
+# 
+# summary(stan_mm_coauthor2, pars = "(Intercept)", "female_coauthorTRUE")
+# prior_summary(stan_mm_coauthor2)
+# 
+# posterior_stan_mm_coauthor2 <- as.matrix(stan_mm_coauthor2)
+# mcmc_areas(posterior_stan_mm_coauthor2,
+#            pars = c("female_coauthorTRUE"),
+#            prob = 0.90)
+# 
+library(brms)
+# 
+# prior1 <- c(set_prior("normal(0,1)", class = "b", coef = "female_coauthorTRUE"),
+#             set_prior("student_t(7, 0, 10)", class = "Intercept"),
+#             set_prior("lkj(regularization = 1, scale = 10, df = 1, autoscale = TRUE)", 
+#                       class = "sd", group = "document_d_ID")
+#             )
+# 
+#  
+# bmr1 <- brm(as.numeric(female_leader_present2) ~
+#               female_coauthor +
+#               (1|document_d_ID),
+#             bernoulli(link = "logit"),
+#             prior = prior1,
+#             warmup = 2000, iter = 4000,
+#             data = leader_text3)
+
+# summary(bmr1)
+# prior_summary(bmr1)
+
+
+
+
+
+
+
+
+
+
+# Female leaders by publication year --------------------------------------
+leader_text4 <- left_join(leader_text3, documents, by = c("document_d_ID" = "d_ID"))
+
+# mm_pubyear <- glmer(
+#   female_leader_present2 ~
+#     `d_publication date` +
+#     (1|document_d_ID),
+#   family = binomial,
+#   data = leader_text4
+# )
+# mm_pubyearOR <- exp(fixef(mm_pubyear))[[2]]
+# 
+# stan_mm_pubyear <- stan_glmer(
+#   female_leader_present2 ~
+#     `d_publication date`  +
+#     (1|document_d_ID),
+#   family = binomial(link = "logit"),
+#   data = leader_text4,
+#   prior_intercept = normal(0,1),
+#   prior = normal(0,1), 
+#   chains = 4, 
+#   iter = 40000)
+# 
+# summary(stan_mm_pubyear, pars = "`d_publication date`")
+# posterior_stan_mm_coauthor <- as.matrix(stan_mm_pubyear)
+# mcmc_areas(posterior_stan_mm_coauthor,
+#            pars = c("`d_publication date`"),
+#            prob = 0.95)
+
+## Both gender and publication year in one model
+
+# ***********************
+#  USE THIS MODEL????
+# ***********************
+
+# stan_mm_pubyear_gender <- stan_glmer(
+#   female_leader_present2 ~
+#     female_coauthor +
+#     #(1|`d_publication date`)  +
+#     (1|document_d_ID),
+#   family = binomial(link = "logit"),
+#   data = leader_text4,
+#   prior_intercept = student_t(1,0,1),
+#   prior = normal(0,1),
+#   chains = 4,
+#   iter = 20000)
+# 
+# summary(stan_mm_pubyear_gender, pars = c("female_coauthorTRUE", "(Intercept)"))
+# posterior_stan_mm_coauthor_pubyear <- as.matrix(stan_mm_pubyear_gender)
+# mcmc_areas(posterior_stan_mm_coauthor_pubyear,
+#            pars = c("female_coauthorTRUE"),
+#            prob = 0.95)
+
+#launch_shinystan(stan_mm_pubyear_gender)
+
+
+
+
+# Text analysis -----------------------------------------------------------
+
+# Switch ’ to '
+text_records$raw_text <- iconv(text_records$raw_text, "", "UTF-8")
+text_records$raw_text <- str_replace(text_records$raw_text, "’", "'")
+
+# Merge high status varaible
+leader_text_ta <- left_join(text_records, leader_text2[,c("cs_textrec_ID", "qualities_high.status", "leader.benefits_social.status.reputation")],
+                            by = "cs_textrec_ID")
+
+leader_text_ta2 <- leader_text_ta[,c("cs_textrec_ID", "qualities_high.status", "leader.benefits_social.status.reputation", "raw_text", "document_d_ID")]
+
+# Set -1 to 0
+leader_text_ta2$qualities_high.status[leader_text_ta2$qualities_high.status == -1] = 0
+
+words <-
+  leader_text_ta2 %>% 
+  unnest_tokens(word, raw_text)
+
+x <- table(words$cs_textrec_ID)
+summary(as.numeric(x))
+median_wordcount <- median(x)
+mean_wordcount <- mean(x)
+sd_wordcount <- sd(x)
+
+# Word frequency
+library(dplyr)
+data("stop_words")
+stop_words <- rbind(stop_words, list(word='page', lexicon='garfield'))
+stop_words <- rbind(stop_words, list(word='ijaaj', lexicon='garfield'))
+stop_words <- rbind(stop_words, list(word='tadoelako', lexicon='garfield'))
+stop_words <- rbind(stop_words, list(word='zande', lexicon='garfield'))
+
+words2 <-
+  words %>%
+  dplyr::filter(!str_detect(word, '\\d')) %>% 
+  anti_join(stop_words)
+
+x <- sort(table(words2$word), decreasing = T)
+
+#Stemming
+library(hunspell)
+
+words2$stem <- hunspell_stem(words2$word)
+
+# Pick one of the stems
+words2$stem2 <- NA
+for (i in 1:nrow(words2)){
+  n = length(words2$stem[[i]])
+  if (n == 0){
+    words2$stem2[i] <- words2$word[i]
+    # } else if (n == 1){
+    #   words2$stem2[i] <- words2$stem[[i]][1]
+  } else {
+    words2$stem2[i] <- words2$stem[[i]][1]
+  }
+}
+
+# Aggregate lead, leader, leadership
+words2$stem2[words2$stem2 == 'lead'] <- 'leader'
+words2$stem2[words2$stem2 == 'leadership'] <- 'leader'
+
+# Aggregate pow with power
+words2$stem2[words2$stem2 == 'pow'] <- 'power'
+
+# glmnet
+library(glmnet)
+
+# document-term matrix
+dtm <-
+  words2 %>% 
+  dplyr::select(cs_textrec_ID, stem2) %>% 
+  group_by(cs_textrec_ID, stem2) %>% 
+  summarise(count = n()) %>% 
+  spread(stem2, count, fill = 0)
+
+model_words <- function(pred_df, model_score_var, lam = 'lambda.min', title){
+  
+  document_d_ID <- pred_df[[1]] # Not sure if this is getting doc ID right?
+  x <- base::as.matrix(pred_df[-1])
+  y <- leader_text_ta2[[model_score_var]][leader_text_ta2$cs_textrec_ID %in% document_d_ID]
+  
+  m_cv <- cv.glmnet(x, y, family = 'poisson', alpha = 1, standardize = F)
+  plot(m_cv)
+  
+  print(m_cv$lambda.min)
+  print(m_cv$lambda.1se)
+  
+  if (lam == 'mid'){
+    lmda <- m_cv$lambda.min + (m_cv$lambda.1se - m_cv$lambda.min)/2
+  } else if (lam == 'min'){
+    lmda <- m_cv$lambda.min
+  } else {
+    lmda = lam
+  }
+  
+  c.min <- coef(m_cv, s = lmda)
+  
+  coefs <- c()
+  for (i in 1:length(c.min)){
+    if (c.min[i] != 0){
+      coefs <- c(coefs, c.min[i])
+      names(coefs)[length(coefs)] <- rownames(c.min)[i]
+    }
+  }
+  # dotchart(sort(coefs[-1]))
+  coefs <- sort(coefs[-1]) # delete intercept
+  df <-
+    data_frame(
+      Word = factor(names(coefs), levels = names(coefs)),
+      Coefficient = coefs,
+      Sign = ifelse(coefs > 0, 'Positive', 'Negative')
+    )
+  plot <- 
+    ggplot(df, aes(Word, Coefficient, colour = Sign, shape=Sign)) + 
+    geom_point() + 
+    geom_hline(yintercept = 0, linetype = 'dotted') +
+    coord_flip() +
+    guides(colour=F, shape=F) +
+    labs(title = title, x = '', y = '') +
+    theme_bw()
+  
+  return(plot)
+}
+
+highstatus_plot <- model_words(dtm, 'qualities_high.status', lam = "min", title = 'Leader quality: High status')
+highstatus_plot
+
+# ben_highstatus_plot <- model_words(dtm, 'leader.benefits_social.status.reputation', lam = "min", title = 'Benefits: Status, reputation')
+# ben_highstatus_plot
+>>>>>>> befd3dc200c893ed112a9f99a9a4ebb37aff18fc
