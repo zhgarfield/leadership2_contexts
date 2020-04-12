@@ -41,6 +41,7 @@ library(ggcorrplot)
 library(margins)
 # library(mgcv)
 library(stringr)
+library(glmnet)
 
 # Load precomputed objects ------------------------------------------------
 
@@ -54,26 +55,7 @@ load("Leader2.Rdata")
 #+ fig.height=15, fig.width=15
 
 # Functions ---------------------------------------------------------------
-
-# loadings plot
-logisticPCA_loadings_plot <- function(m, data){
-  df <- data.frame(m$U)
-  df$variable <- names(data)
-  p1 <-
-    ggplot(df, aes(X1, fct_reorder(variable, X1), colour=X1)) +
-    ggalt::geom_lollipop(horizontal = T, size = 1, show.legend = FALSE) +
-    scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue', name = 'Loading') +
-    theme_bw(15) +
-    labs(title = "PC 1", x = "\nLoading", y = "")
-  p2<-
-    ggplot(df, aes(X2, fct_reorder(variable, X2), colour=X2)) +
-    ggalt::geom_lollipop(horizontal = T, size = 1, show.legend = FALSE) +
-    scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue', name = 'Loading') +
-    theme_bw(15) +
-    labs(title = "PC 2", x = "\nLoading", y = "")
-  p1 + p2
-}
-
+se <- function(x) sd(x)/sqrt(length(x))
 
 # Recode variables --------------------------------------------------------
 
@@ -237,10 +219,10 @@ dev.off()
 # pca_data_qualities$qPC2k2 <- m_lpca_qualk2$PCs[,2]
 # leader_text2 <- left_join(leader_text2, pca_data_qualities[c('cs_textrec_ID', 'qPC1k2', 'qPC2k2')])
 # 
-# # For optimal k, m determined by cv in initialcompute.R
-# kq <- 8
-# mq <- 12
-# 
+# For optimal k, m determined by cv in initialcompute.R
+kq <- 8
+mq <- 12
+
 # logpca_model_qualities = logisticPCA(pca_data_qualities2, k = kq, m = mq, main_effects = T)
 # plot(logpca_model_qualities, type = "scores")
 # logisticPCA_loadings_plot(logpca_model_qualities, data = pca_data_qualities2)
@@ -669,133 +651,8 @@ dev.off()
 # summary(m)
 # Anova(m)
 # visreg(m, scale = 'response')
-# 
-# ## Rstanarm models
-# 
-# options(mc.cores = parallel::detectCores())
-# 
-# # Qualities model
-# 
-# # qc_stan_m <- stan_glmer(
-# #   qualities_component1 ~ 
-# #     subsistence +
-# #     c_cultural_complexity +
-# #     pop_density +
-# #     com_size +
-# #     group.structure2 +
-# #     (1|d_culture/doc_ID),
-# #   prior = normal(0, 1),
-# #   prior_intercept = normal(0, 1),
-# #   algorithm = c("sampling"),
-# #   family = gaussian(link = "identity"),
-# #   iter=4000,
-# #   data=leader_text2
-# # )
-# # 
-# # prior_summary(qc_stan_m)
-# # summary(qc_stan_m,
-# #         pars = c(),
-# #         probs = c(0.025, 0.975),
-# #         digits = 2)
-# # 
-# # median(bayes_R2(qc_stan_m))
-# # 
-# # qc_m_post <- as.matrix(qc_stan_m)
-# # prior_summary(qc_stan_m)
-# # 
-# # # Community size and pop density distributions
-# # mcmc_areas(qc_m_post[,c(7:10)], prob_outer = .95)
-# # 
-# # # Group structure distritions
-# # 
-# # mcmc_areas(qc_m_post[,c(7:14)], 
-# #            prob_outer = .95,
-# #            point_est = "mean"
-# #            )
-# # 
-# # # All effects
-# # mcmc_intervals(qc_m_post[,c(2:20)])
-# # 
-# # launch_shinystan(qc_stan_m)
-# # #mcmc_trace(qc_m_post[,c(1:5)])
-# # 
-# # # ggpubr plots
-# # qc_m_post_df<-data.frame(qc_m_post)
-# # ggdensity(qc_m_post_df, x="c_cultural_complexity", fill = "lightgrey",
-# #           add = "mean", rug=T)
-# # 
-# # 
-# # # tidybase plots
-# # qc_m_post_df_plot<-qc_m_post_df[,c(2:14)]
-# # qc_m_post_df_plot_long<-gather(qc_m_post_df_plot, variable, value)
-# # 
-# # theme_set(theme_tidybayes())
-# # qc_bayes_model_post_plot <- qc_m_post_df_plot_long %>% 
-# #   ggplot(aes(x=value, y=variable))+
-# #   geom_halfeyeh(trim = TRUE)+
-# #   vline_0() +
-# #   xlim(-10,10) +
-# #   scale_y_discrete(labels=rev(c("Subsistence:Pastoralists",
-# #                             "Subsistence:Mixed",
-# #                             "Subsistence:Hunter-gatherers",
-# #                             "Subsistence:Horticulturalists",
-# #                             "Population density",
-# #                             "Group:State-level",
-# #                             "Group:Social",
-# #                             "Group:Religeous",
-# #                             "Group:Political",
-# #                             "Group:Other",
-# #                             "Goupr:Military",
-# #                             "Community size",
-# #                             "Cultural complexity")))+
-# #   labs(x="\nPosterior distribution", y="Covariate\n")
-# #   
-# # 
-# # qc_bayes_model_post_plot
-# # 
-# # #Full tidybayes method
-# # 
-# # ggplot(qc_bayes_model_post_plot, aes(y = variable, x = value)) +
-# #   geom_halfeyeh()
-# # 
-# # 
-# # 
-# # # Functions model
-# # fc_stan_m <- stan_glmer(
-# #   functions_component1 ~ 
-# #     subsistence +
-# #     c_cultural_complexity +
-# #     pop_density2 +
-# #     com_size2 +
-# #     group.structure2 +
-# #     (1|d_culture/doc_ID),
-# #   prior_intercept = normal(0,1),
-# #   prior = normal(0,1),
-# #   algorithm = c("sampling"),
-# #   family = gaussian(link = "identity"),
-# #   iter=4000,
-# #   data=leader_text2
-# # )
-# # 
-# # summary(fc_stan_m)
-# # median(bayes_R2(fc_stan_m))
-# # 
-# # fc_m_post <- as.matrix(fc_stan_m)
-# # 
-# # # Community size distributions
-# # mcmc_areas(fc_m_post[,c(14:17)], prob_outer = .95)
-# # 
-# # # Group structure distributions
-# # mcmc_areas(fc_m_post[,c(14:19)], prob_outer = .95)
-# # 
-# # mcmc_intervals(fc_m_post[,c(2:14)])
-# # #launch_shinystan(fc_stan_m)
-# # 
-# # # Stan models
-# # 
-# 
-# 
-# 
+
+
 # Heatmaps -----------------------------------------------------------------
 
 # Heatmap of qualities with Euclidean distance
@@ -929,16 +786,6 @@ dev.off()
 # 
 
 
-# NMF ---------------------------------------------------------------------
-
-# library(NMF)
-# m_nmf <- nmf(t(pca_data_qualities2), rank = 2:15)
-# m_nmf5 <- nmf(t(pca_data_qualities2), rank = 5)
-# m_nmfrandom <- nmf(randomize(t(pca_data_qualities2)), rank=2:15)
-
-# pdf(file = 'consensusmap.pdf', width = 20)
-# consensusmap(m_nmf)
-# dev.off()
 
 # Group structure by subsistence --------------------------------------------------
 
@@ -1072,7 +919,6 @@ plot_group_subsis_status
 
 
 # Costs and benefits by group structure type ------------------------------
-se <- function(x) sd(x, na.rm=T)/sqrt(length(x))
 
 # try to tidy data to: Group structure, Benefit type, Cost type, Status type (leader, follower), Mean, SE
 
@@ -1647,101 +1493,6 @@ feature_discoveries <-
 
 x <- map_int(all_data2[all_study_vars], ~ sum(.x < 0))
 
-library(rstanarm)
-library(bayesplot)
-options(mc.cores = parallel::detectCores())
-
-# stan_m_coauthor <- stan_glm(
-#   female_leader_present2 ~
-#     female_coauthor,
-#   family = binomial(link = "logit"),
-#   data = leader_text3,
-#   prior_intercept = student_t(df=7,location=0,10),
-#   prior = normal(0,1),
-#   chains = 4,
-#   iter = 40000)
-#  
-# summary(stan_m_coauthor, pars = "(Intercept)", "female_coauthorTRUE")
-# posterior_stan_m_coauthor <- as.matrix(stan_m_coauthor)
-# mcmc_areas(posterior_stan_m_coauthor,
-#            pars = c("female_coauthorTRUE"),
-#            prob = 0.95)
-# 
-# stan_mm_coauthor <- stan_glmer(
-#   female_leader_present2 ~
-#     female_coauthor +
-#   (1|document_d_ID),
-#   family = binomial(link = "logit"),
-#   data = leader_text3,
-#   prior_intercept = student_t(df=7,location=0),
-#   prior = normal(0,1),
-#   prior_covariance = decov(reg. = 1, conc. = 1, shape = 1, scale = 1),
-#   chains = 4,
-#   iter = 40000)
-# 
-# summary(stan_mm_coauthor, pars = "(Intercept)", "female_coauthorTRUE")
-# posterior_stan_mm_coauthor <- as.matrix(stan_mm_coauthor)
-# mcmc_areas(posterior_stan_mm_coauthor,
-#            pars = c("female_coauthorTRUE"),
-#            prob = 0.95)
-# 
-# prior_summary(stan_mm_coauthor)
-# 
-# 
-# ## Adjusting covariance prior
-# ### goal here was to replicate lme4 results with stan_glmer. Adusting prior on covariance matrix, via shape does it
-# stan_mm_coauthor2 <- stan_glmer(
-#   female_leader_present2 ~
-#     female_coauthor +
-#     (1|document_d_ID),
-#   family = binomial(link = "logit"),
-#   data = leader_text3,
-#   prior_intercept = student_t(df=7,location=0),
-#   prior = normal(0,1),
-#   prior_covariance = decov(regularization = 1, 
-#                            concentration = 1,
-#                            shape = 19, 
-#                            scale = 1),
-#   chains = 4,
-#   iter = 40000)
-# 
-# summary(stan_mm_coauthor2, pars = "(Intercept)", "female_coauthorTRUE")
-# prior_summary(stan_mm_coauthor2)
-# 
-# posterior_stan_mm_coauthor2 <- as.matrix(stan_mm_coauthor2)
-# mcmc_areas(posterior_stan_mm_coauthor2,
-#            pars = c("female_coauthorTRUE"),
-#            prob = 0.90)
-# 
-library(brms)
-# 
-# prior1 <- c(set_prior("normal(0,1)", class = "b", coef = "female_coauthorTRUE"),
-#             set_prior("student_t(7, 0, 10)", class = "Intercept"),
-#             set_prior("lkj(regularization = 1, scale = 10, df = 1, autoscale = TRUE)", 
-#                       class = "sd", group = "document_d_ID")
-#             )
-# 
-#  
-# bmr1 <- brm(as.numeric(female_leader_present2) ~
-#               female_coauthor +
-#               (1|document_d_ID),
-#             bernoulli(link = "logit"),
-#             prior = prior1,
-#             warmup = 2000, iter = 4000,
-#             data = leader_text3)
-
-# summary(bmr1)
-# prior_summary(bmr1)
-
-
-
-
-
-
-
-
-
-
 # Female leaders by publication year --------------------------------------
 leader_text4 <- left_join(leader_text3, documents, by = c("document_d_ID" = "d_ID"))
 
@@ -1753,136 +1504,20 @@ leader_text4 <- left_join(leader_text3, documents, by = c("document_d_ID" = "d_I
 #   data = leader_text4
 # )
 # mm_pubyearOR <- exp(fixef(mm_pubyear))[[2]]
-# 
-# stan_mm_pubyear <- stan_glmer(
-#   female_leader_present2 ~
-#     `d_publication date`  +
-#     (1|document_d_ID),
-#   family = binomial(link = "logit"),
-#   data = leader_text4,
-#   prior_intercept = normal(0,1),
-#   prior = normal(0,1), 
-#   chains = 4, 
-#   iter = 40000)
-# 
-# summary(stan_mm_pubyear, pars = "`d_publication date`")
-# posterior_stan_mm_coauthor <- as.matrix(stan_mm_pubyear)
-# mcmc_areas(posterior_stan_mm_coauthor,
-#            pars = c("`d_publication date`"),
-#            prob = 0.95)
-
-## Both gender and publication year in one model
-
-# ***********************
-#  USE THIS MODEL????
-# ***********************
-
-# stan_mm_pubyear_gender <- stan_glmer(
-#   female_leader_present2 ~
-#     female_coauthor +
-#     #(1|`d_publication date`)  +
-#     (1|document_d_ID),
-#   family = binomial(link = "logit"),
-#   data = leader_text4,
-#   prior_intercept = student_t(1,0,1),
-#   prior = normal(0,1),
-#   chains = 4,
-#   iter = 20000)
-# 
-# summary(stan_mm_pubyear_gender, pars = c("female_coauthorTRUE", "(Intercept)"))
-# posterior_stan_mm_coauthor_pubyear <- as.matrix(stan_mm_pubyear_gender)
-# mcmc_areas(posterior_stan_mm_coauthor_pubyear,
-#            pars = c("female_coauthorTRUE"),
-#            prob = 0.95)
-
-#launch_shinystan(stan_mm_pubyear_gender)
-
-
 
 
 # Text analysis -----------------------------------------------------------
 
-# Switch ’ to '
-text_records$raw_text <- iconv(text_records$raw_text, "", "UTF-8")
-text_records$raw_text <- str_replace(text_records$raw_text, "’", "'")
-
-# Merge high status varaible
-leader_text_ta <- left_join(text_records, leader_text2[,c("cs_textrec_ID", "qualities_high.status", "leader.benefits_social.status.reputation")],
-                            by = "cs_textrec_ID")
-
-leader_text_ta2 <- leader_text_ta[,c("cs_textrec_ID", "qualities_high.status", "leader.benefits_social.status.reputation", "raw_text", "document_d_ID")]
-
-# Set -1 to 0
-leader_text_ta2$qualities_high.status[leader_text_ta2$qualities_high.status == -1] = 0
-
-words <-
-  leader_text_ta2 %>% 
-  unnest_tokens(word, raw_text)
-
-x <- table(words$cs_textrec_ID)
-summary(as.numeric(x))
-median_wordcount <- median(x)
-mean_wordcount <- mean(x)
-sd_wordcount <- sd(x)
-
-# Word frequency
-library(dplyr)
-data("stop_words")
-stop_words <- rbind(stop_words, list(word='page', lexicon='garfield'))
-#stop_words <- rbind(stop_words, list(word='ijaaj', lexicon='garfield'))
-#stop_words <- rbind(stop_words, list(word='tadoelako', lexicon='garfield'))
-#stop_words <- rbind(stop_words, list(word='zande', lexicon='garfield'))
-
-words2 <-
-  words %>%
-  dplyr::filter(!str_detect(word, '\\d')) %>% 
-  anti_join(stop_words)
-
-x <- sort(table(words2$word), decreasing = T)
-
-#Stemming
-library(hunspell)
-
-words2$stem <- hunspell_stem(words2$word)
-
-# Pick one of the stems
-words2$stem2 <- NA
-for (i in 1:nrow(words2)){
-  n = length(words2$stem[[i]])
-  if (n == 0){
-    words2$stem2[i] <- words2$word[i]
-    # } else if (n == 1){
-    #   words2$stem2[i] <- words2$stem[[i]][1]
-  } else {
-    words2$stem2[i] <- words2$stem[[i]][1]
-  }
-}
-
-# Aggregate lead, leader, leadership
-words2$stem2[words2$stem2 == 'lead'] <- 'leader'
-words2$stem2[words2$stem2 == 'leadership'] <- 'leader'
-
-# Aggregate pow with power
-words2$stem2[words2$stem2 == 'pow'] <- 'power'
-
-# glmnet
-library(glmnet)
-
-# document-term matrix
-dtm <-
-  words2 %>% 
-  dplyr::select(cs_textrec_ID, stem2) %>% 
-  group_by(cs_textrec_ID, stem2) %>% 
-  summarise(count = n()) %>% 
-  spread(stem2, count, fill = 0)
-
-model_words <- function(pred_df, model_score_var, lam = 'lambda.min', title){
+model_words <- function(var, lam = 'lambda.min', exponentiate = T, title){
   
-  document_d_ID <- pred_df[[1]] # Not sure if this is getting doc ID right?
-  x <- base::as.matrix(pred_df[-1])
-  y <- leader_text_ta2[[model_score_var]][leader_text_ta2$cs_textrec_ID %in% document_d_ID]
+  df <- left_join(leader_text2[c('cs_textrec_ID', var)], leader_dtm)
+  y <- df[[2]]
+  x <- as.matrix(df[-c(1:2)])
   
-  m_cv <- cv.glmnet(x, y, family = 'poisson', alpha = 1, standardize = F)
+  # x <- base::as.matrix(pred_df[-1]) # Remove doc_ID column
+  # y <- leader_text2[[model_score_var]][leader_text2$cs_textrec_ID %in% pred_df[[1]]]
+  
+  m_cv <- cv.glmnet(x, y, family = 'binomial', alpha = 0.5, standardize = F)
   plot(m_cv)
   
   print(m_cv$lambda.min)
@@ -1892,7 +1527,9 @@ model_words <- function(pred_df, model_score_var, lam = 'lambda.min', title){
     lmda <- m_cv$lambda.min + (m_cv$lambda.1se - m_cv$lambda.min)/2
   } else if (lam == 'min'){
     lmda <- m_cv$lambda.min
-  } else {
+  } else if(lam == '1se'){
+    lmda <- m_cv$lambda.1se
+    } else {
     lmda = lam
   }
   
@@ -1905,19 +1542,26 @@ model_words <- function(pred_df, model_score_var, lam = 'lambda.min', title){
       names(coefs)[length(coefs)] <- rownames(c.min)[i]
     }
   }
-  # dotchart(sort(coefs[-1]))
+  
+  if (exponentiate){
+    coefs <- exp(coefs)
+    xintrcpt <- 1
+  } else {
+    xintrcpt <- 0
+  }
+
   coefs <- sort(coefs[-1]) # delete intercept
+  
   df <-
     tibble(
       Word = factor(names(coefs), levels = names(coefs)),
       Coefficient = coefs,
-      Sign = ifelse(coefs > 0, 'Positive', 'Negative')
+      Sign = ifelse(coefs > xintrcpt, 'Increase', 'Decrease')
     )
   plot <- 
-    ggplot(df, aes(Word, Coefficient, colour = Sign, shape=Sign)) + 
+    ggplot(df, aes(Coefficient, Word, colour = Sign, shape=Sign)) + 
     geom_point() + 
-    geom_hline(yintercept = 0, linetype = 'dotted') +
-    coord_flip() +
+    geom_vline(xintercept = xintrcpt, linetype = 'dotted') +
     guides(colour=F, shape=F) +
     labs(title = title, x = '', y = '') +
     theme_bw()
@@ -1925,9 +1569,10 @@ model_words <- function(pred_df, model_score_var, lam = 'lambda.min', title){
   return(plot)
 }
 
-highstatus_plot <- model_words(leader_dtm, 'qualities_high.status', lam = "min", title = 'Leader quality: High status')
-highstatus_plot
 
-ben_highstatus_plot <- model_words(leader_dtm, 'leader.benefits_social.status.reputation', lam = "min", title = 'Benefits: Status, reputation')
-ben_highstatus_plot
+highstatus_plot <- model_words('qualities_high.status', lam = "1se", title = 'Leader quality: High status')
+# highstatus_plot + scale_x_log10()
+
+# ben_highstatus_plot <- model_words('leader.benefits_social.status.reputation', lam = "mid", title = 'Benefits: Status, reputation')
+# ben_highstatus_plot + scale_x_log10()
 

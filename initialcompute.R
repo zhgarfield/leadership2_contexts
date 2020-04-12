@@ -42,6 +42,24 @@ neg1to0 <- function(df){
     )
 }
 
+# loadings plot
+logisticPCA_loadings_plot <- function(m, data){
+  df <- data.frame(m$U)
+  df$variable <- names(data)
+  p1 <-
+    ggplot(df, aes(X1, fct_reorder(variable, X1), colour=X1)) +
+    ggalt::geom_lollipop(horizontal = T, size = 1, show.legend = FALSE) +
+    scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue', name = 'Loading') +
+    theme_bw(15) +
+    labs(title = "PC 1", x = "\nLoading", y = "")
+  p2<-
+    ggplot(df, aes(X2, fct_reorder(variable, X2), colour=X2)) +
+    ggalt::geom_lollipop(horizontal = T, size = 1, show.legend = FALSE) +
+    scale_color_gradient2(low = 'red', mid = 'white', 'high' = 'blue', name = 'Loading') +
+    theme_bw(15) +
+    labs(title = "PC 2", x = "\nLoading", y = "")
+  p1 + p2
+}
 
 # Remove variables with little evidence -----------------------------------
 
@@ -593,61 +611,86 @@ qual_func_vars <- leader_text2 %>%
 #   nboot = 10000,
 #   parallel = T)
 
+# Cluster all study vars
+
+df_all <-
+  leader_text2 %>% 
+  dplyr::select(all_of(all_study_vars)) %>% 
+  dplyr::filter(rowSums(.) > 0)
+
+all_clust <- pvclust(
+  df_all,
+  method.hclust = 'ward',
+  method.dist = 'binary',
+  nboot = 1000,
+  parallel = T
+)
+
+# PAM
+library(cluster)
+library(factoextra)
+
+nbclust <- fviz_nbclust(t(df_all), pam, method='wss') # 4 or 5 silhouette
+m_pam <- pam(df_all, k = 4)
+
+nbclust <- fviz_nbclust(t(df_all), kmeans, method='silhouette') # 2, 5
+m_kmeans <- kmeans(df_all, centers = 2)
+
 # Cross-validation for logisticPCA ----------------------------------------
 
 # This takes a long time, so putting all code in one section
 
-# if(F){
-#   # Leader qualities
-#   qual_cvlpca <- cv.lpca(pca_data_qualities2, ks = 1:20, ms = 5:15)
-#   plot(qual_cvlpca)
-#   which.min(qual_cvlpca[9,]) # optimal? k=9, m=11
-#   
-#   # Plot all minima
-#   x <- apply(qual_cvlpca, MARGIN = 1, which.min)
-#   plot(1:20, qual_cvlpca[cbind(1:20, x)], type='l') # elbows at 8 & 13
-#   
-#   kq <- 8
-#   mq <- 12
-#   
-#   # Assuming k=2, cross validate for optimal m
-#   qual_cvlpcak2 <- cv.lpca(pca_data_qualities2, ks = 2, ms = 1:10)
-#   plot(qual_cvlpcak2)
-#   which.min(qual_cvlpcak2) # m = 7
-#   
-#   # Leader functions
-#   
-#   # Optimal k, m
-#   fun_cvlpca = cv.lpca(pca_data_functions2, ks = 1:20, ms = 5:15)
-#   plot(fun_cvlpca)
-#   
-#   x <- apply(fun_cvlpca, MARGIN = 1, which.min)
-#   plot(1:20, fun_cvlpca[cbind(1:20, x)], type='l') # elbows at 7, 10, 15
-#   
-#   # Optimal values?
-#   kf <- 10 # elbow
-#   mf <- which.min(fun_cvlpca[kf,])
-#   
-#   # For two PCs only (k=2), cv for optimal m
-#   m_lpca_funk2cv <-  cv.lpca(pca_data_functions2, ks = 2, ms = 1:10)
-#   plot(m_lpca_funk2cv)
-#   which.min(m_lpca_funk2cv)
-#   
-#   # Qualities and functions
-#   
-#   # logpca_cv_qf = cv.lpca(pca_data_FQ[c(function_vars, quality_vars)], ks = 1:20, ms = 5:15)
-#   # plot(logpca_cv_qf)
-#   # x <- apply(logpca_cv_qf, MARGIN = 1, which.min)
-#   # plot(1:20, logpca_cv_qf[cbind(1:20, x)], type='l') # elbows at 5, 16
-#   
-#   kqf <- 16
-#   mqf <- 10
-#   
-#   # For k=2 only
-#   logpca_cv_qfk2 = cv.lpca(pca_data_FQ[c(function_vars, quality_vars)], ks = 2, ms = 1:10)
-#   plot(logpca_cv_qfk2)
-#   which.min(logpca_cv_qfk2)
-# }
+if(F){
+  # Leader qualities
+  qual_cvlpca <- cv.lpca(pca_data_qualities2, ks = 1:20, ms = 5:15)
+  plot(qual_cvlpca)
+  which.min(qual_cvlpca[12,]) # optimal? k=9, m=11
+  
+  # Plot all minima
+  x <- apply(qual_cvlpca, MARGIN = 1, which.min)
+  plot(1:20, qual_cvlpca[cbind(1:20, x)], type='l') # elbows at 8 & 13
+  
+  kq <- 8
+  mq <- 12
+  
+  # Assuming k=2, cross validate for optimal m
+  qual_cvlpcak2 <- cv.lpca(pca_data_qualities2, ks = 2, ms = 1:10)
+  plot(qual_cvlpcak2)
+  which.min(qual_cvlpcak2) # m = 7
+  
+  # Leader functions
+  
+  # Optimal k, m
+  fun_cvlpca = cv.lpca(pca_data_functions2, ks = 1:20, ms = 5:15)
+  plot(fun_cvlpca)
+  
+  x <- apply(fun_cvlpca, MARGIN = 1, which.min)
+  plot(1:20, fun_cvlpca[cbind(1:20, x)], type='l') # elbows at 7, 10, 15
+  
+  # Optimal values?
+  kf <- 10 # elbow
+  mf <- which.min(fun_cvlpca[kf,])
+  
+  # For two PCs only (k=2), cv for optimal m
+  m_lpca_funk2cv <-  cv.lpca(pca_data_functions2, ks = 2, ms = 1:10)
+  plot(m_lpca_funk2cv)
+  which.min(m_lpca_funk2cv)
+  
+  # Qualities and functions
+  
+  # logpca_cv_qf = cv.lpca(pca_data_FQ[c(function_vars, quality_vars)], ks = 1:20, ms = 5:15)
+  # plot(logpca_cv_qf)
+  # x <- apply(logpca_cv_qf, MARGIN = 1, which.min)
+  # plot(1:20, logpca_cv_qf[cbind(1:20, x)], type='l') # elbows at 5, 16
+  
+  kqf <- 16
+  mqf <- 10
+  
+  # For k=2 only
+  logpca_cv_qfk2 = cv.lpca(pca_data_FQ[c(function_vars, quality_vars)], ks = 2, ms = 1:10)
+  plot(logpca_cv_qfk2)
+  which.min(logpca_cv_qfk2)
+}
 
 # Save all objects --------------------------------------------------
 

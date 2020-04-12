@@ -27,7 +27,7 @@ We determined the gender of almost all authors of all documents included in our 
 
 **1.	The cluster analysis is nice, but it opens up the option to combine items within both qualities and functions to create a smaller number of higher-level categories or codes that, arguably, are better measured. The issue here is that some things that don’t appear frequently might rise in frequency when they are combined with other similar items. Suppose you use a higher-level category that contains 4 codes and you code the society as ‘1’ if any of the codes appears and zero otherwise. In our view, you need not go crazy with this approach, but look for any tightly bound clusters and consider pursuing those. If you are able to do this, the presentation could be more compact and easier to digest for the reader.**
 
-In the original version of the ms we did not describe our numerous efforts at dimension reduction, including standard PCA, various flavors of logistic PCA, non-negative matrix factorization (NMF), and various flavors of cluster analysis, and we regressed the resulting components against our various culture-level variables. These efforts did not yield any convincing "stucture" in our data or results beyond what we reported. We now briefly describe these efforts so as to better contexualize the results that we do report. 
+In the original version of the ms we did not describe our numerous efforts at dimension reduction, including various flavors of logistic PCA, non-negative matrix factorization (NMF), and various flavors of cluster analysis, and we regressed the resulting components against our various culture-level variables. These efforts did not yield any convincing "stucture" in our data or results beyond what we reported. We now briefly describe these efforts so as to better contexualize the results that we do report. 
 
 We now additionally create variables based on the clusters we did find, and investigate their relationship to culture-level variables. As before, we find little convincing evidence of meaningful patterns, which we now briefly report in the SI.
 
@@ -37,11 +37,11 @@ See above.
 
 **3.	Be clearer about how you are accounting for research effort in each society. For example, are you controlling for the total number of words or pages for each population?**
 
-Total number of pages of ethnography for each culture. Results now reported.
+We incorporate total number of pages of ethnography for each culture. Results now reported.
 
 **This seems very important since we want to make sure that the variation observed isn’t due to some populations getting more or less total study effort or writing effort.**
 
-We investigated three possible sources of bias: total number of pages of ethnography, year of publication of each document, and the presence or absence of a female author/co-author for each document. We found evidence for bias in reporting of evidence for 9 of 105 [get new value] variables based on year of publication only. There was no convincing evidene of bias in any variable based on the total number of pages of ethnography or ethographer gender. Results now reported.
+We investigated three possible sources of bias: total number of pages of ethnography, year of publication of each document, and the presence or absence of a female author/co-author for each document. We found evidence for bias in reporting of evidence for 9 of 105 [get new value] variables based on year of publication only. There was no convincing evidence of bias in any variable based on the total number of pages of ethnography or ethographer gender. Results now reported.
 
 **4.	Did you control for observation year? This might be too highly correlated with ethnographer identity, but worth checking**
 
@@ -61,11 +61,11 @@ We have expanded our supplemental materials, xx, yy, zz.
 
 **Returning to the WEIRD Problem: in your discussion, please circle back to the question of what research might be missing by focusing on leadership in Western or industrialized societies. Say more on how leaders in small-scale societies are the same and different—and perhaps you will be able to explain some of that variation with variables like jurisdictional hierarchy or subsistence type or mobility measures. As mentioned by R1, this likely involves returning to the GLOBE data and putting it together with your findings more directly.** 
 
-We agree we need to better situate our study within the theme of the special issue. We interpret "Beyond WEIRD" in the following way: The original WEIRD paper was a needed wake-up call for psychology. However, we now worry that many psychologists are operationalizing WEIRD as a dichotomy: WEIRD and non-WEIRD. This is obviously a mistake, as there is enormous variation among the non-WEIRD. Our data set focuses primarily on traditional societies, and thus speaks to variation among the non-WEIRD, a point we now emphasize. At the same time, as Edward Said famously argued, anthropologists tend to make the opposite mistake: exoticizing the "Other". We hope we have struck the right balance in identifying important common themes and patterns across most of the populations in our data, while doing justice to their differences.
+We agree we need to better situate our study within the theme of the special issue. We interpret "Beyond WEIRD" in the following way: The original WEIRD paper was a needed wake-up call for psychology. However, we now worry that many psychologists are operationalizing WEIRD as a dichotomy: WEIRD vs. non-WEIRD. This is obviously a mistake, as there is enormous variation among the non-WEIRD. Our data set focuses primarily on traditional societies, and thus speaks to variation among the non-WEIRD, a point we now emphasize. At the same time, as Edward Said famously argued, anthropologists tend to make the opposite mistake: exoticizing the "Other" relative to the "West". We hope we have struck the right balance in identifying important common themes and patterns across most of the populations in our data, while doing justice to their differences.
 
 **Status vs. Leadership: R2 asks about status vs. leadership. Given recent debates about a “leadership psychology” as distinct and separable from status psychologies (like prestige and dominance, van Vugt), it might be worth expanding a bit on what these data say about the connection between status and leadership.** 
 
-This is a good idea. We now include a short section on our "status" variable, and what distinguishes leadership records with evidence for social status from those without such evidence.
+This is a good idea. We now include a short section on our "status" variable, and what distinguishes leadership records with evidence for social status from those without such evidence. We found xx, yy.
 
 **Expanding the dataset: the natural next step with this project is to use this small sample of hand coded categories to create an automated approach for all of the eHRAF, perhaps based on key words. The idea is to develop a set of keywords or other patterns that reliably predict when a paragraph should be coded in a particular way. The method can be developed and benchmarked using the dataset you’ve created and then simply applied in automated fashion to the entire eHRAF corpus. We offer this as a suggestion, but realize that it’s a lot to ask in this context.** 
 
