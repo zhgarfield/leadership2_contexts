@@ -1072,7 +1072,7 @@ plot_group_subsis_status
 
 
 # Costs and benefits by group structure type ------------------------------
-se <- function(x) sd(x)/sqrt(length(x))
+se <- function(x) sd(x, na.rm=T)/sqrt(length(x))
 
 # try to tidy data to: Group structure, Benefit type, Cost type, Status type (leader, follower), Mean, SE
 
@@ -1646,7 +1646,7 @@ feature_discoveries <-
 # Looking for negative values ---------------------------------------------
 
 x <- map_int(all_data2[all_study_vars], ~ sum(.x < 0))
-=======
+
 library(rstanarm)
 library(bayesplot)
 options(mc.cores = parallel::detectCores())
@@ -1908,7 +1908,7 @@ model_words <- function(pred_df, model_score_var, lam = 'lambda.min', title){
   # dotchart(sort(coefs[-1]))
   coefs <- sort(coefs[-1]) # delete intercept
   df <-
-    data_frame(
+    tibble(
       Word = factor(names(coefs), levels = names(coefs)),
       Coefficient = coefs,
       Sign = ifelse(coefs > 0, 'Positive', 'Negative')
@@ -1925,9 +1925,9 @@ model_words <- function(pred_df, model_score_var, lam = 'lambda.min', title){
   return(plot)
 }
 
-highstatus_plot <- model_words(dtm, 'qualities_high.status', lam = "min", title = 'Leader quality: High status')
+highstatus_plot <- model_words(leader_dtm, 'qualities_high.status', lam = "min", title = 'Leader quality: High status')
 highstatus_plot
 
-# ben_highstatus_plot <- model_words(dtm, 'leader.benefits_social.status.reputation', lam = "min", title = 'Benefits: Status, reputation')
-# ben_highstatus_plot
+ben_highstatus_plot <- model_words(leader_dtm, 'leader.benefits_social.status.reputation', lam = "min", title = 'Benefits: Status, reputation')
+ben_highstatus_plot
 
