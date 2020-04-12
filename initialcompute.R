@@ -611,6 +611,31 @@ qual_func_vars <- leader_text2 %>%
 #   nboot = 10000,
 #   parallel = T)
 
+# Cluster all study vars
+
+df_all <-
+  leader_text2 %>% 
+  dplyr::select(all_of(all_study_vars)) %>% 
+  dplyr::filter(rowSums(.) > 0)
+
+all_clust <- pvclust(
+  df_all,
+  method.hclust = 'ward',
+  method.dist = 'binary',
+  nboot = 1000,
+  parallel = T
+)
+
+# PAM
+library(cluster)
+library(factoextra)
+
+nbclust <- fviz_nbclust(t(df_all), pam, method='wss') # 4 or 5 silhouette
+m_pam <- pam(df_all, k = 4)
+
+nbclust <- fviz_nbclust(t(df_all), kmeans, method='silhouette') # 2, 5
+m_kmeans <- kmeans(df_all, centers = 2)
+
 # Cross-validation for logisticPCA ----------------------------------------
 
 # This takes a long time, so putting all code in one section
@@ -619,7 +644,7 @@ if(F){
   # Leader qualities
   qual_cvlpca <- cv.lpca(pca_data_qualities2, ks = 1:20, ms = 5:15)
   plot(qual_cvlpca)
-  which.min(qual_cvlpca[9,]) # optimal? k=9, m=11
+  which.min(qual_cvlpca[12,]) # optimal? k=9, m=11
   
   # Plot all minima
   x <- apply(qual_cvlpca, MARGIN = 1, which.min)

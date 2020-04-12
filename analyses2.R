@@ -41,6 +41,7 @@ library(ggcorrplot)
 library(margins)
 # library(mgcv)
 library(stringr)
+library(glmnet)
 
 # Load precomputed objects ------------------------------------------------
 
@@ -54,7 +55,7 @@ load("Leader2.Rdata")
 #+ fig.height=15, fig.width=15
 
 # Functions ---------------------------------------------------------------
-
+se <- function(x) sd(x)/sqrt(length(x))
 
 # Recode variables --------------------------------------------------------
 
@@ -218,10 +219,10 @@ dev.off()
 # pca_data_qualities$qPC2k2 <- m_lpca_qualk2$PCs[,2]
 # leader_text2 <- left_join(leader_text2, pca_data_qualities[c('cs_textrec_ID', 'qPC1k2', 'qPC2k2')])
 # 
-# # For optimal k, m determined by cv in initialcompute.R
-# kq <- 8
-# mq <- 12
-# 
+# For optimal k, m determined by cv in initialcompute.R
+kq <- 8
+mq <- 12
+
 # logpca_model_qualities = logisticPCA(pca_data_qualities2, k = kq, m = mq, main_effects = T)
 # plot(logpca_model_qualities, type = "scores")
 # logisticPCA_loadings_plot(logpca_model_qualities, data = pca_data_qualities2)
@@ -785,16 +786,6 @@ dev.off()
 # 
 
 
-# NMF ---------------------------------------------------------------------
-
-# library(NMF)
-# m_nmf <- nmf(t(pca_data_qualities2), rank = 2:15)
-# m_nmf5 <- nmf(t(pca_data_qualities2), rank = 5)
-# m_nmfrandom <- nmf(randomize(t(pca_data_qualities2)), rank=2:15)
-
-# pdf(file = 'consensusmap.pdf', width = 20)
-# consensusmap(m_nmf)
-# dev.off()
 
 # Group structure by subsistence --------------------------------------------------
 
@@ -928,7 +919,6 @@ plot_group_subsis_status
 
 
 # Costs and benefits by group structure type ------------------------------
-se <- function(x) sd(x)/sqrt(length(x))
 
 # try to tidy data to: Group structure, Benefit type, Cost type, Status type (leader, follower), Mean, SE
 
@@ -1518,87 +1508,16 @@ leader_text4 <- left_join(leader_text3, documents, by = c("document_d_ID" = "d_I
 
 # Text analysis -----------------------------------------------------------
 
-# Switch ’ to '
-text_records$raw_text <- iconv(text_records$raw_text, "", "UTF-8")
-text_records$raw_text <- str_replace(text_records$raw_text, "’", "'")
-
-# Merge high status varaible
-leader_text_ta <- left_join(text_records, leader_text2[,c("cs_textrec_ID", "qualities_high.status", "leader.benefits_social.status.reputation")],
-                            by = "cs_textrec_ID")
-
-leader_text_ta2 <- leader_text_ta[,c("cs_textrec_ID", "qualities_high.status", "leader.benefits_social.status.reputation", "raw_text", "document_d_ID")]
-
-# Set -1 to 0
-leader_text_ta2$qualities_high.status[leader_text_ta2$qualities_high.status == -1] = 0
-
-words <-
-  leader_text_ta2 %>% 
-  unnest_tokens(word, raw_text)
-
-x <- table(words$cs_textrec_ID)
-summary(as.numeric(x))
-median_wordcount <- median(x)
-mean_wordcount <- mean(x)
-sd_wordcount <- sd(x)
-
-# Word frequency
-library(dplyr)
-data("stop_words")
-stop_words <- rbind(stop_words, list(word='page', lexicon='garfield'))
-#stop_words <- rbind(stop_words, list(word='ijaaj', lexicon='garfield'))
-#stop_words <- rbind(stop_words, list(word='tadoelako', lexicon='garfield'))
-#stop_words <- rbind(stop_words, list(word='zande', lexicon='garfield'))
-
-words2 <-
-  words %>%
-  dplyr::filter(!str_detect(word, '\\d')) %>% 
-  anti_join(stop_words)
-
-x <- sort(table(words2$word), decreasing = T)
-
-#Stemming
-library(hunspell)
-
-words2$stem <- hunspell_stem(words2$word)
-
-# Pick one of the stems
-words2$stem2 <- NA
-for (i in 1:nrow(words2)){
-  n = length(words2$stem[[i]])
-  if (n == 0){
-    words2$stem2[i] <- words2$word[i]
-    # } else if (n == 1){
-    #   words2$stem2[i] <- words2$stem[[i]][1]
-  } else {
-    words2$stem2[i] <- words2$stem[[i]][1]
-  }
-}
-
-# Aggregate lead, leader, leadership
-words2$stem2[words2$stem2 == 'lead'] <- 'leader'
-words2$stem2[words2$stem2 == 'leadership'] <- 'leader'
-
-# Aggregate pow with power
-words2$stem2[words2$stem2 == 'pow'] <- 'power'
-
-# glmnet
-library(glmnet)
-
-# document-term matrix
-dtm <-
-  words2 %>% 
-  dplyr::select(cs_textrec_ID, stem2) %>% 
-  group_by(cs_textrec_ID, stem2) %>% 
-  summarise(count = n()) %>% 
-  spread(stem2, count, fill = 0)
-
-model_words <- function(pred_df, model_score_var, lam = 'lambda.min', title){
+model_words <- function(var, lam = 'lambda.min', exponentiate = T, title){
   
-  document_d_ID <- pred_df[[1]] # Not sure if this is getting doc ID right?
-  x <- base::as.matrix(pred_df[-1])
-  y <- leader_text_ta2[[model_score_var]][leader_text_ta2$cs_textrec_ID %in% document_d_ID]
+  df <- left_join(leader_text2[c('cs_textrec_ID', var)], leader_dtm)
+  y <- df[[2]]
+  x <- as.matrix(df[-c(1:2)])
   
-  m_cv <- cv.glmnet(x, y, family = 'poisson', alpha = 1, standardize = F)
+  # x <- base::as.matrix(pred_df[-1]) # Remove doc_ID column
+  # y <- leader_text2[[model_score_var]][leader_text2$cs_textrec_ID %in% pred_df[[1]]]
+  
+  m_cv <- cv.glmnet(x, y, family = 'binomial', alpha = 0.5, standardize = F)
   plot(m_cv)
   
   print(m_cv$lambda.min)
@@ -1608,7 +1527,9 @@ model_words <- function(pred_df, model_score_var, lam = 'lambda.min', title){
     lmda <- m_cv$lambda.min + (m_cv$lambda.1se - m_cv$lambda.min)/2
   } else if (lam == 'min'){
     lmda <- m_cv$lambda.min
-  } else {
+  } else if(lam == '1se'){
+    lmda <- m_cv$lambda.1se
+    } else {
     lmda = lam
   }
   
@@ -1621,19 +1542,26 @@ model_words <- function(pred_df, model_score_var, lam = 'lambda.min', title){
       names(coefs)[length(coefs)] <- rownames(c.min)[i]
     }
   }
-  # dotchart(sort(coefs[-1]))
+  
+  if (exponentiate){
+    coefs <- exp(coefs)
+    xintrcpt <- 1
+  } else {
+    xintrcpt <- 0
+  }
+
   coefs <- sort(coefs[-1]) # delete intercept
+  
   df <-
     data_frame(
       Word = factor(names(coefs), levels = names(coefs)),
       Coefficient = coefs,
-      Sign = ifelse(coefs > 0, 'Positive', 'Negative')
+      Sign = ifelse(coefs > xintrcpt, 'Increase', 'Decrease')
     )
   plot <- 
-    ggplot(df, aes(Word, Coefficient, colour = Sign, shape=Sign)) + 
+    ggplot(df, aes(Coefficient, Word, colour = Sign, shape=Sign)) + 
     geom_point() + 
-    geom_hline(yintercept = 0, linetype = 'dotted') +
-    coord_flip() +
+    geom_vline(xintercept = xintrcpt, linetype = 'dotted') +
     guides(colour=F, shape=F) +
     labs(title = title, x = '', y = '') +
     theme_bw()
@@ -1641,9 +1569,9 @@ model_words <- function(pred_df, model_score_var, lam = 'lambda.min', title){
   return(plot)
 }
 
-highstatus_plot <- model_words(dtm, 'qualities_high.status', lam = "min", title = 'Leader quality: High status')
-highstatus_plot
+highstatus_plot <- model_words('qualities_high.status', lam = "1se", title = 'Leader quality: High status')
+# highstatus_plot + scale_x_log10()
 
-# ben_highstatus_plot <- model_words(dtm, 'leader.benefits_social.status.reputation', lam = "min", title = 'Benefits: Status, reputation')
-# ben_highstatus_plot
+# ben_highstatus_plot <- model_words('leader.benefits_social.status.reputation', lam = "mid", title = 'Benefits: Status, reputation')
+# ben_highstatus_plot + scale_x_log10()
 
