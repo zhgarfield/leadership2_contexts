@@ -42,6 +42,9 @@ library(margins)
 # library(mgcv)
 library(stringr)
 library(glmnet)
+library(treemapify)
+library(emmeans)
+library(hagenutils)
 
 # Load precomputed objects ------------------------------------------------
 
@@ -71,7 +74,6 @@ plot.variable.support = ggplot(d_melt, aes(value, Variable, xmin=y_negse, xmax=y
   scale_x_continuous(breaks=seq(0,1,.1), labels=scales::percent, limits=c(0,1)) +
   scale_colour_discrete(name='', labels=c('Cultures', 'Text records')) +
   facet_grid(Model~., scales = "free_y", space = "free_y") +
-  theme(strip.text.y = element_text(angle=0)) +
   scale_shape_manual(name="", values=c(17,16), labels=c('Cultures', 'Text records'))+
   scale_fill_manual(name="", values=c("red", "blue"), labels=c('Cultures', 'Text records')) +
   labs(x="",y="") +
@@ -799,7 +801,7 @@ df_groups <-
   dplyr::filter(group.structure2 != 'other') %>% 
   mutate(
     demo_sex = factor(demo_sex, levels = c('male', 'female')),
-    group =   factor(
+    group = factor(
       group.structure2,
       levels = c(
         'residential subgroup',
@@ -830,6 +832,40 @@ plot_group_subsis <-
   guides(fill = guide_legend(reverse = T)) +
   theme_minimal(15) 
 plot_group_subsis
+
+# High status by subsistence groups
+
+# Simple proportions
+x <- table(leader_text2$group.structure2, leader_text2$qualities_high.status)
+x <- prop.table(x, margin = 1)[,2]
+plot_status_group <- ggdotchart(x) + scale_x_continuous(limits = c(0, 0.5))
+
+# logistic model
+
+m_status_group <-
+  glmer(
+    qualities_high.status ~
+      group.structure2 +
+      (1|d_culture/author_ID),
+    family = binomial,
+    data = all_data
+  )
+
+emm_status_group <-
+  emmeans(m_status_group, 'group.structure2', type = 'response') %>% 
+  summary %>% 
+  mutate(
+    group.structure2 = fct_reorder(group.structure2, prob)
+  )
+
+plot_emm_status_group <-
+  ggplot(emm_status_group, aes(prob, group.structure2, xmin = asymp.LCL, xmax = asymp.UCL)) +
+  geom_errorbarh(height = 0) +
+  geom_point() +
+  scale_x_continuous(limits = c(0, 0.7)) +
+  labs(title="Proportion of evidence that leaders are high status", x = '\nProportion', y = "") +
+  theme_minimal()
+plot_emm_status_group
 
 # Leave off for now. Might not need this.
 # + 
@@ -923,33 +959,50 @@ plot_group_subsis_status
 # try to tidy data to: Group structure, Benefit type, Cost type, Status type (leader, follower), Mean, SE
 
 # Group by group structure and calculate mean and SE
-cb_grp <- leader_text2 %>% 
-  group_by(group.structure2) %>% 
+cb_grp <- 
+  leader_text2 %>% 
   select(group.structure2, contains(c("benefits", "costs"))) %>%
-  summarise_each(list(mean=mean, se=se)) %>% 
-  pivot_longer(cols=contains(c("benefits", "costs"))) # couldn't figure out how to pivot_longer on three vars
+  pivot_longer(contains(c("benefits", "costs"))) %>% 
+  mutate(
+    name = str_replace(name, '\\.cost', 'Xcost'),
+    name = str_replace(name, '\\.benefit', 'Xbenefit')
+  ) %>% 
+  separate(name, into=c('type', 'variable'), sep='X') %>% 
+  mutate(
+    variable = str_replace(variable, 'benefits_', 'benefitsX'),
+    variable = str_replace(variable, 'costs_', 'costsX')
+  ) %>%
+  separate(variable, into = c('cost_benefit', 'variable'), sep = 'X') %>% 
+  group_by(group.structure2, type, cost_benefit, variable) %>% 
+  summarise(mean = mean(value), se = sd(value)/sqrt(length(value)), N = n())
+  
+cb_grp_leader <- dplyr::filter(cb_grp, type == 'leader')
+
+ggplot(cb_grp_leader, aes(mean, variable, colour = group.structure2)) + 
+  geom_point() +
+  facet_wrap(~cost_benefit)
 
 # label means and SE to split the data frame
-cb_grp$value_type <- gsub("^.*\\_","",cb_grp$name)
-
-#Create dataframe of means and fix names
-cb_grp_means <- data.frame(split(cb_grp, cb_grp$value_type)[1])
-cb_grp_means$name <- str_sub(cb_grp_means$mean.name, end=-6)
-cb_grp_means$group.structure2 <- cb_grp_means$mean.group.structure2
-cb_grp_means <- cb_grp_means[,c("mean.value","name","group.structure2")]
-
-#Create dataframe of SEs and fix names
-cb_grp_se <- data.frame(split(cb_grp, cb_grp$value_type)[2])
-cb_grp_se$name <- str_sub(cb_grp_se$se.name, end=-4)
-cb_grp_se$group.structure2 <- cb_grp_se$se.group.structure2
-cb_grp_se <- cb_grp_se[,c("se.value","name","group.structure2")]
-
-#Merge mean and SE data back together               
-cb_grp_all <- full_join(cb_grp_means, cb_grp_se, by = c("name", "group.structure2"))
-
-# Create status and type variables
-cb_grp_all$status <- str_extract(cb_grp_all$name, ".+?(?=\\.)")
-cb_grp_all$type <- str_match(cb_grp_all$name, "\\.(.*?)_")
+# cb_grp$value_type <- gsub("^.*\\_","",cb_grp$name)
+# 
+# #Create dataframe of means and fix names
+# cb_grp_means <- data.frame(split(cb_grp, cb_grp$value_type)[1])
+# cb_grp_means$name <- str_sub(cb_grp_means$mean.name, end=-6)
+# cb_grp_means$group.structure2 <- cb_grp_means$mean.group.structure2
+# cb_grp_means <- cb_grp_means[,c("mean.value","name","group.structure2")]
+# 
+# #Create dataframe of SEs and fix names
+# cb_grp_se <- data.frame(split(cb_grp, cb_grp$value_type)[2])
+# cb_grp_se$name <- str_sub(cb_grp_se$se.name, end=-4)
+# cb_grp_se$group.structure2 <- cb_grp_se$se.group.structure2
+# cb_grp_se <- cb_grp_se[,c("se.value","name","group.structure2")]
+# 
+# #Merge mean and SE data back together               
+# cb_grp_all <- full_join(cb_grp_means, cb_grp_se, by = c("name", "group.structure2"))
+# 
+# # Create status and type variables
+# cb_grp_all$status <- str_extract(cb_grp_all$name, ".+?(?=\\.)")
+# cb_grp_all$type <- str_match(cb_grp_all$name, "\\.(.*?)_")
 
 
 
@@ -1125,6 +1178,8 @@ plot_pages_tr <-
 plot_pages_tr
 
 # Variable importance scratchpad ------------------------------------------
+
+# New variants
 
 all_data2 <- 
   all_data %>% 
@@ -1435,12 +1490,26 @@ feature_sub_models <-
     Anova = map(Model, Anova),
     p_value = map_dbl(Anova, 'Pr(>Chisq)'),
     adj_p_value = p.adjust(p_value, method = 'BH'),
-    margins = map(Model, margins)
+    emmeans = map(Model, ~summary(emmeans(., spec = 'subsistence', type = "response")))
   )
 
 sub_models_sig <- 
   feature_sub_models %>% 
-  filter(adj_p_value < 0.05)
+  filter(adj_p_value < 0.05) %>% 
+  unnest(emmeans)
+
+plot_feature_models <-
+  ggplot(
+    sub_models_sig, 
+    aes(rate, subsistence, xmin = asymp.LCL, xmax = asymp.UCL)
+  ) +
+  geom_errorbarh(height = 0, lwd = 2.5, alpha = .2) + 
+  geom_point() + 
+  facet_grid(Feature~.) + 
+  labs(x = '\nRate', y = '') +
+  theme_bw() + 
+  theme(strip.text.y = element_text(angle=0))
+plot_feature_models
 
 df_feature_models <- 
   map_dfr(
@@ -1505,6 +1574,69 @@ leader_text4 <- left_join(leader_text3, documents, by = c("document_d_ID" = "d_I
 # )
 # mm_pubyearOR <- exp(fixef(mm_pubyear))[[2]]
 
+# replicating original variable importance models
+
+variable_importance <- function(df, vars, group){
+  tibble(
+    Group = group,
+    Variable = all_vars_dict[vars],
+    Model = map(
+      vars, 
+      ~ glmer(
+        df[[.x]] ~ 1 + (1|d_culture/author_ID),
+        family = binomial,
+        data = all_data,
+        nAGQ = 0
+      )
+    )
+  ) %>% 
+    mutate(
+      Tidy = map(Model, broom.mixed::tidy, conf.int=T, exponentiate=T),
+      estimate  = map_dbl(Tidy, ~ .x$estimate[1]),
+      conf.low  = map_dbl(Tidy, ~ .x$conf.low[1]),
+      conf.high = map_dbl(Tidy, ~ .x$conf.high[1]),
+      authorSD  = map_dbl(Tidy, ~ .x$estimate[2]),
+      cultureSD = map_dbl(Tidy, ~ .x$estimate[3])
+    )
+}
+
+plot_random_effects <- function(df, var, title, subtitle){
+  v <- df[[var]]
+  names(v) <- df$Variable
+  hagenutils::ggdotchart(v) + 
+    labs(
+      title = title,
+      subtitle = subtitle,
+      x = '\nStandard deviation'
+      )
+}
+
+df_functions <- variable_importance(all_data, function_vars, 'Functions')
+df_qualities <- variable_importance(all_data, quality_vars, 'Qualities')
+
+plot_function_author_re <- plot_random_effects(df_functions, 'authorSD', 'Ethnographer random effects', 'Function variables')
+plot_function_culture_re <- plot_random_effects(df_functions, 'cultureSD', 'Culture random effects', 'Function variables')
+
+plot_quality_author_re <- plot_random_effects(df_qualities, 'authorSD', 'Ethnographer random effects', 'Quality variables')
+plot_quality_culture_re <- plot_random_effects(df_qualities, 'cultureSD', 'Culture random effects', 'Quality variables')
+
+plot_fun_auth_cult_re <- 
+  ggplot(df_functions, aes(authorSD, cultureSD)) + 
+  geom_point() + 
+  geom_text_repel(aes(label = Variable)) + 
+  coord_fixed() +
+  labs(title = 'Function variable random effects', x = '\nAuthor standard deviation', y = 'Culture standard deviation\n') +
+  theme_bw(15)
+plot_fun_auth_cult_re
+
+plot_qual_auth_cult_re <- 
+  ggplot(df_qualities, aes(authorSD, cultureSD)) + 
+  geom_point() + 
+  geom_text_repel(aes(label = Variable)) + 
+  coord_fixed() +
+  labs(title = 'Quality variable random effects', x = '\nAuthor standard deviation', y = 'Culture standard deviation\n') +
+  theme_bw(15)
+plot_qual_auth_cult_re
 
 # Text analysis -----------------------------------------------------------
 
@@ -1517,7 +1649,7 @@ model_words <- function(var, lam = 'lambda.min', exponentiate = T, title){
   # x <- base::as.matrix(pred_df[-1]) # Remove doc_ID column
   # y <- leader_text2[[model_score_var]][leader_text2$cs_textrec_ID %in% pred_df[[1]]]
   
-  m_cv <- cv.glmnet(x, y, family = 'binomial', alpha = 0.5, standardize = F)
+  m_cv <- cv.glmnet(x, y, family = 'binomial', alpha = 1, standardize = F)
   plot(m_cv)
   
   print(m_cv$lambda.min)
@@ -1553,7 +1685,7 @@ model_words <- function(var, lam = 'lambda.min', exponentiate = T, title){
   coefs <- sort(coefs[-1]) # delete intercept
   
   df <-
-    data_frame(
+    tibble(
       Word = factor(names(coefs), levels = names(coefs)),
       Coefficient = coefs,
       Sign = ifelse(coefs > xintrcpt, 'Increase', 'Decrease')
@@ -1562,6 +1694,7 @@ model_words <- function(var, lam = 'lambda.min', exponentiate = T, title){
     ggplot(df, aes(Coefficient, Word, colour = Sign, shape=Sign)) + 
     geom_point() + 
     geom_vline(xintercept = xintrcpt, linetype = 'dotted') +
+    hagenutils::scale_color_binary() +
     guides(colour=F, shape=F) +
     labs(title = title, x = '', y = '') +
     theme_bw()
@@ -1575,3 +1708,24 @@ highstatus_plot <- model_words('qualities_high.status', lam = "1se", title = 'Le
 # ben_highstatus_plot <- model_words('leader.benefits_social.status.reputation', lam = "mid", title = 'Benefits: Status, reputation')
 # ben_highstatus_plot + scale_x_log10()
 
+
+# Treemaps -----------------------------------------------------------------
+
+# docs nested in cultures nested in subsistence types
+
+docsum <-
+  leader_text2 %>% 
+  dplyr::select(d_culture, doc_ID) %>% 
+  left_join(leader_cult[c('d_culture', 'Name', 'region', 'subsistence')]) %>% 
+  group_by(subsistence, Name, doc_ID) %>% 
+  summarise(record_num = n())
+
+plot_cult_docs_subsis <-
+  ggplot(docsum, aes(area = record_num, label = doc_ID, subgroup = subsistence, subgroup2 = Name, fill=subsistence)) + 
+  geom_treemap() +
+  # geom_treemap_text(colour = 'gray') +
+  geom_treemap_subgroup_border() +
+  geom_treemap_subgroup2_border() +
+  geom_treemap_subgroup2_text(colour = 'white') +
+  # geom_treemap_subgroup_text(colour = 'white') +
+  scale_fill_viridis(discrete = T)

@@ -164,7 +164,11 @@ This text record was coded has having evidence for the functions *Resolve confli
 
 We analyzed data from our researcher-coded operationalized variables at the text-record level and at the culture-level. Our first goal was to assess the proportion of text records and cultures that provided evidence for each of our coded variables to discover the qualities, functions, benefits and costs of leadership that are most and least frequently noted in the ethnographic record. We computed confidence intervals for the proportion of text records supporting each variable using generalized linear mixed effects models and random intercepts based on document authors nested within cultures (which partially accounts for potential variation due to differences in ethnographers such as gender, nationality, or theoretical framework). We computed confidence intervals for the proportion of cultures with evidence for each variable using a cluster bootstrap.
 
-We then used several methods to explore lower dimensional representations of these data that might reveal informative "features." These included logistic PCA, non-negative matrix factorization (NMF), and hierarchical cluster analysis. Logistic PCA generalizes Pearson's original formulation of PCA to find a projection of the natural parameters of the saturated model that minimizes the Bernoulli deviance [@logisticPCA]. NMF [@lee1999] finds a low rank approximation of the original matrix, $X \approx WH$, where $X$ is an $n \times p$ matrix, and $W$ and $H$ are $n \times k$ and $k \times p$ matrices, respectively; all elements of $X$, $W$ and $H$ are $\geq 0$; and, typically, $k << min(n,p)$. NMF estimates $W$ and $H$ by minimizing a measure of distance (typically the Frobenius norm or the Kullback-Leibler divergence) between $X$ and $WH$ [@gaujoux2010]. Agglomerative hierarchical cluster starts with all elements in their own cluster, and then uses a distance metric to combine the two closest clusters into a single cluster; the next two closest clusters are then combined, and so forth, until all elements belong to a single cluster. We computed distance between our binary vectors using $1-cor(x, y)$, and agglomerated using the Ward algorithm. We assessed the robustness of the clusters using the *pvclust* package [@suzuki_pvclust2006], which computes an unbiased probability that a cluster appears in bootstrapped samples. We used 10,000 bootstrapped samples.
+We then used several methods to explore lower dimensional representations of these data that might reveal informative "features." These included logistic PCA, non-negative matrix factorization (NMF), and hierarchical cluster analysis. Logistic PCA generalizes Pearson's original formulation of PCA to find a projection of the natural parameters of the saturated model that minimizes the Bernoulli deviance [@logisticPCA]. 
+
+NMF [@lee1999] finds a low rank approximation of the original matrix, $X \approx WH$, where $X$ is an $n \times p$ matrix, and $W$ and $H$ are $n \times k$ and $k \times p$ matrices, respectively; all elements of $X$, $W$ and $H$ are $\geq 0$; and, typically, $k << min(n,p)$. NMF estimates $W$ and $H$ by minimizing a measure of distance between $X$ and $WH$ [we used the default "brunet" algorithm, which uses the Kullback-Leibler divergence; @gaujoux2010].
+
+Agglomerative hierarchical cluster analysis starts with all elements in their own cluster, and then uses a distance metric to combine the two closest clusters into a single cluster; the next two closest clusters are then combined, and so forth, until all elements belong to a single cluster. We computed distance between our binary vectors using $1-cor(x, y)$, and agglomerated using the Ward algorithm. We assessed the robustness of the clusters using the *pvclust* package [@suzuki_pvclust2006], which computes an unbiased probability that a cluster appears in bootstrapped samples. We used 10,000 bootstrapped samples.
 
 <!-- To reduce the dimensionality of the `r length(quality_vars)` leader quality variables and the `r length(function_vars)` leader function variables, all of which take binary values (0, 1), we used logistic PCA from the logisticPCA package. This algorithm projects the natural parameters of the saturated model onto the lower $k-$dimension space that minimizes the Bernoulli deviance [@logisticPCA]. Prior to analysis we removed all rows that had no evidence for any variable, which resulted in `r nrow(pca_data_qualities)` text records for the leader quality variables and `r nrow(pca_data_functions)` text records for the leader function variables. We used cross-validation to optimize rank, $k$, and a tuning parameter, $m$ (the value to approximate the saturated model), per recommendation of the package authors. -->
 
@@ -276,7 +280,13 @@ statusPercCult <- signif(100*statusFracCult, 3)
 
 ## Dimension reduction
 
-Our qualities and functions data comprised sparse $`r nrow(leader_text)` \times `r length(quality_vars)`$ and $`r nrow(leader_text)` \times `r length(function_vars)`$ matrices of binary data, respectively. 
+```{r}
+num_removed <- sum(rowSums(leader_text2[all_study_vars]) == 0)
+```
+
+To investigate features in our data, we first removed `r num_removed` text records with no evidence for any variable.
+
+Our qualities and functions data comprised sparse $`r nrow(leader_text2)` \times `r length(quality_vars)`$ and $`r nrow(leader_text2)` \times `r length(function_vars)`$ matrices of binary data, respectively. 
 
 
 Most data reduction methods did not find strong evidence of structure in the data. Here we report the cluster analysis of variables that used the correlation distance metric ($1 - cor$), and the Ward agglomeration algorithm (for results from the other methods, see the SI). Figure \@ref(fig:cluster)A displays a dendrogram from the cluster analysis of the `r length(quality_vars)` leader quality variables and Figure \@ref(fig:cluster)B displays a dendrogram from the cluster analysis of the `r length(function_vars)` leader function variables. Each cluster analysis includes two estimates of significance for how strongly each cluster within the dendrogram is supported by the data. We rely on the AU (Approximately Unbiased) *p* values, which are computed by multiscale bootstrap resampling and represented as percentages (e.g., clusters with AU values $>95$ are strongly supported, and the top-level clusters are automatically highlighted by rectangles).
@@ -446,11 +456,21 @@ We explored three possible sources of bias in discovery of evidence for each of 
 plot_pubdate
 ```
 
+## Ethnographer and Culture random effects
+
+```{r FunctionRE, fig.cap="Ethnographer and Culture random effects for function variables."}
+plot_fun_auth_cult_re
+```
+
+```{r QualityRE, fig.height=8, fig.cap="Ethnographer and Culture random effects for quality variables."}
+plot_qual_auth_cult_re
+```
+
 ## Disentangleing the relationship between leadership and high status
 
 These data present an oppurtunity to explore the relationship between high status and leadership, as represented in ethnographic texts. To do so, we draw on the term-document matrix of our ethnographic sample which was developed by computing the frequencies of all "informative" words in each text record after removing all punctuation and English stop words (uninformative words such as the, is, at), stemming the remaining words (reducing inflections such as plurals and past tenses to the root, or stem, words). In this data matrix the columns are all the unique word stems (terms), rows were the text records (documents), and the values in each cell were the frequencies of each word stem in each text record. The coding of *high status* was joined with this term-document matrix. This process produced a matrix with `r nrow(leader_dtm)` rows with one for each text-record and `r ncol(leader_dtm)` columns with a column for each unique term and a column for the researcher-coded *high status* value ($0$ or $1$). 
 
-We used lasso regression as a variable selection technique, which is especially useful when the number of predictors is much greater than the number of cases (i.e., $p > > n$). Lasso regression has a penalty or shrinkage term, $\lambda$: larger values of $\lambda$ retain more variables in the model, at the risk of over-fitting, whereas smaller values of $\lambda$ decrease the number of predictors retained in the model, at the risk of under-fitting. The optimal value of $\lambda$ can be estimated with cross-validation [@tibshirani_regression_1996; @zou_regularization_2005]. We used the glmnet package [@friedman_regularization_2010] to fit a lasso regression model to determine which words best predicted evidence for high status as a leader quality. We used tenfold cross-validation to choose the $\lambda$ parameter that minimized deviance. We then plotted all the non-zero coefficients (Figure \@ref(fig:highstatusplot). 
+We used lasso regression as a variable selection technique, which is especially useful when the number of predictors is much greater than the number of cases (i.e., $p > > n$). Lasso regression has a penalty or shrinkage term, $\lambda$: larger values of $\lambda$ retain more variables in the model, at the risk of over-fitting, whereas smaller values of $\lambda$ decrease the number of predictors retained in the model, at the risk of under-fitting. The optimal value of $\lambda$ can be estimated with cross-validation [@tibshirani_regression_1996; @zou_regularization_2005]. We used the glmnet package [@friedman_regularization_2010] to fit a lasso regression model to determine which words best predicted evidence for high status as a leader quality. We used tenfold cross-validation to choose the $\lambda$ parameter that minimized deviance. We then plotted all the non-zero coefficients (Figure \@ref(fig:highstatusplot)). 
 
 ```{r highstatusplot, echo=F, message=F, fig.width=8, fig.height=6, fig.align='center', fig.cap="Lasso logistic regression coefficients, which indicate the words whose frequencies in each text record best predicted evidence for the *high status* leader quality in each text record. Coefficients estimated with glmnet package using cross-validation to determine the optimal value of lambda [@friedman_regularization_2010]. Blue values are positive predictors; red values are negative predictors. X-axis is on a log 10 scale."}
 highstatus_plot + scale_x_log10()
@@ -458,11 +478,17 @@ highstatus_plot + scale_x_log10()
 
 Figure \@ref(fig:highstatusplot) depicts the `r length(highstatus_plot$data$Word)` words with non-zero (mostly positive) coefficents. The words most predictive of evidence for high status leaders are *`r rev(highstatus_plot$data$Word)[1:3]`*, and *`r rev(highstatus_plot$data$Word)[4]`*, respectively. The words, *`r rev(highstatus_plot$data$Word)[5:7]`* are moderately strong predictors. 
 
+## Dimension reduction
+
+
+
 ## Feature models
 
-```{r features, fig.width=10, fig.cap="Marginal effects of Poission mixed effects regression models of Feature variables by mode of subsistence. Only models whose subsistence coefficient had a corrected p-value < 0.05. Base level: agriculturalists. See text for details."}
+```{r features, fig.width=8, fig.cap="Esimtated marginal means [@lenth2020] of Poission mixed effects regression models of Feature variables by mode of subsistence. Only models whose subsistence coefficient had a corrected p-value < 0.05. Plotted on the response scale. See text for details."}
 
-x <- pmap(sub_models_sig, ~ plot(..6, main = ..1))
+# x <- pmap(sub_models_sig, ~ plot(..6, main = ..1))
+
+plot_feature_models
 
 ```
 
