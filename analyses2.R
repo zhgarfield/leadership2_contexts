@@ -1135,7 +1135,7 @@ doc_year_hist <- ggplot(documents, aes(d_publication_date)) +
   geom_vline(xintercept = mean(documents$d_publication_date, na.rm=T),
              linetype="dotted", 
              color = "grey", size=.5)+
-  labs(x="\nDocument publication years (mean year 1960)", y="Count\n")
+  labs(x="\nDocument publication years", y="Count\n")
 
 ## Dumbbell plot of fieldwork time frames
 
@@ -1150,7 +1150,7 @@ doc_fielddates_plot<- ggplot(documents2[!is.na(documents2$d_field_date_start)==T
   geom_dumbbell() +
   facet_grid(region~., scales = "free_y", space = "free_y")+ 
   scale_x_continuous(breaks = seq(1870,2000,10), minor_breaks = seq(1870,2000,10)) +
-  labs(x="\nDocument field work start and end dates", y="")+
+  labs(x="\nSpan of earliest and latest field work year for each document", y="")+
   geom_vline(xintercept = mean(documents2$d_field_date_start, na.rm=T),
              linetype="dotted", 
              color = "black", size=.5)+
