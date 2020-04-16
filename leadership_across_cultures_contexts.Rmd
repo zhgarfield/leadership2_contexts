@@ -12,6 +12,7 @@ csl: evolution-and-human-behavior.csl
 knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=F)
 source('analyses2.R')
 library(pander)
+library(patchwork)
 ```
 
 
@@ -314,6 +315,21 @@ ggsave(file="Figures/variablecostsbenefits.pdf", plot.variable.support_costs_ben
 plot.variable.support_costs_benefits
 ```
 
+We then explored relationships between total leader benefits and costs, summed across all leader benefit and cost variables, respectively, and levels of social and political organization. In general, leaders at the highest supracommunity level had the most evidence for receiving benefits and the least evidence for suffering costs. See Figure \@ref(fig:leadertotalbenefitscosts).
+
+```{r leadertotalbenefitscosts, fig.cap="Estimated marginal means of A. leader total benefits, and B. total costs, as a function of group structure, based on a Poisson mixed effects regression model with random intercepts for ethnographer nested within culture. Values are on the response scale."}
+p1 <- 
+  emm_plot(emmeans(m_ldrtotben, type = 'response', specs = 'group.structure2')) +
+  labs(title = "Total leader benefits", x = "", y = "")
+
+p2 <- emm_plot(emmeans(m_ldrtotcost, type = 'response', specs = 'group.structure2')) +
+  labs(title = "Total leader costs", x = "\nRate", y = "")
+
+p1 + p2 + plot_layout(ncol = 1) + plot_annotation(tag_levels = 'A')
+
+```
+
+
 <!-- ## Exploring population-level variation -->
 
 <!-- To explore potential population variation in the *Prestige vs. Dominance* and *In-group favoritism vs. Social Status* leader qualities components and the *Social functions* and *Mediation vs. Organization* leader functions components, we fit four hierarchical linear models at the text-record level, using nested random effects of document within culture with each of these components as outcome measures. For predictor variables we relied on our researcher-coded measure of group structure and our modified version of the HRAF subsistence classification (see Figure \@ref(fig:grouptype)).  -->
@@ -454,13 +470,13 @@ doc_1950_perc <- signif(length(documents$d_publication_date[documents$d_publicat
 
 The majority of ethnographic documents sampled here (`r doc_1950_perc`%) were published after 1950 and the mean publication year is `r round(mean(documents$d_publication_date),)` (SD = `r round(sd(documents$d_publication_date),2)`). Figure \@ref(fig:doc-years) plots the publication years of all documents which contributed text records to the ethnographic sample. 
 
-```{r doc-years, fig.height=6, fig.cap="Historgram of eHRAF document publiction year. Vertical line shows the mean publication year."}
+```{r doc-years, fig.height=6, fig.cap="Historgram of eHRAF document publiction year. Vertical line shows the median publication year."}
 doc_year_hist
 ```
 
 The eHRAF provides information on the time frame of field work associated with each document. For some documents the span of associated fieldwork is given for the exact months and years the ethnographer was in the field. For most documents one or more spans of years are given. Figure \@ref(fig:field-years) plots the earliest year and the latest year for which field work occurred for each document. The time spans plotted do not depict the full span of fieldwork necessarily, but simply illustrate the time span during which fieldwork occurred. We omitted data for three documents (two from North America and one from Insular Pacific) with field work date ranges prior to 1870. For all documents, the average earliest year in which field work occurred was `r signif(mean(documents$d_field_date_start, na.rm=T),4)` and the average latest years in which field work occurred was `r signif(mean(documents$d_field_date_end, na.rm=T),4)`. 
 
-```{r field-years, fig.height=8, fig.width=9, fig.cap="Dumbbell plot of eHRAF document field work years. Vertical lines shows the  mean earliest and latest years of field work."}
+```{r field-years, fig.height=8, fig.width=9, fig.cap="Span of fieldwork years of study documents. To improve clarity, one document with very early fieldwork from 1791-1804 was omitted."}
 doc_fielddates_plot
 ```
 
@@ -496,7 +512,14 @@ We used lasso regression as a variable selection technique, which is especially 
 highstatus_plot + scale_x_log10()
 ```
 
-Figure \@ref(fig:highstatusplot) depicts the `r length(highstatus_plot$data$Word)` words with non-zero (mostly positive) coefficents. The words most predictive of evidence for high status leaders are *`r rev(highstatus_plot$data$Word)[1:3]`*, and *`r rev(highstatus_plot$data$Word)[4]`*, respectively. The words, *`r rev(highstatus_plot$data$Word)[5:7]`* are moderately strong predictors. 
+Figure \@ref(fig:highstatusplot) depicts the `r length(highstatus_plot$data$Word)` words with non-zero (mostly positive) coefficents. The words most predictive of evidence for high status leaders are *`r rev(highstatus_plot$data$Word)[1:4]`*, and *`r rev(highstatus_plot$data$Word)[5]`*.
+
+We then investigated if the proportion of text records with evidence for high status differed among the different levels of social and political organization. There were modest differences. Somewhat counterintuitively, the proportion of text records indicating high status was lowest at the highest level of political organization, perhaps because it would have been superfluous to note that kings and chiefs were high status. See Figure \@ref(fig:groupstatus).
+
+```{r groupstatus, fig.cap="Estimated marginal means of a mixed effects logistic regression model of evidence for high status (0/1) as a function of group type, with random effects for ethnographer nested within culture."}
+plot_emm_status_group
+```
+
 
 ## Dimension reduction
 

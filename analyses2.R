@@ -58,11 +58,24 @@ library(ggalt)
 
 load("Leader2.Rdata")
 
+# This is also needed in initialcompute.R, so this is redundant
+all_study_vars <- c(function_vars, quality_vars, leader_benefit_vars, leader_cost_vars, follower_benefit_vars, follower_cost_vars)
+
+
 #+ fig.height=15, fig.width=15
 
 # Functions ---------------------------------------------------------------
 se <- function(x) sd(x)/sqrt(length(x))
 
+emm_plot <- function(em){
+  emsum <- summary(em)
+  names(emsum)[1:2] <- c('var', 'estimate')
+  emsum[[1]] <- fct_reorder(emsum[[1]], emsum[[2]])
+  ggplot(emsum, aes(estimate, var, xmin = asymp.LCL, xmax = asymp.UCL)) +
+    geom_errorbarh(height = 0, lwd=2.5, alpha = 0.3) +
+    geom_point() +
+    theme_minimal(15)
+}
 
 # Variable support plots --------------------------------------------------
 
@@ -836,7 +849,7 @@ plot_group_subsis
 # High status by subsistence groups
 
 # Simple proportions
-x <- table(leader_text2$group.structure2, leader_text2$qualities_high.status)
+x <- table(leader_text2$group.structure2, leader_text2$qualities_HighStatus)
 x <- prop.table(x, margin = 1)[,2]
 plot_status_group <- ggdotchart(x) + scale_x_continuous(limits = c(0, 0.5))
 
@@ -844,7 +857,7 @@ plot_status_group <- ggdotchart(x) + scale_x_continuous(limits = c(0, 0.5))
 
 m_status_group <-
   glmer(
-    qualities_high.status ~
+    qualities_HighStatus ~
       group.structure2 +
       (1|d_culture/author_ID),
     family = binomial,
@@ -860,12 +873,15 @@ emm_status_group <-
 
 plot_emm_status_group <-
   ggplot(emm_status_group, aes(prob, group.structure2, xmin = asymp.LCL, xmax = asymp.UCL)) +
-  geom_errorbarh(height = 0) +
+  geom_errorbarh(height = 0, lwd=2.5, alpha = 0.3) +
   geom_point() +
   scale_x_continuous(limits = c(0, 0.7)) +
   labs(title="Proportion of evidence that leaders are high status", x = '\nProportion', y = "") +
-  theme_minimal()
+  theme_minimal(15)
 plot_emm_status_group
+
+
+
 
 # Leave off for now. Might not need this.
 # + 
@@ -913,7 +929,7 @@ plot_group_sex
 
 ## Groups by subsistence for high status texts only
 df_groups_status <- 
-  leader_text2[leader_text2$qualities_high.status==0,] %>% 
+  leader_text2[leader_text2$qualities_HighStatus==0,] %>% 
   dplyr::select(
     group.structure2,
     demo_sex,
@@ -963,24 +979,82 @@ cb_grp <-
   leader_text2 %>% 
   select(group.structure2, contains(c("benefits", "costs"))) %>%
   pivot_longer(contains(c("benefits", "costs"))) %>% 
-  mutate(
-    name = str_replace(name, '\\.cost', 'Xcost'),
-    name = str_replace(name, '\\.benefit', 'Xbenefit')
-  ) %>% 
-  separate(name, into=c('type', 'variable'), sep='X') %>% 
-  mutate(
-    variable = str_replace(variable, 'benefits_', 'benefitsX'),
-    variable = str_replace(variable, 'costs_', 'costsX')
-  ) %>%
-  separate(variable, into = c('cost_benefit', 'variable'), sep = 'X') %>% 
+  separate(name, into=c('type', 'variable'), sep='\\.') %>% 
+  separate(variable, into = c('cost_benefit', 'variable'), sep = '_') %>% 
   group_by(group.structure2, type, cost_benefit, variable) %>% 
   summarise(mean = mean(value), se = sd(value)/sqrt(length(value)), N = n())
   
-cb_grp_leader <- dplyr::filter(cb_grp, type == 'leader')
+cb_grp_leader <- dplyr::filter(cb_grp, type == 'follower')
 
 ggplot(cb_grp_leader, aes(mean, variable, colour = group.structure2)) + 
   geom_point() +
   facet_wrap(~cost_benefit)
+
+# Total benefits
+
+leader_text2 <-
+  leader_text2 %>% 
+  mutate(
+    leadertotalbenefits = rowSums(leader_text2[leader_benefit_vars]),
+    leaderbenefitfailure = length(leader_benefit_vars) - leadertotalbenefits,
+    leadertotalcosts = rowSums(leader_text2[leader_cost_vars]),
+    leadercostfailure = length(leader_cost_vars) - leadertotalcosts,
+    followertotalbenefits = rowSums(leader_text2[follower_benefit_vars]),
+    followerbenefitfailure = length(follower_benefit_vars) - followertotalbenefits,
+    followertotalcosts = rowSums(leader_text2[follower_cost_vars]),
+    followercostfailure = length(follower_cost_vars) - followertotalcosts
+  )
+
+mat <- as.matrix(cbind(leader_text2$leadertotalbenefits, leader_text2$leaderbenefitfailure))
+
+m_ldrtotben <-
+  glmer(
+    cbind(leadertotalbenefits, leaderbenefitfailure) ~
+      group.structure2 +
+      (1|d_culture/doc_ID),
+    family = binomial,
+    data = leader_text2,
+    nAGQ = 0
+  )
+
+emm_plot(emmeans(m_ldrtotben, type = 'response', specs = 'group.structure2'))
+
+m_ldrtotcost <-
+  glmer(
+    cbind(leadertotalcosts, leadercostfailure) ~
+      group.structure2 +
+      subsistence + 
+      (1|d_culture/doc_ID),
+    family = binomial,
+    data = leader_text2,
+    nAGQ = 0
+  )
+emm_plot(emmeans(m_ldrtotcost, type = 'response', specs = 'group.structure2'))
+
+m_followben <-
+  glmer(
+    cbind(followertotalbenefits, followerbenefitfailure) ~
+      group.structure2 +
+      (1|d_culture/doc_ID),
+    family = binomial,
+    data = leader_text2,
+    nAGQ = 0
+  )
+emm_plot(emmeans(m_followben, type = 'response', specs = 'group.structure2'))
+
+m_followcost <-
+  glmer(
+    cbind(followertotalcosts, followercostfailure) ~
+      group.structure2 +
+      (1|d_culture/doc_ID),
+    family = binomial,
+    data = leader_text2,
+    nAGQ = 0
+  )
+Anova(m_followcost)
+emm_plot(emmeans(m_followcost, type = 'response', specs = 'group.structure2'))
+
+cor.test(~ leadertotalbenefits + followertotalcosts, leader_text2)
 
 # label means and SE to split the data frame
 # cb_grp$value_type <- gsub("^.*\\_","",cb_grp$name)
@@ -1023,11 +1097,11 @@ final_record_count <- sum(rowSums(leader_text2[all_study_vars])>0)
 male_leader_pct <- signif(100*sum(leader_text2$demo_sex=='male', na.rm=T)/nrow(leader_text2), 3)
 female_leader_pct <- signif(100*sum(leader_text2$demo_sex=='female', na.rm=T)/nrow(leader_text2), 2)
 
-intelltxts <- sum(leader_text2$qualities_knowlageable.intellect)
-polytxts <- sum(leader_text2$qualities_polygynous)
-statustxts <- sum(leader_text2$qualities_high.status)
-intellpolytxts <- sum(leader_text2$qualities_polygynous & leader_text2$qualities_knowlageable.intellect)
-statuspolytxts <- sum(leader_text2$qualities_polygynous & leader_text2$qualities_high.status)
+intelltxts <- sum(leader_text2$qualities_KnowlageableIntellect)
+polytxts <- sum(leader_text2$qualities_Polygynous)
+statustxts <- sum(leader_text2$qualities_HighStatus)
+intellpolytxts <- sum(leader_text2$qualities_Polygynous & leader_text2$qualities_KnowlageableIntellect)
+statuspolytxts <- sum(leader_text2$qualities_Polygynous & leader_text2$qualities_HighStatus)
 
 # text analysis
 # leader_text has 1000 rows
@@ -1171,7 +1245,7 @@ dfwc <-
 plot_pages_tr <-
   ggplot(dfwc, aes(`N Pages eHRAF`, number_leader_records, label = `eHRAF Culture Name`)) + 
   geom_point() + 
-  geom_text_repel(size = 3) +
+  geom_text_repel(size = 3, alpha = 0.5) +
   geom_smooth(span=1) +
   labs(x = '\nTotal number of pages of ethnography in the eHRAF', y = 'Number of text records on leadership\n') +
   theme_bw(15)
@@ -1182,40 +1256,51 @@ plot_pages_tr
 
 documents$d_publication_date <- as.numeric(documents$d_publication_date)
 
-doc_year_hist <- ggplot(documents, aes(d_publication_date)) + 
+doc_year_hist <- 
+  ggplot(documents, aes(d_publication_date)) + 
   geom_histogram(binwidth = 5) +
-  scale_x_continuous(breaks = seq(1860,2000,10)) +
-  geom_vline(xintercept = mean(documents$d_publication_date, na.rm=T),
+  scale_x_continuous(breaks = seq(1860,2000,20)) +
+  geom_vline(xintercept = median(documents$d_publication_date, na.rm=T),
              linetype="dotted", 
              color = "grey", size=.5)+
-  labs(x="\nDocument publication years", y="Count\n")
+  labs(x="\nDocument publication years", y="Count\n") +
+  theme_minimal(15)
+doc_year_hist
 
 ## Dumbbell plot of fieldwork time frames
 
 documents$d_field_date_start <- as.numeric(documents$d_field_date_start)
 documents$d_field_date_end <- as.numeric(documents$d_field_date_end)
 
-documents2<-left_join(documents, leader_cult) %>% 
-  filter(d_field_date_start>1869)
+documents2 <- 
+  documents %>% 
+  dplyr::select(d_ID, d_culture, d_field_date_start, d_field_date_end) %>% 
+  dplyr::filter(
+    !is.na(d_field_date_start),
+    !is.na(d_field_date_end),
+    d_field_date_start > 1799
+    ) %>% 
+  left_join(leader_cult[c('d_culture', 'region')]) %>% 
+  mutate(
+    d_ID = reorder(d_ID, d_field_date_start)
+  )
 
-doc_fielddates_plot<- ggplot(documents2[!is.na(documents2$d_field_date_start)==T,], 
-                    aes(x=d_field_date_start, xend=d_field_date_end, y=reorder(d_ID, d_field_date_start), colour=region)) + 
+#[!is.na(documents2$d_field_date_start)==T,], aes(x=d_field_date_start, xend=d_field_date_end, y=reorder(d_ID, d_field_date_start)
+
+doc_fielddates_plot <- 
+  ggplot(documents2, aes(x = d_field_date_start, xend=d_field_date_end, y = d_ID)) + 
   geom_dumbbell() +
   facet_grid(region~., scales = "free_y", space = "free_y")+ 
-  scale_x_continuous(breaks = seq(1870,2000,10), minor_breaks = seq(1870,2000,10)) +
-  labs(x="\nSpan of earliest and latest field work year for each document", y="")+
-  geom_vline(xintercept = mean(documents2$d_field_date_start, na.rm=T),
-             linetype="dotted", 
-             color = "black", size=.5)+
-  geom_vline(xintercept = mean(documents2$d_field_date_end, na.rm=T),
-             linetype="dotted", 
-             color = "black", size=.5)+
-  theme_bw(15) +
-  scale_color_viridis(discrete = T) +
-  theme(axis.text.y=element_blank(),
-        strip.text.y = element_text(angle=0),
-        legend.position = "none",
-        strip.text = element_text(colour = 'black'))
+  scale_x_continuous(breaks = seq(1850, 2000, 10), minor_breaks = seq(1870,2000,10)) +
+  labs(x="\nSpan of earliest and latest field work year for each document", y="") +
+  theme_minimal(15) +
+  theme(
+    axis.text.y = element_blank(),
+    strip.text.y = element_text(angle=0, hjust=0),
+    legend.position = "none",
+    strip.text = element_text(colour = 'black')
+  )
+doc_fielddates_plot
 
 # Variable importance scratchpad ------------------------------------------
 
@@ -1485,8 +1570,8 @@ features <- unique(clust_vars$Feature)
 names(features) <- features
 
 feature_var <- function(feature){
-  vars <- clust_vars$Variable[clust_vars$Feature == feature]
-  rowSums(all_data2[vars])
+  alldatavars <- clust_vars$Variable[clust_vars$Feature == feature]
+  rowSums(all_data2[alldatavars])
 }
 
 all_data3 <-
@@ -1663,7 +1748,7 @@ plot_quality_culture_re <- plot_random_effects(df_qualities, 'cultureSD', 'Cultu
 plot_fun_auth_cult_re <- 
   ggplot(df_functions, aes(authorSD, cultureSD)) + 
   geom_point() + 
-  geom_text_repel(aes(label = Variable)) + 
+  geom_text_repel(aes(label = Variable), alpha = 0.5) + 
   coord_fixed() +
   labs(title = 'Function variable random effects', x = '\nAuthor standard deviation', y = 'Culture standard deviation\n') +
   theme_bw(15)
@@ -1672,11 +1757,70 @@ plot_fun_auth_cult_re
 plot_qual_auth_cult_re <- 
   ggplot(df_qualities, aes(authorSD, cultureSD)) + 
   geom_point() + 
-  geom_text_repel(aes(label = Variable)) + 
+  geom_text_repel(aes(label = Variable), alpha = 0.5) + 
   coord_fixed() +
   labs(title = 'Quality variable random effects', x = '\nAuthor standard deviation', y = 'Culture standard deviation\n') +
   theme_bw(15)
 plot_qual_auth_cult_re
+
+# Investigate continental effects
+
+all_data2b <- 
+  all_data2 %>% 
+  left_join(leader_cult[c('d_culture', 'region')])
+
+# Is region sig, controlling for subsistence? No. ~pluck(., 3, 1)
+# Is subsistence sig, controlling for region? No. ~pluck(., 3, 2)
+df_allvars_continent <- 
+  tibble(
+    Variable = all_study_vars,
+    Model = map(
+      all_study_vars,
+      ~ glmer(
+        all_data2b[[.]] ~ 
+          region + 
+          subsistence +
+          (1|d_culture/author_ID),
+        family = binomial,
+        data = all_data2b,
+        nAGQ = 0
+      )
+    ),
+    Anova = map(Model, Anova),
+    p_value = map_dbl(Anova, ~pluck(., 3, 2)),
+    adj_pvalue = p.adjust(p_value, method = 'BH')
+  )
+
+
+df_allvars_continentSig <-
+  df_allvars_continent %>% 
+  dplyr::filter(adj_pvalue < 0.05)
+
+
+df_allvars_subsistence <- 
+  tibble(
+    Variable = all_study_vars,
+    Model = map(
+      all_study_vars,
+      ~ glmer(
+        all_data2b[[.]] ~ 
+          subsistence +
+          region +
+          (1|d_culture/author_ID),
+        family = binomial,
+        data = all_data2b,
+        nAGQ = 0
+      )
+    ),
+    Anova = map(Model, Anova),
+    p_value = map_dbl(Anova, 'Pr(>Chisq)'),
+    adj_pvalue = p.adjust(p_value, method = 'BH')
+  )
+
+
+df_allvars_subsistenceSig <-
+  df_allvars_subsistence %>% 
+  dplyr::filter(adj_pvalue < 0.05)
 
 # Text analysis -----------------------------------------------------------
 
@@ -1737,7 +1881,7 @@ model_words <- function(var, lam = 'lambda.min', exponentiate = T, title){
     hagenutils::scale_color_binary() +
     guides(colour=F, shape=F) +
     labs(title = title, x = '', y = '') +
-    theme_bw()
+    theme_minimal(15)
   
   return(plot)
 }
