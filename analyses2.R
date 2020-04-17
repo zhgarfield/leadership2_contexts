@@ -48,7 +48,6 @@ library(treemapify)
 library(emmeans)
 library(hagenutils)
 library(ggalt)
-library(ggpubr)
 
 # Load precomputed objects ------------------------------------------------
 
@@ -1814,7 +1813,7 @@ df_allvars_subsistence <-
       )
     ),
     Anova = map(Model, Anova),
-    p_value = map_dbl(Anova, 'Pr(>Chisq)'),
+    p_value = map_dbl(Anova, ~pluck(., 3, 1)),
     adj_pvalue = p.adjust(p_value, method = 'BH')
   )
 
@@ -1888,7 +1887,7 @@ model_words <- function(var, lam = 'lambda.min', exponentiate = T, title){
 }
 
 
-highstatus_plot <- model_words('qualities_high.status', lam = "1se", title = 'Leader quality: High status')
+highstatus_plot <- model_words('qualities_HighStatus', lam = "1se", title = 'Leader quality: High status')
 # highstatus_plot + scale_x_log10()
 
 # ben_highstatus_plot <- model_words('leader.benefits_social.status.reputation', lam = "mid", title = 'Benefits: Status, reputation')
