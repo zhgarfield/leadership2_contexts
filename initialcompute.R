@@ -283,11 +283,11 @@ for (m in models) {
   }
 }
 
-d_melt = data.frame(Model=Model, Variable=Variable, Type=Type, value=value, y_se=y_se, y_negse=y_negse, stringsAsFactors = F)
+  d_melt = data.frame(Model=Model, Variable=Variable, Type=Type, value=value, y_se=y_se, y_negse=y_negse, stringsAsFactors = F)
 
 var_names <- c(
-  "function_BestowMate" = "Bestow mates",                        
-  "function_PoliticalAppointments" = "Political appointments",             
+  "functions_BestowMate" = "Bestow mates",                        
+  "functions_PoliticalAppointments" = "Political appointments",             
   "functions_ConstructionInfrastructure"       = "Construction/infastructure",
   "functions_ControlEconomics"                 = "Control economics",
   "functions_CouncilMember"                    = "Council member",
@@ -300,8 +300,8 @@ var_names <- c(
   "functions_Punishment"                        = "Punishment",
   "functions_ServeLeader"                      = "Serve a leader",
   "functions_StrategicPlanning" = "Strategic planning",
-  "function_OrganizeCooperation"  = "Organize cooperation",
-  "function_ResolveConflcit"      = "Resolve conflict",
+  "functions_OrganizeCooperation"  = "Organize cooperation",
+  "functions_ResolveConflcit"      = "Resolve conflict",
   "functions_ControlCalendar"     = "Control calendar",
   "functions_ControlImmigration"  = "Control immigration",
   "functions_DistributeResources" = "Distribute resources",
@@ -349,11 +349,11 @@ var_names <- c(
   "qualities_Fairness"               = "Fairness",
   "qualities_HighQualitySpouse"    = "High-quality spouse",
   "qualities_Industriousness"        = "Industriousness",
-  "qualities_Interpersonal.skills"   = "Interpersonal skills",
+  "qualities_InterpersonalSkills"   = "Interpersonal skills",
   "qualities_Loyalty"                = "Loyalty",
   "qualities_PhysicalHealth"        = "Physical health",
   "qualities_ProperBehavior"        = "Proper behavior",
-  "qualities_Strategic.Nepotism"     = "Strategic nepotism",
+  "qualities_StrategicNepotism"     = "Strategic nepotism",
   "qualities_Xenophobic"   = "Xenophobia",
   "qualities_AntiHonest" = "Dishonest",
   "qualities_AntiFairness" = "Unfair",
