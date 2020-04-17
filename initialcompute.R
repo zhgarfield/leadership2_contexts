@@ -77,7 +77,7 @@ lt2vars <- names(leader_text2)
 
 # This includes "functions_context" which is not included in original vector
 function_vars <- lt2vars[str_detect(lt2vars, 'function')]
-function_vars <- function_vars[function_vars != "functions_context"]
+function_vars <- function_vars[function_vars != "functions_Context"]
 
 quality_vars <- lt2vars[str_detect(lt2vars, 'qualities')]
 leader_benefit_vars <- lt2vars[str_detect(lt2vars, 'leader.benefits')]
@@ -603,7 +603,7 @@ m_pvclust_fun <-
 
 qual_func_vars <- leader_text2 %>% 
   select(matches("functions|qualities")) %>% 
-  select(-functions_context) %>% 
+  select(-functions_Context) %>% 
   select(-contains("component"))
 
 # qual_func_clust <- pvclust(

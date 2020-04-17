@@ -877,7 +877,7 @@ plot_group_sex
 
 ## Groups by subsistence for high status texts only
 df_groups_status <- 
-  leader_text2[leader_text2$qualities_high.status==0,] %>% 
+  leader_text2[leader_text2$qualities_HighStatus==0,] %>% 
   dplyr::select(
     group.structure2,
     demo_sex,
