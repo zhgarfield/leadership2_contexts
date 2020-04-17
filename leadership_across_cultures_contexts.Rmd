@@ -464,6 +464,11 @@ Contemporary theoretical models of the evolution of leadership often emphasize l
 
 ## Ethnographic sample
 
+```{r subsisttree, fig.cap="Composition of the study source data, organized by mode of subsistence and culture. Size the rectangles, in descending order, is proportional to the number of text records per mode of subsistence, cultures of each mode, and per document from each culture."}
+plot_cult_docs_subsis
+```
+
+
 ```{r}
 doc_1950_perc <- signif(length(documents$d_publication_date[documents$d_publication_date>1949])/length(documents$d_publication_date),2)*100
 ```
@@ -539,6 +544,12 @@ plot_emm_status_group
 
 plot_feature_models
 
+```
+
+### Correlation matrix of features
+
+```{r featurecor, fig.cap="Correlation matrix of Feature variables. Numbers and colors indicate Pearson correlation coefficients."}
+plot_features_cor
 ```
 
 
