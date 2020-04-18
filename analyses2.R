@@ -852,7 +852,7 @@ plot_group_subsis
 # Simple proportions
 x <- table(leader_text2$group.structure2, leader_text2$qualities_HighStatus)
 x <- prop.table(x, margin = 1)[,2]
-plot_status_group <- ggdotchart(x) + scale_x_continuous(limits = c(0, 0.5))
+plot_status_group <- hagenutils::ggdotchart(x) + scale_x_continuous(limits = c(0, 0.5))
 
 # logistic model
 
