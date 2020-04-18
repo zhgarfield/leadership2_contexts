@@ -48,7 +48,6 @@ library(treemapify)
 library(emmeans)
 library(hagenutils)
 library(ggalt)
-library(ggpubr)
 
 # Load precomputed objects ------------------------------------------------
 
@@ -1569,16 +1568,33 @@ clust_fun_vars <- map2_df(fun_branches, names(fun_branches), branch2df)
 clust_vars <- bind_rows(clust_fun_vars, clust_qual_vars)
 features <- unique(clust_vars$Feature)
 names(features) <- features
+features2 <- features
+names(features2) <- paste0(features, 'Failure')
+
 
 feature_var <- function(feature){
   alldatavars <- clust_vars$Variable[clust_vars$Feature == feature]
   rowSums(all_data2[alldatavars])
 }
 
+failures <- function(feature){
+  max <- length(clust_vars$Feature[clust_vars$Feature == feature])
+  successes <- all_data3[[feature]]
+  max - successes
+}
+
 all_data3 <-
   all_data2 %>% 
   dplyr::select(demo_sex:female_coauthor) %>% 
-  bind_cols(map_dfc(features, feature_var))
+  bind_cols(
+    map_dfc(features, feature_var)
+    ) 
+
+all_data3 <- 
+  all_data3 %>% 
+  bind_cols(
+    map_dfc(features2, failures)
+  )
 
 df_culture_sum <-
   all_data3 %>%
@@ -1596,21 +1612,23 @@ heatmap(
   col = viridis(256)
   )
 
-ggcorrplot(cor(df_culture_sum[-c(1, 8)]), hc.order = T, hc.method = 'ward.D', lab=T)
+plot_features_cor <- 
+  ggcorrplot(cor(df_culture_sum[-c(1, 8)]), hc.order = T, hc.method = 'ward.D', lab=T)
 
 # Number of cultures without missing values
 map_int(culture_vars, ~ sum(!is.na(.)))
 
 # Univariate model of each feature by subsistence type
+failure_vars <- names(features2)
 feature_sub_models <-
   tibble(
     Feature = features,
-    Model = map(
-      features, ~ glmer(
-        all_data3[[.x]] ~
+    Model = map2(
+      features, failure_vars, ~ glmer(
+        cbind(all_data3[[.x]], all_data3[[.y]]) ~
           subsistence +
           (1|d_culture/doc_ID),
-        family = poisson,
+        family = binomial,
         data = all_data3
       )),
     Anova = map(Model, Anova),
@@ -1627,12 +1645,12 @@ sub_models_sig <-
 plot_feature_models <-
   ggplot(
     sub_models_sig, 
-    aes(rate, subsistence, xmin = asymp.LCL, xmax = asymp.UCL)
+    aes(prob, subsistence, xmin = asymp.LCL, xmax = asymp.UCL)
   ) +
   geom_errorbarh(height = 0, lwd = 2.5, alpha = .2) + 
   geom_point() + 
   facet_grid(Feature~.) + 
-  labs(x = '\nRate', y = '') +
+  labs(x = '\nProbability', y = '') +
   theme_bw() + 
   theme(strip.text.y = element_text(angle=0))
 plot_feature_models
@@ -1814,7 +1832,7 @@ df_allvars_subsistence <-
       )
     ),
     Anova = map(Model, Anova),
-    p_value = map_dbl(Anova, 'Pr(>Chisq)'),
+    p_value = map_dbl(Anova, ~pluck(., 3, 1)),
     adj_pvalue = p.adjust(p_value, method = 'BH')
   )
 
@@ -1888,7 +1906,7 @@ model_words <- function(var, lam = 'lambda.min', exponentiate = T, title){
 }
 
 
-highstatus_plot <- model_words('qualities_high.status', lam = "1se", title = 'Leader quality: High status')
+highstatus_plot <- model_words('qualities_HighStatus', lam = "1se", title = 'Leader quality: High status')
 # highstatus_plot + scale_x_log10()
 
 # ben_highstatus_plot <- model_words('leader.benefits_social.status.reputation', lam = "mid", title = 'Benefits: Status, reputation')
@@ -1912,6 +1930,7 @@ plot_cult_docs_subsis <-
   # geom_treemap_text(colour = 'gray') +
   geom_treemap_subgroup_border() +
   geom_treemap_subgroup2_border() +
-  geom_treemap_subgroup2_text(colour = 'white') +
+  geom_treemap_subgroup2_text(colour = 'gray') +
   # geom_treemap_subgroup_text(colour = 'white') +
   scale_fill_viridis(discrete = T)
+plot_cult_docs_subsis

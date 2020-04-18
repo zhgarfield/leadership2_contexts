@@ -283,84 +283,7 @@ for (m in models) {
   }
 }
 
-  d_melt = data.frame(Model=Model, Variable=Variable, Type=Type, value=value, y_se=y_se, y_negse=y_negse, stringsAsFactors = F)
-
-var_names <- c(
-  "functions_BestowMate" = "Bestow mates",                        
-  "functions_PoliticalAppointments" = "Political appointments",             
-  "functions_ConstructionInfrastructure"       = "Construction/infastructure",
-  "functions_ControlEconomics"                 = "Control economics",
-  "functions_CouncilMember"                    = "Council member",
-  "functions_GroupDetermination"              = "Group determination/cohesiveness",
-  "functions_Hospitality"                       = "Hospitality",
-  "functions_MilitaryCommand"                  = "Military command",
-  "functions_NewSettlement"                    =  "Movement/migration",
-  "functions_ProsocialInvestment"              = "Prosocial investment",
-  "functions_ProvideCounsel"                   = "Provide counsel/direction",
-  "functions_Punishment"                        = "Punishment",
-  "functions_ServeLeader"                      = "Serve a leader",
-  "functions_StrategicPlanning" = "Strategic planning",
-  "functions_OrganizeCooperation"  = "Organize cooperation",
-  "functions_ResolveConflcit"      = "Resolve conflict",
-  "functions_ControlCalendar"     = "Control calendar",
-  "functions_ControlImmigration"  = "Control immigration",
-  "functions_DistributeResources" = "Distribute resources",
-  "functions_GroupRepresentative" = "Group representative",
-  "functions_Medicinal"           = "Medicinal functions",
-  "functions_MoralAuthority"     = "Moral authority",
-  "functions_Policymaking"        =  "Policy making",
-  "functions_Protection"          = "Protection",
-  "functions_ProvideSubsistence" = "Provide subsistence",
-  "functions_Ritual"              = "Ritual functions",
-  "functions_SocialFunctions" = "Misc. social functions",
-  "qualities_ArtisticPerformance"     = "Artistic performance",
-  "qualities_Generous"                 = "Generosity",
-  "qualities_Age"                      = "Age",
-  "qualities_Attractive"              = "Attractive",
-  "qualities_CoerciveAuthority"      = "Coercive authority",
-  "qualities_CulturallyProgressive"  = "Culturally progressive",
-  "qualities_FavorablePersonality"   = "Favorable personality",
-  "qualities_Honest"                  = "Honesty",
-  "qualities_IngroupMember"          = "Ingroup member",
-  "qualities_Killer"                  = "Killer",
-  "qualities_ManyChildren"           = "Many children",
-  "qualities_PhysicallyStrong"       = "Physically formidable",
-  "qualities_Prosocial"               = "Prosocial",
-  "qualities_StrategicPlanner"       = "Strategic planner",
-  "qualities_DrugConsumption"     = "Drug consumption",
-  "qualities_HighStatus"            = "High status",
-  "qualities_Aggressive"             = "Aggressiveness",
-  "qualities_Bravery"               = "Bravery",
-  "qualities_Confident"             = "Confidence",
-  "qualities_Decisive"              = "Decisiveness/decision-making",
-  "qualities_Feared"                = "Feared",
-  "qualities_Humble"                = "Humility",
-  "qualities_Innovative"            = "Innovative",
-  "qualities_KnowlageableIntellect" = "Knowledgeable/intelligent",
-  "qualities_OratorySkill"         = "Oratory skill",
-  "qualities_Polygynous"            = "Polygynous",
-  "qualities_SocialContacts"       = "Social contacts",
-  "qualities_Supernatural"    = "Supernatural",
-  "qualities_ExpAccomplished"       = "Experienced/accomplished",
-  "qualities_Wealthy"                = "Wealthy",
-  "qualities_Ambition"               = "Ambitious",
-  "qualities_Charisma"               = "Charisma",
-  "qualities_CulturallyConservative" = "Culturally conservative",
-  "qualities_Fairness"               = "Fairness",
-  "qualities_HighQualitySpouse"    = "High-quality spouse",
-  "qualities_Industriousness"        = "Industriousness",
-  "qualities_InterpersonalSkills"   = "Interpersonal skills",
-  "qualities_Loyalty"                = "Loyalty",
-  "qualities_PhysicalHealth"        = "Physical health",
-  "qualities_ProperBehavior"        = "Proper behavior",
-  "qualities_StrategicNepotism"     = "Strategic nepotism",
-  "qualities_Xenophobic"   = "Xenophobia",
-  "qualities_AntiHonest" = "Dishonest",
-  "qualities_AntiFairness" = "Unfair",
-  "qualities_AntiDrugConsumption" = "No drug consumption",
-  "qualities_AntiCoerciveAuthority" = "No coercive authority"
-)
-
+d_melt = data.frame(Model=Model, Variable=Variable, Type=Type, value=value, y_se=y_se, y_negse=y_negse, stringsAsFactors = F)
 d_melt$Variable <- var_names[d_melt$Variable]
 
 the_levels <- c(d_melt$Variable[d_melt$Type=='Cultures'][order(d_melt$value[d_melt$Type=='Cultures'])])
@@ -434,48 +357,6 @@ for (m in models) {
 }
 
 d_melt_cb = data.frame(Model=Model, Variable=Variable, Type=Type, value=value, y_se=y_se, y_negse=y_negse, stringsAsFactors = F)
-
-# var_names <- c(
-#   "leader.benefits_fitness"  = "Fitness",                  
-#   "leader.benefits_other"     = "Other misc.",                 
-#   "leader.benefits_resource_food" = "Food resources",             
-#   "leader.benefits_social.status.reputation" = "Status/reputation",  
-#   "leader.benefits_resource_other" = "Non-food Resources",
-#   "leader.benefits_mating"      = "Mating",              
-#   "leader.benefits_reduced.risk.harm.conflict" = "Reduced risk of harm/conflict",
-#   "leader.benefits_social.services"           = "Social services",
-#   "leader.benefits_territory" = "Territory",
-#  "follower.benefits_fitness"   = "Fitness",                   
-#  "follower.benefits_other"          = "Other misc.",            
-#  "follower.benefits_resource_food"   = "Food resources",            
-#  "follower.benefits_social.status.reputation"  = "Status/reputation",
-#  "follower.benefits_resource_other"  = "Non-food Resources",
-#  "follower.benefits_mating"           = "Mating",           
-#  "follower.benefits_reduced.risk.harm.conflict" = "Reduced risk of harm/conflict",
-#  "follower.benefits_social.services"    = "Social services",       
-#  "follower.benefits_territory" = "Territory",
-#  "leader.costs_fitness.costs"   = "Fitness",               
-#  "leader.costs_other"                  = "Other misc.",      
-#  "leader.costs_resources_other.cost"      =    "Non-food Resources",
-#  "leader.costs_territory.cost"         = "Territory",       
-#  "leader.costs.social.services" = "Social services",
-# "leader.costs_increased.risk.harm.conflict" = "Increased risk of harm/conflict",
-# "leader.costs_resource_food.cost"  =    "Food resources",     
-# "leader.costs_social.status"              = "Status/reputation", 
-# "leader.costs.mating.cost" = "Mating",  
-# "follower.costs_fitness"    = "Fitness",                    
-# "follower.costs_other"              = "Other misc.",          
-# "follower.costs_resource_other"    = "Non-food Resources",           
-# "follower.costs_territory"             = "Territory",       
-# "follower.costs_social.services" = "Social services",
-# "follower.costs_increased.risk.harm.conflict" = "Increased risk of harm/conflict",
-# "follower.costs_resource_food"     =     "Food resources",      
-# "follower.costs_social.status"      = "Status/reputation",         
-# "follower.costs_mating"                      = "Mating"  
-# )
-# 
-# d_melt_cb$Variable <- var_names[d_melt_cb$Variable]
-# 
 the_levels <- c(d_melt_cb$Variable[d_melt_cb$Type=='Cultures'][order(d_melt_cb$value[d_melt_cb$Type=='Cultures'])])
 d_melt_cb$Variable = factor(d_melt_cb$Variable, levels=the_levels)
 
